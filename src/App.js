@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// App.jsx
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,22 +13,36 @@ function Home() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
 
+  // 🔹 Recupera nickname salvato localmente (se esiste)
+  useEffect(() => {
+    const savedNick = localStorage.getItem("nickname");
+    if (savedNick) setNickname(savedNick);
+  }, []);
+
+  // 🔹 Salva automaticamente il nickname quando cambia
+  useEffect(() => {
+    if (nickname.trim()) localStorage.setItem("nickname", nickname);
+  }, [nickname]);
+
+  // 🔹 Crea una nuova stanza
   const createRoom = () => {
     if (!nickname.trim()) {
       alert("Inserisci un nickname prima di continuare!");
       return;
     }
     const roomId = Math.random().toString(36).substring(2, 8);
-    navigate(`/room/${roomId}?nick=${encodeURIComponent(nickname)}`);
+    navigate(`/room/${roomId}?nick=${encodeURIComponent(nickname)}`, { replace: true });
   };
 
+  // 🔹 Unisciti a una stanza esistente
   const joinRoom = () => {
     if (!nickname.trim()) {
       alert("Inserisci un nickname prima di continuare!");
       return;
     }
     const input = prompt("Inserisci il codice stanza:");
-    if (input) navigate(`/room/${input}?nick=${encodeURIComponent(nickname)}`);
+    if (input)
+      navigate(`/room/${input}?nick=${encodeURIComponent(nickname)}`, { replace: true });
   };
 
   return (
@@ -40,6 +55,7 @@ function Home() {
         placeholder="Il tuo nickname..."
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && createRoom()}
         style={{
           padding: "10px 15px",
           borderRadius: 6,
@@ -84,8 +100,32 @@ function Home() {
 
 function Room() {
   const { roomId } = useParams();
-  const query = new URLSearchParams(window.location.search);
-  const nickname = query.get("nick") || "Anonimo";
+  const navigate = useNavigate();
+  const [nickname, setNickname] = useState("");
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    let nick = query.get("nick");
+
+    // 🔹 Se manca il nickname, chiedilo all’utente
+    if (!nick || nick.trim() === "") {
+      const userNick = prompt("Inserisci il tuo nickname:");
+      if (!userNick || userNick.trim() === "") {
+        alert("Devi inserire un nickname!");
+        navigate("/", { replace: true });
+        return;
+      }
+      nick = userNick.trim();
+      navigate(`/room/${roomId}?nick=${encodeURIComponent(nick)}`, { replace: true });
+    }
+
+    setNickname(nick);
+    setIsReady(true);
+  }, [navigate, roomId]);
+
+  if (!isReady || !nickname) return null;
+
   return <Board roomId={roomId} nickname={nickname} />;
 }
 
