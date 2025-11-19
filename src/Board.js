@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Stage, Layer, Line } from "react-konva";
 import throttle from "lodash.throttle";
 import { db } from "./firebase";
@@ -31,6 +31,66 @@ export default function Board({ roomId, nickname }) {
 
   const isArtist = gameState?.currentArtist === nickname;
   const hasGuessed = gameState?.guessedPlayers?.includes(nickname);
+
+  // ------------------------------
+  // 🧹 Pulisci lavagna
+  // ------------------------------
+  const clearBoard = useCallback(async () => {
+    await Promise.all([
+      remove(ref(db, `rooms/${roomId}/lines`)),
+      remove(ref(db, `rooms/${roomId}/lines_temp`)),
+    ]);
+    setLines([]);
+  }, [roomId]);
+
+  // ------------------------------
+  // 🔄 Passa al turno successivo
+  // ------------------------------
+  const nextTurn = useCallback(async () => {
+    const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
+    const nextIndex = (currentIndex + 1) % players.length;
+    const nextArtist = players[nextIndex]?.name;
+    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+    await set(ref(db, `rooms/${roomId}/game`), {
+      active: true,
+      currentArtist: nextArtist,
+      word,
+      turnStartedAt: Date.now(),
+      guessedPlayers: [],
+      round: (gameState?.round || 1) + 1
+    });
+
+    await clearBoard();
+  }, [roomId, players, gameState?.currentArtist, gameState?.round, clearBoard]);
+
+  // ------------------------------
+  // ⏭️ Fine turno automatica (timeout)
+  // ------------------------------
+  const endTurnAutomatically = useCallback(async () => {
+    await push(ref(db, `rooms/${roomId}/chat`), {
+      user: "Sistema",
+      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    setTimeout(() => nextTurn(), 3000);
+  }, [roomId, gameState?.word, nextTurn]);
+
+  // ------------------------------
+  // ⏭️ Fine turno manuale (tutti hanno indovinato)
+  // ------------------------------
+  const endTurnManually = useCallback(async () => {
+    await push(ref(db, `rooms/${roomId}/chat`), {
+      user: "Sistema",
+      message: `🎉 Tutti hanno indovinato! La parola era: ${gameState?.word}`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    setTimeout(() => nextTurn(), 2000);
+  }, [roomId, gameState?.word, nextTurn]);
 
   // ------------------------------
   // 👤 Aggiungi giocatore
@@ -107,17 +167,14 @@ export default function Board({ roomId, nickname }) {
       timerRef.current = null;
     }
 
-    if (!gameState?.active || timeLeft <= 0) return;
+    if (!gameState?.active) return;
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           timerRef.current = null;
-          // Chiama endTurn solo se il gioco è ancora attivo
-          if (gameState?.active) {
-            endTurnAutomatically();
-          }
+          endTurnAutomatically();
           return 0;
         }
         return prev - 1;
@@ -130,56 +187,7 @@ export default function Board({ roomId, nickname }) {
         timerRef.current = null;
       }
     };
-  }, [gameState?.active, gameState?.round]);
-
-  // ------------------------------
-  // ⏭️ Fine turno automatica (timeout)
-  // ------------------------------
-  const endTurnAutomatically = async () => {
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
-    setTimeout(() => nextTurn(), 3000);
-  };
-
-  // ------------------------------
-  // ⏭️ Fine turno manuale (tutti hanno indovinato)
-  // ------------------------------
-  const endTurnManually = async () => {
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `🎉 Tutti hanno indovinato! La parola era: ${gameState?.word}`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
-    setTimeout(() => nextTurn(), 2000);
-  };
-
-  // ------------------------------
-  // 🔄 Passa al turno successivo
-  // ------------------------------
-  const nextTurn = async () => {
-    const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
-    const nextIndex = (currentIndex + 1) % players.length;
-    const nextArtist = players[nextIndex]?.name;
-    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-
-    await set(ref(db, `rooms/${roomId}/game`), {
-      active: true,
-      currentArtist: nextArtist,
-      word,
-      turnStartedAt: Date.now(),
-      guessedPlayers: [],
-      round: (gameState?.round || 1) + 1
-    });
-
-    await clearBoard();
-  };
+  }, [gameState?.active, gameState?.round, endTurnAutomatically]);
 
   // ------------------------------
   // 💬 Messaggi chat
@@ -261,17 +269,6 @@ export default function Board({ roomId, nickname }) {
   };
 
   // ------------------------------
-  // 🧹 Pulisci lavagna
-  // ------------------------------
-  const clearBoard = async () => {
-    await Promise.all([
-      remove(ref(db, `rooms/${roomId}/lines`)),
-      remove(ref(db, `rooms/${roomId}/lines_temp`)),
-    ]);
-    setLines([]);
-  };
-
-  // ------------------------------
   // 🎨 Eventi mouse
   // ------------------------------
   const handleMouseDown = (e) => {
@@ -314,7 +311,7 @@ export default function Board({ roomId, nickname }) {
   // ------------------------------
   // 💬 Invia messaggio/indovina
   // ------------------------------
-  const sendMessage = async () => {
+  const sendMessage = useCallback(async () => {
     if (!inputMessage.trim() || !gameState?.active) return;
 
     const msg = inputMessage.trim().toLowerCase();
@@ -367,7 +364,7 @@ export default function Board({ roomId, nickname }) {
       });
       setInputMessage("");
     }
-  };
+  }, [inputMessage, gameState, isArtist, hasGuessed, players, nickname, roomId, endTurnManually]);
 
   return (
     <div className="board-container">
