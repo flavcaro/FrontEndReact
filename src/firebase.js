@@ -14,4 +14,5 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// Use Realtime Database for the drawing/rooms data (Board.js uses firebase/database APIs)
 export const db = getDatabase(app);
