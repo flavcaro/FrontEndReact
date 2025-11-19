@@ -34,20 +34,25 @@ export default function Board({ roomId, nickname }) {
   const hasGuessed = gameState?.guessedPlayers?.includes(nickname);
 
   // ------------------------------
-  // 🧹 Pulisci lavagna
-  // ------------------------------
-  const clearBoard = useCallback(async () => {
-    await Promise.all([
-      remove(ref(db, `rooms/${roomId}/lines`)),
-      remove(ref(db, `rooms/${roomId}/lines_temp`)),
-    ]);
-    setLines([]);
-  }, [roomId]);
-
-  // ------------------------------
   // 🔄 Passa al turno successivo
   // ------------------------------
   const nextTurn = useCallback(async () => {
+    // 1️⃣ Disattiva temporaneamente il gioco per bloccare i listener
+    await set(ref(db, `rooms/${roomId}/game/active`), false);
+    
+    // 2️⃣ Pulisci tutto dal database
+    await Promise.all([
+      remove(ref(db, `rooms/${roomId}/lines`)),
+      remove(ref(db, `rooms/${roomId}/lines_temp`))
+    ]);
+    
+    // 3️⃣ Pulisci lo stato locale
+    setLines([]);
+    
+    // 4️⃣ Piccolo delay per assicurarsi che tutti i client abbiano ricevuto l'aggiornamento
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // 5️⃣ Avvia il nuovo turno
     const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
     const nextIndex = (currentIndex + 1) % players.length;
     const nextArtist = players[nextIndex]?.name;
@@ -61,23 +66,7 @@ export default function Board({ roomId, nickname }) {
       guessedPlayers: [],
       round: (gameState?.round || 1) + 1
     });
-
-    await clearBoard();
-  }, [roomId, players, gameState?.currentArtist, gameState?.round, clearBoard]);
-
-  // ------------------------------
-  // ⏭️ Fine turno automatica (timeout)
-  // ------------------------------
-  const endTurnAutomatically = useCallback(async () => {
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
-    setTimeout(() => nextTurn(), 3000);
-  }, [roomId, gameState?.word, nextTurn]);
+  }, [roomId, players, gameState?.currentArtist, gameState?.round]);
 
   // ------------------------------
   // ⏭️ Fine turno manuale (tutti hanno indovinato)
@@ -91,6 +80,20 @@ export default function Board({ roomId, nickname }) {
     });
 
     setTimeout(() => nextTurn(), 2000);
+  }, [roomId, gameState?.word, nextTurn]);
+
+  // ------------------------------
+  // ⏭️ Fine turno automatica (timeout)
+  // ------------------------------
+  const endTurnAutomatically = useCallback(async () => {
+    await push(ref(db, `rooms/${roomId}/chat`), {
+      user: "Sistema",
+      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    setTimeout(() => nextTurn(), 3000);
   }, [roomId, gameState?.word, nextTurn]);
 
   // ------------------------------
@@ -212,10 +215,16 @@ export default function Board({ roomId, nickname }) {
   useEffect(() => {
     const linesRef = ref(db, `rooms/${roomId}/lines`);
     const unsubscribe = onValue(linesRef, (snapshot) => {
+      // 🔒 Non aggiornare le linee se il gioco non è attivo
+      if (!gameState?.active) {
+        setLines([]);
+        return;
+      }
+      
       const data = snapshot.val() || {};
       const saved = Object.entries(data).map(([firebaseKey, value]) => ({ 
         ...value, 
-        id: firebaseKey, // Usa la chiave Firebase come ID
+        id: firebaseKey,
         temp: false 
       }));
       setLines((prev) => {
@@ -224,7 +233,7 @@ export default function Board({ roomId, nickname }) {
       });
     });
     return unsubscribe;
-  }, [roomId]);
+  }, [roomId, gameState?.active]);
 
   // ------------------------------
   // ✏️ Linee temporanee
@@ -232,12 +241,17 @@ export default function Board({ roomId, nickname }) {
   useEffect(() => {
     const tempRef = ref(db, `rooms/${roomId}/lines_temp`);
     const unsubscribe = onValue(tempRef, (snapshot) => {
+      // 🔒 Non aggiornare le linee se il gioco non è attivo
+      if (!gameState?.active) {
+        return;
+      }
+      
       const data = snapshot.val() || {};
       const otherTemp = Object.entries(data)
         .filter(([user]) => user !== nickname)
         .map(([user, value]) => ({ 
           ...value, 
-          id: `temp-${user}-${value.updatedAt || Date.now()}`, // ID univoco per temp
+          id: `temp-${user}-${value.updatedAt || Date.now()}`,
           temp: true 
         }));
       setLines((prev) => {
@@ -247,7 +261,7 @@ export default function Board({ roomId, nickname }) {
       });
     });
     return unsubscribe;
-  }, [roomId, nickname]);
+  }, [roomId, nickname, gameState?.active]);
 
   // ------------------------------
   // 🎲 Inizia gioco
@@ -265,8 +279,12 @@ export default function Board({ roomId, nickname }) {
       round: 1
     });
 
-    await clearBoard();
-    await set(ref(db, `rooms/${roomId}/chat`), null);
+    await Promise.all([
+      remove(ref(db, `rooms/${roomId}/lines`)),
+      remove(ref(db, `rooms/${roomId}/lines_temp`)),
+      set(ref(db, `rooms/${roomId}/chat`), null)
+    ]);
+    setLines([]);
   };
 
   // ------------------------------
@@ -275,6 +293,17 @@ export default function Board({ roomId, nickname }) {
   const saveLine = async (line) => {
     const lineRef = push(ref(db, `rooms/${roomId}/lines`));
     await set(lineRef, { ...line, createdAt: Date.now() });
+  };
+
+  // ------------------------------
+  // 🧹 Pulisci lavagna (manuale)
+  // ------------------------------
+  const clearBoard = async () => {
+    await Promise.all([
+      remove(ref(db, `rooms/${roomId}/lines`)),
+      remove(ref(db, `rooms/${roomId}/lines_temp`)),
+    ]);
+    setLines([]);
   };
 
   // ------------------------------
@@ -362,6 +391,7 @@ export default function Board({ roomId, nickname }) {
           clearInterval(timerRef.current);
           timerRef.current = null;
         }
+        
         setTimeout(() => endTurnManually(), 1000);
       }
     } else {
