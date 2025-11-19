@@ -28,6 +28,7 @@ export default function Board({ roomId, nickname }) {
   const sendTempLine = useRef(null);
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
+  const lineIdCounter = useRef(0);
 
   const isArtist = gameState?.currentArtist === nickname;
   const hasGuessed = gameState?.guessedPlayers?.includes(nickname);
@@ -212,7 +213,11 @@ export default function Board({ roomId, nickname }) {
     const linesRef = ref(db, `rooms/${roomId}/lines`);
     const unsubscribe = onValue(linesRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const saved = Object.entries(data).map(([id, value]) => ({ id, ...value, temp: false }));
+      const saved = Object.entries(data).map(([firebaseKey, value]) => ({ 
+        ...value, 
+        id: firebaseKey, // Usa la chiave Firebase come ID
+        temp: false 
+      }));
       setLines((prev) => {
         const tempLines = prev.filter((l) => l.temp);
         return [...saved, ...tempLines];
@@ -229,8 +234,12 @@ export default function Board({ roomId, nickname }) {
     const unsubscribe = onValue(tempRef, (snapshot) => {
       const data = snapshot.val() || {};
       const otherTemp = Object.entries(data)
-        .filter(([id]) => id !== nickname)
-        .map(([id, value]) => ({ id, ...value, temp: true }));
+        .filter(([user]) => user !== nickname)
+        .map(([user, value]) => ({ 
+          ...value, 
+          id: `temp-${user}-${value.updatedAt || Date.now()}`, // ID univoco per temp
+          temp: true 
+        }));
       setLines((prev) => {
         const myTemp = prev.filter((l) => l.temp && l.user === nickname);
         const saved = prev.filter((l) => !l.temp);
@@ -276,8 +285,9 @@ export default function Board({ roomId, nickname }) {
     
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
+    lineIdCounter.current += 1;
     currentLine.current = { 
-      id: `${nickname}-${Date.now()}`,
+      id: `${nickname}-${Date.now()}-${lineIdCounter.current}`,
       points: [pos.x, pos.y], 
       user: nickname,
       temp: true
