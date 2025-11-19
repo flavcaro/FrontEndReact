@@ -27,6 +27,7 @@ export default function Board({ roomId, nickname }) {
   const playerRefRef = useRef(null);
   const sendTempLine = useRef(null);
   const messagesEndRef = useRef(null);
+  const timerRef = useRef(null);
 
   const isArtist = gameState?.currentArtist === nickname;
   const hasGuessed = gameState?.guessedPlayers?.includes(nickname);
@@ -100,52 +101,85 @@ export default function Board({ roomId, nickname }) {
   // ⏱️ Timer
   // ------------------------------
   useEffect(() => {
+    // Pulisci timer precedente
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     if (!gameState?.active || timeLeft <= 0) return;
 
-    const handleEndTurn = async () => {
-      // Messaggio di fine turno
-      await push(ref(db, `rooms/${roomId}/chat`), {
-        user: "Sistema",
-        message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
-        timestamp: Date.now(),
-        isSystem: true
-      });
-
-      setTimeout(async () => {
-        const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
-        const nextIndex = (currentIndex + 1) % players.length;
-        const nextArtist = players[nextIndex]?.name;
-        const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-
-        await set(ref(db, `rooms/${roomId}/game`), {
-          active: true,
-          currentArtist: nextArtist,
-          word,
-          turnStartedAt: Date.now(),
-          guessedPlayers: [],
-          round: (gameState?.round || 1) + 1
-        });
-
-        await Promise.all([
-          remove(ref(db, `rooms/${roomId}/lines`)),
-          remove(ref(db, `rooms/${roomId}/lines_temp`)),
-        ]);
-        setLines([]);
-      }, 3000);
-    };
-
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          handleEndTurn();
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          // Chiama endTurn solo se il gioco è ancora attivo
+          if (gameState?.active) {
+            endTurnAutomatically();
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [gameState?.active, gameState?.word, gameState?.currentArtist, gameState?.round, timeLeft, roomId, players]);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [gameState?.active, gameState?.round]);
+
+  // ------------------------------
+  // ⏭️ Fine turno automatica (timeout)
+  // ------------------------------
+  const endTurnAutomatically = async () => {
+    await push(ref(db, `rooms/${roomId}/chat`), {
+      user: "Sistema",
+      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    setTimeout(() => nextTurn(), 3000);
+  };
+
+  // ------------------------------
+  // ⏭️ Fine turno manuale (tutti hanno indovinato)
+  // ------------------------------
+  const endTurnManually = async () => {
+    await push(ref(db, `rooms/${roomId}/chat`), {
+      user: "Sistema",
+      message: `🎉 Tutti hanno indovinato! La parola era: ${gameState?.word}`,
+      timestamp: Date.now(),
+      isSystem: true
+    });
+
+    setTimeout(() => nextTurn(), 2000);
+  };
+
+  // ------------------------------
+  // 🔄 Passa al turno successivo
+  // ------------------------------
+  const nextTurn = async () => {
+    const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
+    const nextIndex = (currentIndex + 1) % players.length;
+    const nextArtist = players[nextIndex]?.name;
+    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+    await set(ref(db, `rooms/${roomId}/game`), {
+      active: true,
+      currentArtist: nextArtist,
+      word,
+      turnStartedAt: Date.now(),
+      guessedPlayers: [],
+      round: (gameState?.round || 1) + 1
+    });
+
+    await clearBoard();
+  };
 
   // ------------------------------
   // 💬 Messaggi chat
@@ -216,37 +250,6 @@ export default function Board({ roomId, nickname }) {
 
     await clearBoard();
     await set(ref(db, `rooms/${roomId}/chat`), null);
-  };
-
-  // ------------------------------
-  // ⏭️ Fine turno (chiamata manuale da sendMessage)
-  // ------------------------------
-  const endTurn = async () => {
-    // Messaggio di fine turno
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `⏰ Tempo scaduto! La parola era: ${gameState?.word}`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
-    setTimeout(async () => {
-      const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
-      const nextIndex = (currentIndex + 1) % players.length;
-      const nextArtist = players[nextIndex]?.name;
-      const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-
-      await set(ref(db, `rooms/${roomId}/game`), {
-        active: true,
-        currentArtist: nextArtist,
-        word,
-        turnStartedAt: Date.now(),
-        guessedPlayers: [],
-        round: (gameState?.round || 1) + 1
-      });
-
-      await clearBoard();
-    }, 3000);
   };
 
   // ------------------------------
@@ -328,10 +331,9 @@ export default function Board({ roomId, nickname }) {
         );
       }
 
-      await set(ref(db, `rooms/${roomId}/game/guessedPlayers`), [
-        ...(gameState.guessedPlayers || []),
-        nickname
-      ]);
+      const updatedGuessedPlayers = [...(gameState.guessedPlayers || []), nickname];
+      
+      await set(ref(db, `rooms/${roomId}/game/guessedPlayers`), updatedGuessedPlayers);
 
       await push(ref(db, `rooms/${roomId}/chat`), {
         user: "Sistema",
@@ -343,13 +345,17 @@ export default function Board({ roomId, nickname }) {
       setInputMessage("");
 
       // Se tutti hanno indovinato, passa al turno successivo
-      const remainingPlayers = players.filter(p => 
-        p.name !== gameState.currentArtist && 
-        !gameState.guessedPlayers?.includes(p.name)
-      );
+      const totalPlayers = players.length;
+      const artistCount = 1;
+      const guessedCount = updatedGuessedPlayers.length;
       
-      if (remainingPlayers.length <= 1) {
-        setTimeout(endTurn, 2000);
+      if (guessedCount >= totalPlayers - artistCount) {
+        // Ferma il timer
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        setTimeout(() => endTurnManually(), 1000);
       }
     } else {
       // Messaggio normale
