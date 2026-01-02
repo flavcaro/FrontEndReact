@@ -11,6 +11,9 @@ export default function GameHeader({
   onStartGame,
   onClearBoard
 }) {
+  const currentRound = gameState?.round || 0;
+  const totalRounds = gameState?.totalRounds || 0;
+
   return (
     <header className="board-header">
       <div className="room-info">
@@ -20,14 +23,20 @@ export default function GameHeader({
         </div>
         
         {gameState?.active && (
-          <div style={{ marginLeft: 40 }}>
-            <div className="room-label">
-              {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
+          <>
+            <div style={{ marginLeft: 40 }}>
+              <div className="room-label">Round {currentRound}/{totalRounds}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: '#6366f1' }}>
+                {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
+              </div>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: isArtist ? '#22c55e' : '#6366f1' }}>
-              {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
+            <div style={{ marginLeft: 40 }}>
+              <div className="room-label">Parola</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: isArtist ? '#22c55e' : '#6366f1' }}>
+                {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 
@@ -45,7 +54,7 @@ export default function GameHeader({
           </div>
         )}
         
-        {!gameState?.active && players.length >= MIN_PLAYERS && (
+        {!gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && (
           <button onClick={onStartGame} className="btn-start">
             🎮 Inizia Partita
           </button>

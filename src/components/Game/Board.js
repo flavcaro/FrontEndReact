@@ -7,6 +7,7 @@ import PlayersSidebar from "./PlayersSidebar";
 import ChatSidebar from "./ChatSidebar";
 import GameHeader from "./GameHeader";
 import Canvas from "./Canvas";
+import GameResults from "./GameResults";
 import "../../App.css";
 
 export default function Board({ roomId, nickname }) {
@@ -16,8 +17,10 @@ export default function Board({ roomId, nickname }) {
     timeLeft, 
     isArtist, 
     hasGuessed, 
+    finalResults,
     startGame, 
-    handleGuess 
+    handleGuess,
+    restartGame
   } = useGame(roomId, nickname, players);
   const { messages, messagesEndRef } = useChat(roomId);
   const { 
@@ -67,6 +70,13 @@ export default function Board({ roomId, nickname }) {
         hasGuessed={hasGuessed}
         onGuessCorrect={handleGuess}
       />
+
+      {finalResults && (
+        <GameResults 
+          finalResults={finalResults}
+          onRestart={restartGame}
+        />
+      )}
     </div>
   );
 }
