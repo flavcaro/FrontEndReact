@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ref, set, push, onValue, remove } from "firebase/database";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 
 export function usePlayers(roomId, nickname) {
   const [players, setPlayers] = useState([]);
@@ -9,8 +9,20 @@ export function usePlayers(roomId, nickname) {
   // Aggiungi giocatore
   useEffect(() => {
     const addPlayer = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("No authenticated user");
+        return;
+      }
+
       const newRef = push(ref(db, `rooms/${roomId}/players`));
-      await set(newRef, { name: nickname, joinedAt: Date.now(), score: 0 });
+      await set(newRef, { 
+        name: nickname, 
+        joinedAt: Date.now(), 
+        score: 0,
+        userId: user.uid, // Link player to authenticated user
+        email: user.email
+      });
       playerRefRef.current = newRef;
     };
     addPlayer();

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, push, remove, onValue } from "firebase/database";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import { WORDS, TURN_DURATION, POINTS_PER_GUESS } from "../constants/gameConfig";
 
 export function useGame(roomId, nickname, players) {
@@ -106,6 +106,12 @@ export function useGame(roomId, nickname, players) {
 
   // Inizia gioco
   const startGame = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("⚠️ Devi essere autenticato per iniziare la partita!");
+      return;
+    }
+
     const firstArtist = players[0]?.name;
     const word = WORDS[Math.floor(Math.random() * WORDS.length)];
     
@@ -115,7 +121,8 @@ export function useGame(roomId, nickname, players) {
       word,
       turnStartedAt: Date.now(),
       guessedPlayers: [],
-      round: 1
+      round: 1,
+      startedBy: user.uid // Track who started the game
     });
 
     await Promise.all([
