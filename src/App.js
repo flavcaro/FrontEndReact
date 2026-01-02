@@ -11,6 +11,7 @@ import { auth } from "./firebase";
 import Lobby from "./components/Lobby/Lobby";
 import Home from "./components/Home/Home";
 import Board from "./components/Game/Board";
+import RoomJoin from "./components/Room/RoomJoin";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
@@ -38,7 +39,12 @@ function ProtectedHome() {
   return <Home />;
 }
 
-function Room() {
+function RoomEntry() {
+  const { roomId } = useParams();
+  return <RoomJoin roomId={roomId.toUpperCase()} />;
+}
+
+function RoomPlay() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
@@ -49,37 +55,26 @@ function Room() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
-        // Not authenticated, redirect to lobby
-        alert("⚠️ Devi essere autenticato per entrare in una stanza!");
-        navigate("/", { replace: true });
+        alert("⚠️ Sessione scaduta! Devi rifare l'accesso.");
+        navigate(`/room/${roomId}`, { replace: true });
       } else {
         setUser(currentUser);
       }
       setAuthLoading(false);
     });
     return unsubscribe;
-  }, [navigate]);
+  }, [navigate, roomId]);
 
   useEffect(() => {
     if (!user || authLoading) return;
 
     const query = new URLSearchParams(window.location.search);
-    let nick = query.get("nick");
+    const nick = query.get("nick");
 
     if (!nick || nick.trim() === "") {
-      const savedNick = localStorage.getItem("nickname");
-      if (savedNick) {
-        nick = savedNick;
-      } else {
-        const userNick = prompt("Inserisci il tuo nickname:");
-        if (!userNick || userNick.trim() === "") {
-          alert("Devi inserire un nickname!");
-          navigate("/home", { replace: true });
-          return;
-        }
-        nick = userNick.trim();
-      }
-      navigate(`/room/${roomId}?nick=${encodeURIComponent(nick)}`, { replace: true });
+      alert("⚠️ Nickname mancante!");
+      navigate(`/room/${roomId}`, { replace: true });
+      return;
     }
 
     setNickname(nick);
@@ -100,7 +95,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Lobby />} />
           <Route path="/home" element={<ProtectedHome />} />
-          <Route path="/room/:roomId" element={<Room />} />
+          <Route path="/room/:roomId" element={<RoomEntry />} />
+          <Route path="/room/:roomId/play" element={<RoomPlay />} />
         </Routes>
       </Router>
     </ErrorBoundary>

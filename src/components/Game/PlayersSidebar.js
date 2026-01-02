@@ -1,6 +1,9 @@
 import React from 'react';
 
 export default function PlayersSidebar({ players, gameState, nickname, roomId }) {
+  // Remove nickname from the share URL
+  const shareUrl = `${window.location.origin}/room/${roomId}`;
+
   return (
     <aside className="players-sidebar">
       <div className="sidebar-header">
@@ -26,7 +29,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
               <div style={{ fontSize: 11, color: '#64748b' }}>{p.score || 0} punti</div>
             </div>
             {p.name === nickname && <span className="you-tag">Tu</span>}
-            {gameState?.guessedPlayers?.includes(p.name) && <span style={{ fontSize: 18 }}>✅</span>}
+            {gameState?.guessedPlayers?.some(g => g.nickname === p.name) && <span style={{ fontSize: 18 }}>✅</span>}
           </li>
         ))}
       </ul>
@@ -34,9 +37,13 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
       <div className="share-box">
         <label>🔗 Invita amici</label>
         <input
-          value={`${window.location.origin}/room/${roomId}`}
+          value={shareUrl}
           readOnly
-          onClick={(e) => e.target.select()}
+          onClick={(e) => {
+            e.target.select();
+            navigator.clipboard.writeText(shareUrl);
+          }}
+          title="Clicca per copiare"
         />
       </div>
     </aside>

@@ -1,0 +1,124 @@
+/* Canvas */
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.canvas-stage {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: crosshair;
+  border: 1px solid #e2e8f0;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Responsive - Large Tablets */
+@media (max-width: 1400px) {
+  .canvas-wrapper {
+    padding: 20px;
+  }
+
+  .canvas-stage {
+    max-width: 700px;
+    max-height: 500px;
+  }
+}
+
+/* Responsive - Tablets */
+@media (max-width: 1024px) {
+  .canvas-wrapper {
+    padding: 16px;
+    flex: 1;
+  }
+
+  .canvas-stage {
+    max-width: 90vw;
+    max-height: 100%;
+    width: 700px !important;
+    height: auto !important;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .canvas-wrapper {
+    padding: 12px;
+  }
+
+  .canvas-stage {
+    max-width: calc(100vw - 24px);
+    width: 600px !important;
+    height: auto !important;
+  }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+  .canvas-wrapper {
+    padding: 8px;
+  }
+
+  .canvas-stage {
+    max-width: calc(100vw - 16px);
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Responsive - Extra Small */
+@media (max-width: 375px) {
+  .canvas-wrapper {
+    padding: 6px;
+  }
+
+  .canvas-stage {
+    max-width: calc(100vw - 12px);
+  }
+}
+
+/* Responsive - Landscape Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .canvas-wrapper {
+    padding: 8px;
+  }
+
+  .canvas-stage {
+    max-height: calc(100vh - 100px);
+    max-width: 100%;
+  }
+}
+
+/* Responsive - Very Small Landscape */
+@media (max-height: 450px) and (orientation: landscape) {
+  .canvas-wrapper {
+    padding: 4px;
+  }
+}
+
+/* Responsive - Tablet Landscape */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .canvas-wrapper {
+    padding: 12px;
+  }
+
+  .canvas-stage {
+    max-width: 600px;
+    max-height: calc(100vh - 150px);
+  }
+}
+
+/* Responsive - High Resolution */
+@media (min-width: 1920px) {
+  .canvas-stage {
+    max-width: 1000px;
+    max-height: 700px;
+  }
+}

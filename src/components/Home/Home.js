@@ -74,20 +74,17 @@ export default function Home() {
     }
     localStorage.setItem('nickname', nickname);
     const roomId = generateRoomCode();
-    navigate(`/room/${roomId}?nick=${encodeURIComponent(nickname)}`, { replace: true });
+    // Navigate to the play route with nickname
+    navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`, { replace: true });
   };
 
   const joinRoom = () => {
-    if (!validateNickname(nickname)) {
-      alert('⚠️ Inserisci un nickname prima di continuare!');
-      return;
-    }
     if (!validateRoomCode(roomCode)) {
       alert('⚠️ Inserisci il codice della stanza (6 caratteri)!');
       return;
     }
-    localStorage.setItem('nickname', nickname);
-    navigate(`/room/${roomCode.toUpperCase()}?nick=${encodeURIComponent(nickname)}`, { replace: true });
+    // Navigate to room entry page (where they'll be asked for nickname if needed)
+    navigate(`/room/${roomCode.toUpperCase()}`, { replace: true });
   };
 
   return (

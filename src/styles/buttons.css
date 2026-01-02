@@ -1,0 +1,70 @@
+/* Lobby Buttons */
+.lobby-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: inherit;
+}
+
+.lobby-btn.primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.lobby-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.lobby-btn.secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.lobby-btn.secondary:hover {
+  background: #e2e8f0;
+}
+
+.lobby-btn.tertiary {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.lobby-btn.tertiary:hover {
+  background: #fecaca;
+}
+
+.lobby-btn.small {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.lobby-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 20px;
+}
+
+.btn-text {
+  flex: 1;
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn-clear,
+  .btn-start {
+    min-height: 44px; /* iOS touch target size */
+  }
+}
