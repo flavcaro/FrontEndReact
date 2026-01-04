@@ -20,6 +20,16 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// Helper function to send system message
+const sendSystemMessage = async (roomId, message) => {
+  await push(ref(db, `rooms/${roomId}/chat`), {
+    user: "Sistema",
+    message,
+    timestamp: Date.now(),
+    isSystem: true
+  });
+};
+
 export function usePlayers(roomId, nickname) {
   const [players, setPlayers] = useState([]);
   const [finalNickname, setFinalNickname] = useState(nickname);
@@ -29,10 +39,11 @@ export function usePlayers(roomId, nickname) {
   const playerRefRef = useRef(null);
   const isAddingPlayer = useRef(false);
   const sessionId = useRef(getSessionId());
+  const playerNicknameRef = useRef(null); // Store nickname for cleanup
 
   // Add or update player with disconnect handling
   useEffect(() => {
-    const currentSessionId = sessionId.current; // Capture for cleanup
+    const currentSessionId = sessionId.current;
     
     const addOrUpdatePlayer = async () => {
       if (isAddingPlayer.current) return;
@@ -52,7 +63,7 @@ export function usePlayers(roomId, nickname) {
 
         // Check if THIS EXACT SESSION already exists (same tab/window reconnecting)
         const existingSessionEntry = Object.entries(existingPlayers).find(
-          ([, player]) => player.sessionId === sessionId.current
+          ([, player]) => player.sessionId === currentSessionId
         );
 
         if (!existingSessionEntry && playersList.length >= MAX_PLAYERS) {
@@ -64,18 +75,20 @@ export function usePlayers(roomId, nickname) {
         let playerReference;
         let playerKey;
         let isFirstPlayer = playersList.length === 0;
+        let playerNickname;
 
         if (existingSessionEntry) {
           // THIS EXACT SESSION exists (same tab reconnecting) - just update
           const [existingPlayerId, playerData] = existingSessionEntry;
           playerKey = existingPlayerId;
           playerReference = ref(db, `rooms/${roomId}/players/${playerKey}`);
+          playerNickname = playerData.name;
           
           const user = auth.currentUser;
           await set(playerReference, {
             name: playerData.name,
             originalNickname: nickname,
-            sessionId: sessionId.current,
+            sessionId: currentSessionId,
             userId: user && !user.isAnonymous ? user.uid : null,
             joinedAt: Date.now(),
             score: playerData.score || 0,
@@ -100,6 +113,8 @@ export function usePlayers(roomId, nickname) {
             console.log(`Nickname "${nickname}" già in uso. Cambiato in "${uniqueName}"`);
           }
 
+          playerNickname = uniqueName;
+
           const newRef = push(playersRef);
           playerKey = newRef.key;
           playerReference = newRef;
@@ -108,35 +123,44 @@ export function usePlayers(roomId, nickname) {
           await set(playerReference, {
             name: uniqueName,
             originalNickname: nickname,
-            sessionId: sessionId.current, // Store session ID
+            sessionId: currentSessionId,
             userId: user && !user.isAnonymous ? user.uid : null,
             joinedAt: Date.now(),
             score: 0,
             color: getPlayerColor(playersList.length),
             connected: true,
-            isOwner: isFirstPlayer // First player is the owner
+            isOwner: isFirstPlayer
           });
           
           setFinalNickname(uniqueName);
           setIsOwner(isFirstPlayer);
+
+          // Send join message
+          await sendSystemMessage(roomId, `👋 ${uniqueName} è entrato nella stanza`);
 
           // Store room ownership in separate location
           if (isFirstPlayer) {
             await set(ref(db, `rooms/${roomId}/owner`), {
               playerId: playerKey,
               nickname: uniqueName,
-              sessionId: sessionId.current,
+              sessionId: currentSessionId,
               createdAt: Date.now()
             });
           }
         }
 
-        // Set up disconnect handler - remove player when they leave
+        // Store nickname for cleanup
+        playerNicknameRef.current = playerNickname;
+
+        // Set up disconnect handler - send leave message and remove player
         const disconnectHandler = onDisconnect(playerReference);
         
         // If owner disconnects, end the game
         if (isFirstPlayer || (existingSessionEntry && existingSessionEntry[1].isOwner)) {
           disconnectHandler.remove().then(async () => {
+            // Send leave message
+            await sendSystemMessage(roomId, `🚪 ${playerNickname} ha abbandonato la stanza`);
+            
             // Check if game is active
             const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
             const gameData = gameSnapshot.val();
@@ -146,7 +170,19 @@ export function usePlayers(roomId, nickname) {
             }
           });
         } else {
-          await disconnectHandler.remove();
+          // Regular player disconnect
+          await disconnectHandler.set({
+            name: playerNickname,
+            originalNickname: nickname,
+            sessionId: currentSessionId,
+            connected: false,
+            leftAt: Date.now()
+          }).then(async () => {
+            // Send leave message when player disconnects
+            await sendSystemMessage(roomId, `🚪 ${playerNickname} ha abbandonato la stanza`);
+            // Then remove after message is sent
+            await remove(playerReference);
+          });
         }
 
         playerRefRef.current = playerReference;
@@ -161,12 +197,16 @@ export function usePlayers(roomId, nickname) {
 
     addOrUpdatePlayer();
 
-    // Cleanup on unmount - manually remove player
+    // Cleanup on unmount - manually remove player and send message
     return () => {
-      if (playerRefRef.current) {
-        // Check if this is the owner
+      if (playerRefRef.current && playerNicknameRef.current) {
         const checkOwnerAndRemove = async () => {
           try {
+            const playerName = playerNicknameRef.current;
+            
+            // Send leave message first
+            await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
+            
             const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
             const ownerData = ownerSnapshot.val();
             
@@ -192,6 +232,7 @@ export function usePlayers(roomId, nickname) {
         
         checkOwnerAndRemove();
         playerRefRef.current = null;
+        playerNicknameRef.current = null;
       }
     };
   }, [roomId, nickname]);

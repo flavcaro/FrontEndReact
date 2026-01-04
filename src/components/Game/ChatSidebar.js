@@ -51,7 +51,25 @@ export default function ChatSidebar({
   // Helper function to determine message style based on type
   const getMessageStyle = (msg) => {
     if (msg.isSystem) {
-      // System messages - check for special types
+      // Player joined message
+      if (msg.message.includes('è entrato') || msg.message.includes('👋')) {
+        return {
+          background: '#dbeafe',
+          borderLeft: '3px solid #3b82f6',
+          color: '#1e40af',
+          fontWeight: 600
+        };
+      }
+      // Player left message
+      if (msg.message.includes('ha abbandonato') || msg.message.includes('🚪')) {
+        return {
+          background: '#fee2e2',
+          borderLeft: '3px solid #ef4444',
+          color: '#991b1b',
+          fontWeight: 600
+        };
+      }
+      // Correct guess messages
       if (msg.message.includes('ha indovinato') || msg.message.includes('✅')) {
         return {
           background: '#dcfce7',
@@ -60,6 +78,7 @@ export default function ChatSidebar({
           fontWeight: 600
         };
       }
+      // Time expired messages
       if (msg.message.includes('Tempo scaduto') || msg.message.includes('⏰')) {
         return {
           background: '#fee2e2',
@@ -68,6 +87,7 @@ export default function ChatSidebar({
           fontWeight: 600
         };
       }
+      // Game start/turn messages
       if (msg.message.includes('Partita iniziata') || msg.message.includes('🎮') || msg.message.includes('sta disegnando')) {
         return {
           background: '#dbeafe',
@@ -76,6 +96,7 @@ export default function ChatSidebar({
           fontWeight: 600
         };
       }
+      // Round end messages
       if (msg.message.includes('Fine turno') || msg.message.includes('📊')) {
         return {
           background: '#fef3c7',
@@ -84,6 +105,7 @@ export default function ChatSidebar({
           fontWeight: 600
         };
       }
+      // Game end messages
       if (msg.message.includes('Partita terminata') || msg.message.includes('🎉')) {
         return {
           background: '#f3e8ff',

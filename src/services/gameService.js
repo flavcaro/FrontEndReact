@@ -18,6 +18,9 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   const firstArtist = players[0]?.name;
   const word = getRandomWord(gameConfig.difficulty?.id);
   
+  // Use the selected rounds directly from gameConfig
+  const totalRounds = gameConfig.roundsPerGame || 6;
+  
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
     currentArtist: firstArtist,
@@ -25,7 +28,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     turnStartedAt: Date.now(),
     guessedPlayers: [],
     round: 1,
-    totalRounds: gameConfig.roundsPerGame || players.length * 3,
+    totalRounds: totalRounds, // Store the actual selected rounds
     startedBy: userId,
     ownerId: userId,
     gameEnded: false,
@@ -43,7 +46,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎮 Partita iniziata! ${gameConfig.roundsPerGame} turni - Difficoltà: ${gameConfig.difficulty?.name}`,
+    message: `🎮 Partita iniziata! ${totalRounds} turni - Difficoltà: ${gameConfig.difficulty?.name}`,
     timestamp: Date.now(),
     isSystem: true
   });
@@ -119,7 +122,7 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   
   await new Promise(resolve => setTimeout(resolve, 200));
   
-  // Select next artist
+  // Select next artist (rotate through all players)
   const currentIndex = players.findIndex(p => p.name === currentArtist);
   const nextIndex = (currentIndex + 1) % players.length;
   const nextArtist = players[nextIndex]?.name;

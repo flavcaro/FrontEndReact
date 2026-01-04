@@ -39,7 +39,7 @@ export function useGame(roomId, nickname, players) {
   // Check if game should end
   const checkGameEnd = useCallback(async () => {
     const currentRound = gameState?.round || 1;
-    const totalRounds = gameState?.totalRounds || players.length * 3;
+    const totalRounds = gameState?.totalRounds || 6;
 
     if (currentRound >= totalRounds) {
       await endGame(roomId, players);
@@ -115,16 +115,17 @@ export function useGame(roomId, nickname, players) {
   // Timer
   const timerRef = useGameTimer(gameState, showResults, endTurnAutomatically, setTimeLeft);
 
-  // Start game
-  const startGame = async (config) => {
+  // Start game - receives config as parameter
+  const startGame = useCallback(async (config) => {
     const user = auth.currentUser;
     if (!user) {
       alert("⚠️ Devi essere autenticato per iniziare la partita!");
       return;
     }
 
+    console.log('Starting game with config:', config); // Debug log
     await startNewGame(roomId, players, user.uid, config);
-  };
+  }, [roomId, players]);
 
   // Handle correct guess
   const handleGuess = useCallback(async (nickname) => {
