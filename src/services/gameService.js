@@ -1,6 +1,7 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS, ROUNDS_PER_GAME } from "../constants/gameConfig";
+import { updateGameStats } from "./userService";
 
 export const startNewGame = async (roomId, players, userId) => {
   // Reset all player scores
@@ -47,7 +48,8 @@ export const endGame = async (roomId, players) => {
     .map(([id, player]) => ({
       id,
       name: player.name,
-      score: player.score || 0
+      score: player.score || 0,
+      userId: player.userId
     }))
     .sort((a, b) => b.score - a.score);
 
@@ -64,6 +66,15 @@ export const endGame = async (roomId, players) => {
     timestamp: Date.now(),
     isSystem: true
   });
+
+  // Update user statistics for registered users
+  const winnerId = finalScores[0]?.userId;
+  for (const player of finalScores) {
+    if (player.userId) {
+      const isWinner = player.userId === winnerId;
+      await updateGameStats(player.userId, player.score, isWinner);
+    }
+  }
 
   return finalScores;
 };

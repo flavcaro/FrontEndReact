@@ -1,4 +1,4 @@
-import { ref, set, serverTimestamp } from "firebase/database";
+import { ref, set, serverTimestamp, get, update } from "firebase/database";
 import { db } from "../firebase";
 
 export const saveUserToDatabase = async (user) => {
@@ -12,7 +12,9 @@ export const saveUserToDatabase = async (user) => {
       lastLogin: serverTimestamp(),
       xp: 0,
       gamesPlayed: 0,
-      gamesWon: 0
+      gamesWon: 0,
+      totalScore: 0,
+      bestScore: 0
     });
   } catch (error) {
     console.error("Error saving user to database:", error);
@@ -26,5 +28,30 @@ export const updateLastLogin = async (uid) => {
     await set(userRef, serverTimestamp());
   } catch (error) {
     console.error("Error updating last login:", error);
+  }
+};
+
+export const updateGameStats = async (userId, score, isWinner) => {
+  try {
+    const userRef = ref(db, `users/${userId}`);
+    const snapshot = await get(userRef);
+    const userData = snapshot.val() || {};
+
+    const gamesPlayed = (userData.gamesPlayed || 0) + 1;
+    const gamesWon = isWinner ? (userData.gamesWon || 0) + 1 : (userData.gamesWon || 0);
+    const totalScore = (userData.totalScore || 0) + score;
+    const bestScore = Math.max(userData.bestScore || 0, score);
+    const xp = (userData.xp || 0) + (isWinner ? 50 : 20); // 50 XP per vittoria, 20 per partecipazione
+
+    await update(userRef, {
+      gamesPlayed,
+      gamesWon,
+      totalScore,
+      bestScore,
+      xp,
+      lastPlayed: serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Error updating game stats:", error);
   }
 };
