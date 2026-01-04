@@ -8,7 +8,7 @@ import Input from '../common/Input';
 import UserHeader from './UserHeader';
 import RoomActions from './RoomActions';
 import GameModeSelector from './GameModeSelector';
-import { generateRoomCode, validateNickname, validateRoomCode } from '../../utils/roomUtils';
+import { generateRoomCode, validateNickname, extractRoomCode } from '../../utils/roomUtils';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -51,12 +51,25 @@ export default function Home() {
     setShowModeSelector(false);
   };
 
-  const joinRoom = (roomCode) => {
-    if (!validateRoomCode(roomCode)) {
-      alert('⚠️ Inserisci il codice della stanza (6 caratteri)!');
+  const joinRoom = (roomCodeOrUrl) => {
+    if (!validateNickname(nickname)) {
+      alert('⚠️ Inserisci un nickname prima di continuare!');
       return;
     }
-    navigate(`/room/${roomCode.toUpperCase()}`, { replace: true });
+
+    // Extract room code from input (handles both codes and full URLs)
+    const roomCode = extractRoomCode(roomCodeOrUrl);
+    
+    if (!roomCode) {
+      alert('⚠️ Codice stanza non valido! Deve essere di 6 caratteri.');
+      return;
+    }
+
+    // Save nickname before joining
+    localStorage.setItem('nickname', nickname);
+    
+    // Navigate to room entry page
+    navigate(`/room/${roomCode}`, { replace: true });
   };
 
   return (
