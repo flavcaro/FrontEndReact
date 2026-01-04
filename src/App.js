@@ -12,6 +12,7 @@ import Lobby from "./components/Lobby/Lobby";
 import Home from "./components/Home/Home";
 import Board from "./components/Game/Board";
 import RoomJoin from "./components/Room/RoomJoin";
+import Profile from "./components/Profile/Profile";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
@@ -37,6 +38,29 @@ function ProtectedHome() {
   if (!user) return <Loading message="Reindirizzamento..." />;
 
   return <Home />;
+}
+
+function ProtectedProfile() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        navigate("/", { replace: true });
+      } else {
+        setUser(currentUser);
+      }
+      setAuthLoading(false);
+    });
+    return unsubscribe;
+  }, [navigate]);
+
+  if (authLoading) return <Loading message="Caricamento profilo..." />;
+  if (!user) return <Loading message="Reindirizzamento..." />;
+
+  return <Profile />;
 }
 
 function RoomEntry() {
@@ -95,6 +119,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Lobby />} />
           <Route path="/home" element={<ProtectedHome />} />
+          <Route path="/profile" element={<ProtectedProfile />} />
           <Route path="/room/:roomId" element={<RoomEntry />} />
           <Route path="/room/:roomId/play" element={<RoomPlay />} />
         </Routes>

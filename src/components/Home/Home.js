@@ -111,7 +111,7 @@ export default function Home() {
         
         <div className="header-actions">
           {!isGuest && (
-            <button className="btn-profile" onClick={() => alert('Profilo - Coming soon!')}>
+            <button className="btn-profile" onClick={() => navigate('/profile')}>
               👤 Profilo
             </button>
           )}
