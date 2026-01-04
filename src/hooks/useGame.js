@@ -41,7 +41,10 @@ export function useGame(roomId, nickname, players) {
     const currentRound = gameState?.round || 1;
     const totalRounds = gameState?.totalRounds || 6;
 
+    console.log(`🔍 Check fine gioco: round ${currentRound}/${totalRounds}`);
+    
     if (currentRound >= totalRounds) {
+      console.log('🏁 Partita finita! Chiamando endGame...');
       await endGame(roomId, players);
       return true;
     }
