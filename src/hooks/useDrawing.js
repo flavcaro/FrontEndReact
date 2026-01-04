@@ -106,7 +106,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive) {
   };
 
   const handleMouseMove = (e) => {
-    if (!isDrawing.current || !isArtist) return;
+    if (!isDrawing.current || !isArtist || !currentLine.current) return;
     const pos = e.target.getStage().getPointerPosition();
     currentLine.current.points = [...currentLine.current.points, pos.x, pos.y];
     setLines((prev) => {
