@@ -1,0 +1,254 @@
+/* Simple Mobile Responsive Layout */
+
+/* Mobile Portrait - Vertical Stack */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .board-container {
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Board Main - Top */
+  .board-main {
+    flex: 1;
+    order: 1;
+    min-height: 0;
+  }
+
+  /* Header - Compact but visible */
+  .board-header {
+    padding: 10px 12px !important;
+  }
+
+  .room-info > div {
+    margin-left: 0 !important;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .btn-clear,
+  .btn-start {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    min-height: 44px !important; /* Touch-friendly */
+  }
+
+  /* Canvas */
+  .canvas-wrapper {
+    flex: 1;
+    padding: 8px !important;
+  }
+
+  .canvas-stage {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+
+  /* Chat - Middle (30% height) */
+  .chat-sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: 30vh !important;
+    max-height: 30vh !important;
+    min-height: 180px !important;
+    order: 2;
+    border-left: none !important;
+    border-top: 2px solid #e2e8f0 !important;
+    flex-shrink: 0;
+  }
+
+  .chat-sidebar .sidebar-header {
+    padding: 10px 12px !important;
+  }
+
+  /* Players - Bottom horizontal strip */
+  .players-sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: 110px !important; /* Fixed height */
+    max-height: 110px !important;
+    min-height: 110px !important;
+    order: 3;
+    border-right: none !important;
+    border-top: 2px solid #e2e8f0 !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    background: white;
+    padding: 0 !important;
+  }
+
+  .players-sidebar .sidebar-header {
+    display: none !important;
+  }
+
+  .players-list {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 15px 10px !important; /* Extra top padding to prevent cut-off */
+    gap: 12px !important;
+    height: 100%;
+    align-items: center;
+    min-height: 110px !important;
+  }
+
+  .players-list li {
+    flex-shrink: 0 !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    min-width: 80px !important;
+    padding: 10px 8px !important;
+    margin: 0 !important;
+  }
+
+  .player-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 16px !important;
+    margin: 0 auto 8px auto !important;
+  }
+
+  .player-name {
+    font-size: 12px !important;
+  }
+
+  .you-tag {
+    font-size: 9px !important;
+  }
+
+  .share-box {
+    display: none !important;
+  }
+}
+
+/* Small Mobile Portrait */
+@media (max-width: 480px) and (orientation: portrait) {
+  .board-header {
+    padding: 8px 10px !important;
+  }
+
+  .btn-clear,
+  .btn-start {
+    padding: 7px 12px !important;
+    font-size: 12px !important;
+    min-height: 40px !important;
+  }
+
+  .players-sidebar {
+    height: 100px !important;
+    max-height: 100px !important;
+    min-height: 100px !important;
+  }
+
+  .players-list {
+    padding: 12px 8px !important;
+    min-height: 100px !important;
+  }
+
+  .players-list li {
+    min-width: 75px !important;
+    padding: 8px 6px !important;
+  }
+
+  .player-avatar {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .chat-sidebar {
+    height: 28vh !important;
+    min-height: 170px !important;
+  }
+}
+
+/* Mobile Landscape - Horizontal Layout */
+@media (max-height: 600px) and (orientation: landscape) {
+  .board-container {
+    flex-direction: row !important;
+  }
+
+  .players-sidebar {
+    width: 180px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    order: 1 !important;
+    border-right: 1px solid #e2e8f0 !important;
+    border-top: none !important;
+    overflow-y: auto !important;
+  }
+
+  .players-sidebar .sidebar-header {
+    display: flex !important;
+  }
+
+  .players-list {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    padding: 8px !important;
+  }
+
+  .players-list li {
+    flex-direction: row !important;
+    text-align: left !important;
+    min-width: auto !important;
+    width: 100%;
+  }
+
+  .player-avatar {
+    margin: 0 !important;
+  }
+
+  .share-box {
+    display: block !important;
+  }
+
+  .board-main {
+    flex: 1;
+    order: 2;
+  }
+
+  .chat-sidebar {
+    width: 220px !important;
+    height: 100vh !important;
+    order: 3 !important;
+    border-left: 1px solid #e2e8f0 !important;
+    border-top: none !important;
+  }
+}
+
+/* Tablet Landscape */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .board-container {
+    flex-direction: row !important;
+  }
+
+  .players-sidebar {
+    width: 220px !important;
+    height: 100vh !important;
+    border-right: 1px solid #e2e8f0 !important;
+  }
+
+  .players-sidebar .sidebar-header {
+    display: flex !important;
+  }
+
+  .players-list {
+    flex-direction: column !important;
+  }
+
+  .players-list li {
+    flex-direction: row !important;
+    text-align: left !important;
+  }
+
+  .chat-sidebar {
+    width: 270px !important;
+    height: 100vh !important;
+    border-left: 1px solid #e2e8f0 !important;
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { push } from "firebase/database";
-import { ref } from "firebase/database";
+import { push, ref, onValue } from "firebase/database";
 import { db } from "../../firebase";
+import { getColorForNickname } from "../../utils/nicknameUtils";
 
 export default function ChatSidebar({ 
   roomId, 
@@ -14,6 +14,17 @@ export default function ChatSidebar({
   onGuessCorrect
 }) {
   const [inputMessage, setInputMessage] = useState("");
+  const [players, setPlayers] = useState([]);
+
+  // Get all players for color mapping - FIXED
+  React.useEffect(() => {
+    const playersRef = ref(db, `rooms/${roomId}/players`);
+    const unsubscribe = onValue(playersRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      setPlayers(Object.values(data));
+    });
+    return () => unsubscribe();
+  }, [roomId]);
 
   const sendMessage = useCallback(async () => {
     if (!inputMessage.trim() || !gameState?.active) return;
@@ -22,16 +33,13 @@ export default function ChatSidebar({
     const msgLower = msg.toLowerCase();
     const correctWord = gameState?.word?.toLowerCase();
 
-    // 🎯 Controllo risposta - PRIMA di inviare il messaggio
     if (!isArtist && !hasGuessed && msgLower === correctWord) {
-      // Indovinato! Non inviare il messaggio in chat
       await onGuessCorrect(nickname);
       setInputMessage("");
     } else {
-      // Messaggio normale (risposta sbagliata o chat normale)
       await push(ref(db, `rooms/${roomId}/chat`), {
         user: nickname,
-        message: msg, // Usa il messaggio originale, non lowercase
+        message: msg,
         timestamp: Date.now(),
         isSystem: false
       });
@@ -52,7 +60,14 @@ export default function ChatSidebar({
             className={msg.isSystem ? 'chat-message system' : 'chat-message'}
           >
             {!msg.isSystem && (
-              <div className="chat-user">{msg.user}</div>
+              <div 
+                className="chat-user"
+                style={{
+                  color: getColorForNickname(msg.user, players)
+                }}
+              >
+                {msg.user}
+              </div>
             )}
             <div className="chat-text">{msg.message}</div>
           </div>

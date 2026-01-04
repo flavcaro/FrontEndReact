@@ -1,0 +1,133 @@
+/* Home Responsive Styles */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .home-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 20px;
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .home-main {
+    padding: 24px 16px;
+  }
+
+  .home-card {
+    padding: 32px 24px;
+  }
+
+  .home-title h1 {
+    font-size: 32px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .home-header {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .user-info {
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-nickname {
+    padding: 10px 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .nickname-icon {
+    font-size: 20px;
+  }
+
+  .nickname-text {
+    font-size: 14px;
+  }
+
+  .user-stats {
+    justify-content: center;
+  }
+
+  .xp-badge {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-profile,
+  .btn-logout {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .home-main {
+    padding: 16px 12px;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .home-card {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .home-title {
+    margin-bottom: 24px;
+  }
+
+  .home-title h1 {
+    font-size: 28px;
+  }
+
+  .home-title p {
+    font-size: 14px;
+  }
+}
+
+/* Extra Small */
+@media (max-width: 375px) {
+  .home-card {
+    padding: 24px 16px;
+  }
+
+  .home-title h1 {
+    font-size: 24px;
+  }
+
+  .user-nickname {
+    padding: 8px 12px;
+  }
+
+  .nickname-text {
+    font-size: 13px;
+  }
+}
+
+/* Touch Devices */
+@media (hover: none) and (pointer: coarse) {
+  .btn-profile,
+  .btn-logout {
+    min-height: 48px;
+  }
+}

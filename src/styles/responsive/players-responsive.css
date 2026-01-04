@@ -1,0 +1,292 @@
+/* Players Sidebar Responsive Styles */
+
+/* Large Tablets */
+@media (max-width: 1400px) {
+  .players-sidebar {
+    width: 240px;
+  }
+}
+
+/* Tablets Portrait */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .players-sidebar {
+    width: 100%;
+    max-height: 180px;
+    min-height: 140px;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    overflow-y: hidden;
+  }
+
+  .sidebar-header {
+    padding: 14px 16px;
+  }
+
+  .players-list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .players-list li {
+    flex-shrink: 0;
+    min-width: 130px;
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 10px;
+  }
+
+  .player-avatar {
+    margin-bottom: 6px;
+  }
+
+  .share-box {
+    padding: 14px 16px;
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 768px) and (orientation: portrait) {
+  .players-sidebar {
+    max-height: 160px;
+    min-height: 130px;
+  }
+
+  .sidebar-header {
+    padding: 12px 14px;
+  }
+
+  .sidebar-header h3 {
+    font-size: 14px;
+  }
+
+  .players-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .players-list {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .players-list li {
+    min-width: 110px;
+    padding: 10px 8px;
+  }
+
+  .player-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .player-name {
+    font-size: 13px;
+  }
+
+  .you-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .share-box {
+    padding: 12px 14px;
+  }
+
+  .share-box label {
+    font-size: 11px;
+  }
+
+  .share-box input {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}
+
+/* Small Mobile Portrait */
+@media (max-width: 480px) and (orientation: portrait) {
+  .players-sidebar {
+    max-height: 150px;
+    min-height: 120px;
+  }
+
+  .sidebar-header {
+    padding: 10px 12px;
+  }
+
+  .sidebar-header h3 {
+    font-size: 13px;
+  }
+
+  .players-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .players-list {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .players-list li {
+    min-width: 100px;
+    padding: 10px 6px;
+  }
+
+  .player-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  .player-name {
+    font-size: 12px;
+  }
+
+  .you-tag {
+    font-size: 9px;
+  }
+}
+
+/* Extra Small Portrait */
+@media (max-width: 375px) and (orientation: portrait) {
+  .players-sidebar {
+    max-height: 140px;
+    min-height: 110px;
+  }
+
+  .sidebar-header {
+    padding: 8px 10px;
+  }
+
+  .players-list li {
+    min-width: 90px;
+    padding: 8px 4px;
+  }
+
+  .player-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .player-name {
+    font-size: 11px;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .players-sidebar {
+    max-height: none;
+    width: 200px;
+    border-bottom: none;
+    border-right: 1px solid #e2e8f0;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 10px 12px;
+  }
+
+  .players-list {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px;
+  }
+
+  .players-list li {
+    min-width: auto;
+    flex-direction: row;
+    text-align: left;
+    padding: 8px;
+  }
+
+  .player-avatar {
+    margin-bottom: 0;
+  }
+
+  .share-box {
+    display: none;
+  }
+}
+
+/* Very Small Landscape */
+@media (max-height: 450px) and (orientation: landscape) {
+  .players-sidebar {
+    width: 160px;
+  }
+
+  .sidebar-header {
+    padding: 8px 10px;
+  }
+
+  .sidebar-header h3 {
+    font-size: 12px;
+  }
+
+  .players-list {
+    padding: 6px;
+  }
+
+  .players-list li {
+    padding: 6px;
+  }
+
+  .player-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+  }
+
+  .player-name {
+    font-size: 11px;
+  }
+}
+
+/* Tablet Landscape */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .players-sidebar {
+    width: 220px;
+    max-height: none;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: none;
+  }
+
+  .players-list {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .players-list li {
+    min-width: auto;
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+/* High Resolution */
+@media (min-width: 1920px) {
+  .players-sidebar {
+    width: 320px;
+  }
+}
+
+/* Touch Devices */
+@media (hover: none) and (pointer: coarse) {
+  .players-list li {
+    min-height: 56px;
+    padding: 14px;
+  }
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}

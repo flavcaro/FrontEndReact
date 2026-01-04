@@ -6,7 +6,6 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Loading from '../common/Loading';
 import { validateNickname } from '../../utils/roomUtils';
-import '../Lobby/Lobby.css';
 
 export default function RoomJoin({ roomId }) {
   const navigate = useNavigate();

@@ -68,7 +68,7 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-/* Background Shapes */
+/* Background Shapes - Shared between Home and Lobby */
 .lobby-bg-shapes,
 .home-bg-shapes {
   position: absolute;
@@ -112,7 +112,22 @@
 /* Responsive - Mobile */
 @media (max-width: 768px) {
   .logo {
-    font-size: 48px;
+    font-size: 56px;
+  }
+
+  .shape-1 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .shape-2 {
+    width: 150px;
+    height: 150px;
+  }
+
+  .shape-3 {
+    width: 100px;
+    height: 100px;
   }
 }
 
@@ -121,11 +136,15 @@
   .logo {
     font-size: 48px;
   }
+
+  .info-text {
+    font-size: 12px;
+  }
 }
 
 /* Responsive - Extra Small */
 @media (max-width: 375px) {
   .logo {
-    font-size: 36px;
+    font-size: 40px;
   }
 }

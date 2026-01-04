@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS } from '../../constants/gameConfig';
 
 export default function GameHeader({ 
@@ -11,8 +12,20 @@ export default function GameHeader({
   onStartGame,
   onClearBoard
 }) {
+  const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
   const totalRounds = gameState?.totalRounds || 0;
+  const gameMode = gameState?.mode || 'Classica';
+  
+  const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS;
+
+  const handleLeaveRoom = () => {
+    if (gameState?.active) {
+      const confirm = window.confirm('Sei sicuro di voler uscire? La partita è in corso!');
+      if (!confirm) return;
+    }
+    navigate('/home', { replace: true });
+  };
 
   return (
     <header className="board-header">
@@ -20,6 +33,13 @@ export default function GameHeader({
         <div>
           <div className="room-label">Stanza</div>
           <div className="room-code">{roomId}</div>
+        </div>
+
+        <div style={{ marginLeft: 20 }}>
+          <div className="room-label">Modalità</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#6366f1' }}>
+            🎨 {gameMode}
+          </div>
         </div>
         
         {gameState?.active && (
@@ -54,10 +74,26 @@ export default function GameHeader({
           </div>
         )}
         
-        {!gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && (
+        {canStartGame && (
           <button onClick={onStartGame} className="btn-start">
-            🎮 Inizia Partita
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Inizia Partita
           </button>
+        )}
+
+        {!gameState?.active && !gameState?.gameEnded && players.length < MIN_PLAYERS && (
+          <div style={{
+            padding: '8px 16px',
+            background: '#fef3c7',
+            color: '#92400e',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600
+          }}>
+            ⏳ In attesa di altri giocatori ({players.length}/{MIN_PLAYERS})
+          </div>
         )}
         
         {isArtist && gameState?.active && (
@@ -69,6 +105,27 @@ export default function GameHeader({
             Pulisci
           </button>
         )}
+
+        <button onClick={handleLeaveRoom} className="btn-leave" style={{
+          background: '#64748b',
+          color: 'white',
+          padding: '10px 18px',
+          borderRadius: 8,
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: 14,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Esci
+        </button>
       </div>
     </header>
   );
