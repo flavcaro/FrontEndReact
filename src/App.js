@@ -34,7 +34,7 @@ function ProtectedHome() {
     return unsubscribe;
   }, [navigate]);
 
-  if (authLoading) return <Loading message="Verificando autenticazione..." />;
+  if (authLoading) return <Loading message="Caricamento..." />;
   if (!user) return <Loading message="Reindirizzamento..." />;
 
   return <Home />;
@@ -72,6 +72,7 @@ function RoomPlay() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
+  const [gameConfig, setGameConfig] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -101,6 +102,20 @@ function RoomPlay() {
       return;
     }
 
+    // Try to get game config from localStorage (for room creator)
+    const storedConfigKey = `room_${roomId}_mode`;
+    const storedConfig = localStorage.getItem(storedConfigKey);
+
+    if (storedConfig) {
+      try {
+        const config = JSON.parse(storedConfig);
+        console.log("Loaded config from localStorage:", config); // Debug
+        setGameConfig(config);
+      } catch (e) {
+        console.error("Error parsing stored config:", e);
+      }
+    }
+
     setNickname(nick);
     setIsReady(true);
   }, [navigate, roomId, user, authLoading]);
@@ -109,7 +124,7 @@ function RoomPlay() {
   if (!user) return <Loading message="Reindirizzamento..." />;
   if (!isReady || !nickname) return <Loading message="Entrando nella stanza..." />;
 
-  return <Board roomId={roomId.toUpperCase()} nickname={nickname} />;
+  return <Board roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
 }
 
 export default function App() {

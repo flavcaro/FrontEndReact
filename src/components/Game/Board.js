@@ -11,7 +11,7 @@ import Canvas from "./Canvas";
 import GameResults from "./GameResults";
 import "../../App.css";
 
-export default function Board({ roomId, nickname }) {
+export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
   const { players, finalNickname, isRoomFull, isOwner } = usePlayers(roomId, nickname);
   const { 
@@ -58,6 +58,16 @@ export default function Board({ roomId, nickname }) {
     };
   }, [gameState]);
 
+  // Handler to start game with config
+  const handleStartGame = () => {
+    if (gameConfig) {
+      console.log('Starting game with stored config:', gameConfig); // Debug
+      startGame(gameConfig);
+    } else {
+      alert('⚠️ Errore: configurazione di gioco non trovata!');
+    }
+  };
+
   return (
     <div className="board-container">
       <PlayersSidebar 
@@ -76,7 +86,7 @@ export default function Board({ roomId, nickname }) {
           timeLeft={timeLeft}
           players={players}
           isOwner={isOwner}
-          onStartGame={startGame}
+          onStartGame={handleStartGame}
           onClearBoard={clearBoard}
         />
 
