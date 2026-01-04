@@ -1,8 +1,14 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
-import { WORDS, ROUNDS_PER_GAME } from "../constants/gameConfig";
+import { WORDS_BY_DIFFICULTY } from "../constants/gameConfig";
 
-export const startNewGame = async (roomId, players, userId) => {
+// Get random word based on difficulty
+const getRandomWord = (difficulty = 'MEDIUM') => {
+  const wordList = WORDS_BY_DIFFICULTY[difficulty.toUpperCase()] || WORDS_BY_DIFFICULTY.MEDIUM;
+  return wordList[Math.floor(Math.random() * wordList.length)];
+};
+
+export const startNewGame = async (roomId, players, userId, gameConfig) => {
   // Reset all player scores
   const resetPromises = players.map(player => 
     set(ref(db, `rooms/${roomId}/players/${player.id}/score`), 0)
@@ -10,7 +16,7 @@ export const startNewGame = async (roomId, players, userId) => {
   await Promise.all(resetPromises);
 
   const firstArtist = players[0]?.name;
-  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const word = getRandomWord(gameConfig.difficulty?.id);
   
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
@@ -19,10 +25,13 @@ export const startNewGame = async (roomId, players, userId) => {
     turnStartedAt: Date.now(),
     guessedPlayers: [],
     round: 1,
-    totalRounds: players.length * ROUNDS_PER_GAME,
+    totalRounds: gameConfig.roundsPerGame || players.length * 3,
     startedBy: userId,
-    ownerId: userId, // Track room owner
-    gameEnded: false
+    ownerId: userId,
+    gameEnded: false,
+    mode: gameConfig.name || 'Classica',
+    difficulty: gameConfig.difficulty?.name || 'Medio',
+    difficultyId: gameConfig.difficulty?.id || 'medium'
   });
 
   // Clear board and chat
@@ -34,7 +43,7 @@ export const startNewGame = async (roomId, players, userId) => {
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎮 Partita iniziata! ${players.length * ROUNDS_PER_GAME} turni totali. Ogni giocatore disegnerà ${ROUNDS_PER_GAME} volte.`,
+    message: `🎮 Partita iniziata! ${gameConfig.roundsPerGame} turni - Difficoltà: ${gameConfig.difficulty?.name}`,
     timestamp: Date.now(),
     isSystem: true
   });
@@ -48,16 +57,15 @@ export const endGame = async (roomId, players) => {
     .map(([id, player]) => ({
       id,
       name: player.name,
-      score: player.score || 0
+      score: player.score || 0,
+      userId: player.userId
     }))
     .sort((a, b) => b.score - a.score);
 
-  await set(ref(db, `rooms/${roomId}/game`), {
-    active: false,
-    gameEnded: true,
-    finalScores,
-    endedAt: Date.now()
-  });
+  await set(ref(db, `rooms/${roomId}/game/active`), false);
+  await set(ref(db, `rooms/${roomId}/game/gameEnded`), true);
+  await set(ref(db, `rooms/${roomId}/game/finalScores`), finalScores);
+  await set(ref(db, `rooms/${roomId}/game/endedAt`), Date.now());
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
@@ -99,14 +107,14 @@ export const endGameByOwnerLeaving = async (roomId, players) => {
   return finalScores;
 };
 
-export const advanceToNextTurn = async (roomId, players, currentArtist) => {
+export const advanceToNextTurn = async (roomId, players, currentArtist, difficultyId) => {
   await set(ref(db, `rooms/${roomId}/game/active`), false);
   
   // Clear canvas and chat for next round
   await Promise.all([
     remove(ref(db, `rooms/${roomId}/lines`)),
     remove(ref(db, `rooms/${roomId}/lines_temp`)),
-    remove(ref(db, `rooms/${roomId}/chat`)) // Clear chat between rounds
+    remove(ref(db, `rooms/${roomId}/chat`))
   ]);
   
   await new Promise(resolve => setTimeout(resolve, 200));
@@ -115,7 +123,7 @@ export const advanceToNextTurn = async (roomId, players, currentArtist) => {
   const currentIndex = players.findIndex(p => p.name === currentArtist);
   const nextIndex = (currentIndex + 1) % players.length;
   const nextArtist = players[nextIndex]?.name;
-  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const word = getRandomWord(difficultyId);
   
   return { nextArtist, word };
 };

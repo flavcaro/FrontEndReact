@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ref, set, push, onValue, remove, get, onDisconnect } from "firebase/database";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import { generateUniqueNickname, getPlayerColor } from "../utils/nicknameUtils";
 import { MAX_PLAYERS } from "../constants/gameConfig";
 import { endGameByOwnerLeaving } from "../services/gameService";
@@ -71,10 +71,12 @@ export function usePlayers(roomId, nickname) {
           playerKey = existingPlayerId;
           playerReference = ref(db, `rooms/${roomId}/players/${playerKey}`);
           
+          const user = auth.currentUser;
           await set(playerReference, {
             name: playerData.name,
             originalNickname: nickname,
             sessionId: sessionId.current,
+            userId: user && !user.isAnonymous ? user.uid : null,
             joinedAt: Date.now(),
             score: playerData.score || 0,
             color: playerData.color || getPlayerColor(playersList.length),
@@ -102,10 +104,12 @@ export function usePlayers(roomId, nickname) {
           playerKey = newRef.key;
           playerReference = newRef;
           
+          const user = auth.currentUser;
           await set(playerReference, {
             name: uniqueName,
             originalNickname: nickname,
-            sessionId: sessionId.current,
+            sessionId: sessionId.current, // Store session ID
+            userId: user && !user.isAnonymous ? user.uid : null,
             joinedAt: Date.now(),
             score: 0,
             color: getPlayerColor(playersList.length),

@@ -85,6 +85,8 @@ export default function Board({ roomId, nickname }) {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          isArtist={isArtist}
+          nickname={finalNickname}
         />
       </main>
 

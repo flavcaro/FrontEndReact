@@ -1,14 +1,30 @@
 /* filepath: src/components/Home/GameModeSelector.js */
 import React, { useState } from 'react';
-import { GAME_MODES, DEFAULT_GAME_MODE } from '../../constants/gameConfig';
+import { 
+  GAME_MODES, 
+  DEFAULT_GAME_MODE, 
+  DIFFICULTY_LEVELS,
+  DEFAULT_DIFFICULTY,
+  ROUNDS_OPTIONS,
+  DEFAULT_ROUNDS
+} from '../../constants/gameConfig';
 import Button from '../common/Button';
 
 export default function GameModeSelector({ onSelectMode, onCancel }) {
   const [selectedMode, setSelectedMode] = useState(DEFAULT_GAME_MODE.id);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(DEFAULT_DIFFICULTY.id);
+  const [selectedRounds, setSelectedRounds] = useState(DEFAULT_ROUNDS);
 
   const handleConfirm = () => {
     const mode = Object.values(GAME_MODES).find(m => m.id === selectedMode);
-    onSelectMode(mode);
+    const difficulty = Object.values(DIFFICULTY_LEVELS).find(d => d.id === selectedDifficulty);
+    const rounds = selectedRounds;
+
+    onSelectMode({
+      ...mode,
+      difficulty: difficulty,
+      roundsPerGame: rounds
+    });
   };
 
   return (
@@ -30,7 +46,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         background: 'white',
         borderRadius: '24px',
         padding: '32px',
-        maxWidth: '500px',
+        maxWidth: '600px',
         width: '100%',
         maxHeight: '90vh',
         overflowY: 'auto',
@@ -43,7 +59,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
           marginBottom: '8px',
           textAlign: 'center'
         }}>
-          🎮 Scegli Modalità
+          🎮 Configura Partita
         </h2>
         <p style={{
           color: '#64748b',
@@ -51,104 +67,174 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
           marginBottom: '24px',
           textAlign: 'center'
         }}>
-          Seleziona come vuoi giocare
+          Personalizza la tua esperienza di gioco
         </p>
 
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          marginBottom: '24px'
-        }}>
-          {Object.values(GAME_MODES).map((mode) => (
-            <div
-              key={mode.id}
-              onClick={() => setSelectedMode(mode.id)}
-              style={{
-                padding: '20px',
-                border: selectedMode === mode.id 
-                  ? '3px solid #6366f1' 
-                  : '2px solid #e2e8f0',
-                borderRadius: '16px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                background: selectedMode === mode.id 
-                  ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
-                  : 'white',
-                transform: selectedMode === mode.id ? 'scale(1.02)' : 'scale(1)',
-                boxShadow: selectedMode === mode.id 
-                  ? '0 4px 12px rgba(99, 102, 241, 0.2)' 
-                  : 'none'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
-                marginBottom: '12px'
-              }}>
-                <div style={{
-                  fontSize: '32px',
-                  width: '50px',
-                  height: '50px',
+        {/* Game Mode Selection */}
+        <div style={{ marginBottom: '24px' }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#334155',
+            marginBottom: '12px'
+          }}>
+            🎨 Modalità di Gioco
+          </h3>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {Object.values(GAME_MODES).map((mode) => (
+              <div
+                key={mode.id}
+                onClick={() => setSelectedMode(mode.id)}
+                style={{
+                  padding: '16px',
+                  border: selectedMode === mode.id 
+                    ? '3px solid #6366f1' 
+                    : '2px solid #e2e8f0',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: selectedMode === mode.id 
+                    ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
+                    : 'white',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  background: selectedMode === mode.id 
-                    ? '#6366f1' 
-                    : '#f1f5f9',
-                  borderRadius: '12px',
-                  transition: 'all 0.2s'
-                }}>
-                  {mode.icon}
-                </div>
+                  gap: '12px'
+                }}
+              >
+                <div style={{ fontSize: '24px' }}>{mode.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#1e293b',
-                    marginBottom: '4px'
-                  }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '14px' }}>
                     {mode.name}
-                  </h3>
-                  <p style={{
-                    fontSize: '13px',
-                    color: '#64748b',
-                    lineHeight: '1.4'
-                  }}>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
                     {mode.description}
-                  </p>
+                  </div>
                 </div>
                 {selectedMode === mode.id && (
-                  <div style={{
-                    fontSize: '24px',
-                    color: '#6366f1'
-                  }}>
-                    ✓
-                  </div>
+                  <div style={{ fontSize: '20px', color: '#6366f1' }}>✓</div>
                 )}
               </div>
-              <div style={{
-                display: 'flex',
-                gap: '16px',
-                fontSize: '12px',
-                color: '#64748b',
-                paddingLeft: '66px'
-              }}>
-                <div>⏱️ {mode.turnDuration}s per turno</div>
-                <div>🔄 {mode.roundsPerGame} round</div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Coming Soon Modes */}
+        {/* Difficulty Selection */}
+        <div style={{ marginBottom: '24px' }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#334155',
+            marginBottom: '12px'
+          }}>
+            🎯 Difficoltà
+          </h3>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap'
+          }}>
+            {Object.values(DIFFICULTY_LEVELS).map((difficulty) => (
+              <button
+                key={difficulty.id}
+                onClick={() => setSelectedDifficulty(difficulty.id)}
+                style={{
+                  flex: '1 1 calc(33.333% - 8px)',
+                  minWidth: '140px',
+                  padding: '16px 12px',
+                  border: selectedDifficulty === difficulty.id 
+                    ? `3px solid ${difficulty.color}` 
+                    : '2px solid #e2e8f0',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: selectedDifficulty === difficulty.id 
+                    ? `${difficulty.color}15` 
+                    : 'white',
+                  textAlign: 'center'
+                }}
+              >
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>
+                  {difficulty.icon}
+                </div>
+                <div style={{
+                  fontWeight: '600',
+                  color: selectedDifficulty === difficulty.id ? difficulty.color : '#334155',
+                  fontSize: '14px',
+                  marginBottom: '4px'
+                }}>
+                  {difficulty.name}
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                  {difficulty.description}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Rounds Selection */}
+        <div style={{ marginBottom: '24px' }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#334155',
+            marginBottom: '12px'
+          }}>
+            🔄 Numero di Round
+          </h3>
+          <div style={{
+            display: 'flex',
+            gap: '8px'
+          }}>
+            {ROUNDS_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setSelectedRounds(option.value)}
+                style={{
+                  flex: 1,
+                  padding: '16px 12px',
+                  border: selectedRounds === option.value 
+                    ? '3px solid #6366f1' 
+                    : '2px solid #e2e8f0',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: selectedRounds === option.value 
+                    ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
+                    : 'white',
+                  textAlign: 'center'
+                }}
+              >
+                <div style={{ fontSize: '24px', marginBottom: '6px' }}>
+                  {option.icon}
+                </div>
+                <div style={{
+                  fontWeight: '700',
+                  color: selectedRounds === option.value ? '#6366f1' : '#334155',
+                  fontSize: '16px',
+                  marginBottom: '2px'
+                }}>
+                  {option.label}
+                </div>
+                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                  {option.description}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Summary */}
         <div style={{
           padding: '16px',
           background: '#f8fafc',
           borderRadius: '12px',
           marginBottom: '24px',
-          border: '1px dashed #cbd5e1'
+          border: '1px solid #e2e8f0'
         }}>
           <div style={{
             fontSize: '12px',
@@ -156,46 +242,31 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
             fontWeight: '600',
             marginBottom: '8px'
           }}>
-            🚀 PROSSIMAMENTE
+            📋 RIEPILOGO CONFIGURAZIONE
           </div>
           <div style={{
             display: 'flex',
-            gap: '8px',
-            flexWrap: 'wrap'
+            flexDirection: 'column',
+            gap: '6px',
+            fontSize: '13px',
+            color: '#334155'
           }}>
-            <span style={{
-              background: '#e0e7ff',
-              color: '#6366f1',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '11px',
-              fontWeight: '600'
-            }}>
-              ⚡ Modalità Veloce
-            </span>
-            <span style={{
-              background: '#fef3c7',
-              color: '#f59e0b',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '11px',
-              fontWeight: '600'
-            }}>
-              👥 A Squadre
-            </span>
-            <span style={{
-              background: '#fee2e2',
-              color: '#ef4444',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '11px',
-              fontWeight: '600'
-            }}>
-              🎯 Solo Parole Difficili
-            </span>
+            <div>
+              <strong>Modalità:</strong> {GAME_MODES[selectedMode.toUpperCase()].name}
+            </div>
+            <div>
+              <strong>Difficoltà:</strong> {DIFFICULTY_LEVELS[selectedDifficulty.toUpperCase()].name}
+            </div>
+            <div>
+              <strong>Round:</strong> {selectedRounds} turni totali
+            </div>
+            <div>
+              <strong>Tempo per turno:</strong> {GAME_MODES[selectedMode.toUpperCase()].turnDuration}s
+            </div>
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div style={{
           display: 'flex',
           gap: '12px'

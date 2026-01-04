@@ -5,7 +5,9 @@ export default function Canvas({
   lines, 
   onMouseDown, 
   onMouseMove, 
-  onMouseUp 
+  onMouseUp,
+  isArtist,
+  nickname
 }) {
   return (
     <div className="canvas-wrapper">
@@ -19,17 +21,23 @@ export default function Canvas({
         onMouseLeave={onMouseUp}
       >
         <Layer>
-          {lines.map((line, i) => (
-            <Line
-              key={line.id || i}
-              points={line.points}
-              stroke={line.temp ? "#cbd5e1" : "#1e293b"}
-              strokeWidth={3}
-              tension={0.5}
-              lineCap="round"
-              lineJoin="round"
-            />
-          ))}
+          {lines.map((line, i) => {
+            // Show other players' temporary lines in gray, everything else in black
+            const isOtherTempLine = line.temp && line.user !== nickname;
+            const strokeColor = isOtherTempLine ? "#cbd5e1" : "#1e293b";
+            
+            return (
+              <Line
+                key={line.id || i}
+                points={line.points}
+                stroke={strokeColor}
+                strokeWidth={3}
+                tension={0.5}
+                lineCap="round"
+                lineJoin="round"
+              />
+            );
+          })}
         </Layer>
       </Stage>
     </div>
