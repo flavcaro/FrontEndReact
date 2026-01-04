@@ -42,9 +42,13 @@ export const updateGameStats = async (userId, score, isWinner) => {
     const gamesWon = isWinner ? (userData.gamesWon || 0) + 1 : (userData.gamesWon || 0);
     const totalScore = (userData.totalScore || 0) + score;
     const bestScore = Math.max(userData.bestScore || 0, score);
-    const xp = (userData.xp || 0) + (isWinner ? 50 : 20); // 50 XP per vittoria, 20 per partecipazione
+    
+    // XP basati sul punteggio: 1 XP per ogni punto + bonus vittoria
+    const baseXp = score; // 1 XP per ogni punto fatto
+    const winnerBonus = isWinner ? 100 : 0; // Bonus di 100 XP per vittoria
+    const xp = (userData.xp || 0) + baseXp + winnerBonus;
 
-    console.log(`📊 Nuove statistiche:`, { gamesPlayed, gamesWon, totalScore, bestScore, xp });
+    console.log(`📊 Nuove statistiche:`, { gamesPlayed, gamesWon, totalScore, bestScore, xp, xpGuadagnati: baseXp + winnerBonus });
     
     await update(userRef, {
       gamesPlayed,

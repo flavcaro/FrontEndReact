@@ -1,7 +1,6 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS_BY_DIFFICULTY } from "../constants/gameConfig";
-import { updateGameStats } from "./userService";
 
 // Get random word based on difficulty
 const getRandomWord = (difficulty = 'MEDIUM') => {
@@ -78,21 +77,9 @@ export const endGame = async (roomId, players) => {
     isSystem: true
   });
 
-  // Update user statistics for registered users
-  const winnerId = finalScores[0]?.userId;
-  console.log("🎮 Fine partita - Aggiornamento statistiche");
-  console.log("Vincitore userId:", winnerId);
+  console.log("🎮 Fine partita - Risultati salvati");
+  console.log("Vincitore:", finalScores[0]);
   console.log("Tutti i player:", finalScores);
-  
-  for (const player of finalScores) {
-    if (player.userId) {
-      const isWinner = player.userId === winnerId;
-      console.log(`Aggiorno statistiche per ${player.name} (userId: ${player.userId})`);
-      await updateGameStats(player.userId, player.score, isWinner);
-    } else {
-      console.log(`${player.name} non ha userId - ospite o non autenticato`);
-    }
-  }
 
   return finalScores;
 };

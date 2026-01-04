@@ -4,6 +4,7 @@ import { db, auth } from "../firebase";
 import { TURN_DURATION } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
 import { useGameTimer } from "./useGameTimer";
+import { updateGameStats } from "../services/userService";
 import { 
   startNewGame, 
   endGame, 
@@ -24,13 +25,24 @@ export function useGame(roomId, nickname, players) {
   // Listen to game state
   useEffect(() => {
     const gameRef = ref(db, `rooms/${roomId}/game`);
-    const unsubscribe = onValue(gameRef, (snapshot) => {
+    const unsubscribe = onValue(gameRef, async (snapshot) => {
       const data = snapshot.val();
       setGameState(data);
 
-      if (data?.gameEnded) {
+      if (data?.gameEnded && data?.finalScores) {
         setShowResults(false);
         setFinalResults(data.finalScores);
+        
+        // Update own statistics if registered user
+        const user = auth.currentUser;
+        if (user && !user.isAnonymous) {
+          const myScore = data.finalScores.find(p => p.userId === user.uid);
+          if (myScore) {
+            const isWinner = data.finalScores[0]?.userId === user.uid;
+            console.log('📊 Aggiornando le MIE statistiche:', { myScore, isWinner });
+            await updateGameStats(user.uid, myScore.score, isWinner);
+          }
+        }
       }
     });
     return unsubscribe;
