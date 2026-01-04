@@ -9,6 +9,7 @@ export default function GameHeader({
   hasGuessed, 
   timeLeft, 
   players,
+  isOwner,
   onStartGame,
   onClearBoard
 }) {
@@ -17,11 +18,15 @@ export default function GameHeader({
   const totalRounds = gameState?.totalRounds || 0;
   const gameMode = gameState?.mode || 'Classica';
   
-  const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS;
+  const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && isOwner;
 
   const handleLeaveRoom = () => {
     if (gameState?.active) {
-      const confirm = window.confirm('Sei sicuro di voler uscire? La partita è in corso!');
+      const confirmMessage = isOwner 
+        ? 'Sei il creatore della stanza! Se esci, la partita terminerà per tutti. Sei sicuro?' 
+        : 'Sei sicuro di voler uscire? La partita è in corso!';
+      
+      const confirm = window.confirm(confirmMessage);
       if (!confirm) return;
     }
     navigate('/home', { replace: true });
@@ -31,7 +36,7 @@ export default function GameHeader({
     <header className="board-header">
       <div className="room-info">
         <div>
-          <div className="room-label">Stanza</div>
+          <div className="room-label">Stanza {isOwner && '👑'}</div>
           <div className="room-code">{roomId}</div>
         </div>
 
@@ -79,8 +84,21 @@ export default function GameHeader({
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
-            Inizia Partita
+            👑 Inizia Partita
           </button>
+        )}
+
+        {!gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && !isOwner && (
+          <div style={{
+            padding: '8px 16px',
+            background: '#fef3c7',
+            color: '#92400e',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600
+          }}>
+            👑 In attesa che il creatore avvii la partita...
+          </div>
         )}
 
         {!gameState?.active && !gameState?.gameEnded && players.length < MIN_PLAYERS && (
@@ -107,7 +125,7 @@ export default function GameHeader({
         )}
 
         <button onClick={handleLeaveRoom} className="btn-leave" style={{
-          background: '#64748b',
+          background: isOwner ? '#dc2626' : '#64748b',
           color: 'white',
           padding: '10px 18px',
           borderRadius: 8,
@@ -124,7 +142,7 @@ export default function GameHeader({
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          Esci
+          {isOwner ? '👑 Esci (Termina Partita)' : 'Esci'}
         </button>
       </div>
     </header>

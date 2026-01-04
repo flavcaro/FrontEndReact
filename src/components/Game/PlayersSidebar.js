@@ -28,10 +28,13 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
                 border: p.name === nickname ? '3px solid #fbbf24' : 'none'
               }}
             >
-              {p.name === gameState?.currentArtist ? '🎨' : p.name.charAt(0).toUpperCase()}
+              {p.isOwner ? '👑' : p.name === gameState?.currentArtist ? '🎨' : p.name.charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1 }}>
-              <div className="player-name">{p.name}</div>
+              <div className="player-name">
+                {p.isOwner && '👑 '}
+                {p.name}
+              </div>
               <div style={{ fontSize: 11, color: '#64748b' }}>{p.score || 0} punti</div>
             </div>
             {p.name === nickname && <span className="you-tag">Tu</span>}

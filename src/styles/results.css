@@ -178,3 +178,91 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .game-results-card {
+    padding: 24px;
+  }
+
+  .results-header h1 {
+    font-size: 24px;
+  }
+
+  .podium {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .podium-place {
+    width: 100%;
+  }
+
+  .place-1,
+  .place-2,
+  .place-3 {
+    order: unset;
+  }
+
+  .podium-medal {
+    font-size: 40px;
+  }
+
+  .place-1 .podium-medal {
+    font-size: 48px;
+  }
+
+  /* Stack buttons on small screens */
+  .game-results-card > div:last-child {
+    flex-direction: column !important;
+  }
+
+  .game-results-card > div:last-child button {
+    width: 100% !important;
+    flex: unset !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-results-card {
+    padding: 20px;
+  }
+
+  .results-header h1 {
+    font-size: 22px;
+  }
+
+  .podium-player {
+    padding: 12px 16px;
+  }
+
+  .podium-name {
+    font-size: 16px;
+  }
+
+  .podium-score {
+    font-size: 18px;
+  }
+
+  .result-row {
+    padding: 10px 12px;
+  }
+
+  .result-position {
+    font-size: 16px;
+    min-width: 35px;
+  }
+
+  .result-player {
+    font-size: 14px;
+  }
+
+  .result-score {
+    font-size: 14px;
+  }
+
+  .btn-restart {
+    padding: 14px;
+    font-size: 14px;
+  }
+}

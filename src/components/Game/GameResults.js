@@ -1,10 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function GameResults({ finalResults, onRestart }) {
+  const navigate = useNavigate();
+
   if (!finalResults || finalResults.length === 0) return null;
 
-  const winner = finalResults[0];
   const podium = finalResults.slice(0, 3);
+
+  const handleExit = () => {
+    navigate('/home', { replace: true });
+  };
 
   return (
     <div className="game-results-overlay">
@@ -41,9 +47,48 @@ export default function GameResults({ finalResults, onRestart }) {
           ))}
         </div>
 
-        <button onClick={onRestart} className="btn-restart">
-          🔄 Gioca Ancora
-        </button>
+        <div
+          style={{
+            display: 'flex',
+            gap: '12px',
+            marginTop: '24px',
+          }}
+        >
+          <button onClick={onRestart} className="btn-restart" style={{ flex: 1 }}>
+            🔄 Gioca Ancora
+          </button>
+          <button
+            onClick={handleExit}
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: '#64748b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(100, 116, 139, 0.4)';
+              e.currentTarget.style.background = '#475569';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.background = '#64748b';
+            }}
+          >
+            🚪 Esci
+          </button>
+        </div>
       </div>
     </div>
   );

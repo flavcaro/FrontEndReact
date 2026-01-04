@@ -13,7 +13,7 @@ import "../../App.css";
 
 export default function Board({ roomId, nickname }) {
   const navigate = useNavigate();
-  const { players, finalNickname, isRoomFull } = usePlayers(roomId, nickname);
+  const { players, finalNickname, isRoomFull, isOwner } = usePlayers(roomId, nickname);
   const { 
     gameState, 
     timeLeft, 
@@ -75,6 +75,7 @@ export default function Board({ roomId, nickname }) {
           hasGuessed={hasGuessed}
           timeLeft={timeLeft}
           players={players}
+          isOwner={isOwner}
           onStartGame={startGame}
           onClearBoard={clearBoard}
         />
