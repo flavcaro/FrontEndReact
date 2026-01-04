@@ -1,38 +1,33 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { ref, set, push, remove, onValue, get } from "firebase/database";
+import { useState, useEffect, useCallback } from "react";
+import { ref, set, onValue } from "firebase/database";
 import { db, auth } from "../firebase";
+import { TURN_DURATION, ROUNDS_PER_GAME } from "../constants/gameConfig";
+import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
+import { useGameTimer } from "./useGameTimer";
 import { 
-  WORDS, 
-  TURN_DURATION, 
-  POINTS_PER_GUESS, 
-  ARTIST_POINTS,
-  TIME_BONUS_MULTIPLIER,
-  ROUNDS_PER_GAME 
-} from "../constants/gameConfig";
+  startNewGame, 
+  endGame, 
+  advanceToNextTurn, 
+  awardPlayerPoints, 
+  sendSystemMessage 
+} from "../services/gameService";
 
 export function useGame(roomId, nickname, players) {
   const [gameState, setGameState] = useState(null);
   const [timeLeft, setTimeLeft] = useState(TURN_DURATION);
   const [showResults, setShowResults] = useState(false);
   const [finalResults, setFinalResults] = useState(null);
-  const timerRef = useRef(null);
 
   const isArtist = gameState?.currentArtist === nickname;
   const hasGuessed = gameState?.guessedPlayers?.some(g => g.nickname === nickname);
 
-  // Listener stato gioco
+  // Listen to game state
   useEffect(() => {
     const gameRef = ref(db, `rooms/${roomId}/game`);
     const unsubscribe = onValue(gameRef, (snapshot) => {
       const data = snapshot.val();
       setGameState(data);
-      
-      if (data?.turnStartedAt && data?.active) {
-        const elapsed = Math.floor((Date.now() - data.turnStartedAt) / 1000);
-        setTimeLeft(Math.max(0, TURN_DURATION - elapsed));
-      }
 
-      // Check if game ended
       if (data?.gameEnded) {
         setShowResults(false);
         setFinalResults(data.finalScores);
@@ -41,29 +36,15 @@ export function useGame(roomId, nickname, players) {
     return unsubscribe;
   }, [roomId]);
 
-  // Calculate points based on time remaining
-  const calculatePoints = (timeRemaining) => {
-    const basePoints = POINTS_PER_GUESS;
-    const timeBonus = Math.floor((timeRemaining / TURN_DURATION) * basePoints * TIME_BONUS_MULTIPLIER);
-    return basePoints + timeBonus;
-  };
-
   // Award points to artist
   const awardArtistPoints = useCallback(async () => {
     const artistPlayer = players.find(p => p.name === gameState?.currentArtist);
     if (artistPlayer) {
       const guessedCount = gameState?.guessedPlayers?.length || 0;
-      const artistBonus = guessedCount * ARTIST_POINTS;
+      const artistBonus = calculateArtistBonus(guessedCount);
       
-      const playerRef = ref(db, `rooms/${roomId}/players/${artistPlayer.id}/score`);
-      await set(playerRef, (artistPlayer.score || 0) + artistBonus);
-
-      await push(ref(db, `rooms/${roomId}/chat`), {
-        user: "Sistema",
-        message: `🎨 ${gameState.currentArtist} riceve ${artistBonus} punti come artista!`,
-        timestamp: Date.now(),
-        isSystem: true
-      });
+      await awardPlayerPoints(roomId, artistPlayer.id, artistPlayer.score, artistBonus);
+      await sendSystemMessage(roomId, `🎨 ${gameState.currentArtist} riceve ${artistBonus} punti come artista!`);
     }
   }, [roomId, players, gameState]);
 
@@ -71,17 +52,9 @@ export function useGame(roomId, nickname, players) {
   const showRoundResults = useCallback(async () => {
     setShowResults(true);
     
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `📊 Fine turno! La parola era: "${gameState?.word}"`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
-    // Award artist points
+    await sendSystemMessage(roomId, `📊 Fine turno! La parola era: "${gameState?.word}"`);
     await awardArtistPoints();
 
-    // Wait 5 seconds before next turn
     setTimeout(async () => {
       setShowResults(false);
       await nextTurn();
@@ -94,32 +67,7 @@ export function useGame(roomId, nickname, players) {
     const totalRounds = players.length * ROUNDS_PER_GAME;
 
     if (currentRound >= totalRounds) {
-      // Game ended - calculate final scores
-      const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-      const playersData = playersSnapshot.val() || {};
-      
-      const finalScores = Object.entries(playersData)
-        .map(([id, player]) => ({
-          id,
-          name: player.name,
-          score: player.score || 0
-        }))
-        .sort((a, b) => b.score - a.score);
-
-      await set(ref(db, `rooms/${roomId}/game`), {
-        active: false,
-        gameEnded: true,
-        finalScores,
-        endedAt: Date.now()
-      });
-
-      await push(ref(db, `rooms/${roomId}/chat`), {
-        user: "Sistema",
-        message: `🎉 Partita terminata! Vincitore: ${finalScores[0].name} con ${finalScores[0].score} punti!`,
-        timestamp: Date.now(),
-        isSystem: true
-      });
-
+      const finalScores = await endGame(roomId, players);
       return true;
     }
     return false;
@@ -127,25 +75,10 @@ export function useGame(roomId, nickname, players) {
 
   // Next turn logic
   const nextTurn = useCallback(async () => {
-    // Check if game should end first
     const gameEnded = await checkGameEnd();
     if (gameEnded) return;
 
-    await set(ref(db, `rooms/${roomId}/game/active`), false);
-    
-    // Clear canvas
-    await Promise.all([
-      remove(ref(db, `rooms/${roomId}/lines`)),
-      remove(ref(db, `rooms/${roomId}/lines_temp`))
-    ]);
-    
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    // Select next artist
-    const currentIndex = players.findIndex(p => p.name === gameState?.currentArtist);
-    const nextIndex = (currentIndex + 1) % players.length;
-    const nextArtist = players[nextIndex]?.name;
-    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+    const { nextArtist, word } = await advanceToNextTurn(roomId, players, gameState?.currentArtist);
     const nextRound = (gameState?.round || 0) + 1;
 
     await set(ref(db, `rooms/${roomId}/game`), {
@@ -158,66 +91,22 @@ export function useGame(roomId, nickname, players) {
       totalRounds: players.length * ROUNDS_PER_GAME
     });
 
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `🎨 Turno ${nextRound}/${players.length * ROUNDS_PER_GAME}: ${nextArtist} sta disegnando!`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
+    await sendSystemMessage(roomId, `🎨 Turno ${nextRound}/${players.length * ROUNDS_PER_GAME}: ${nextArtist} sta disegnando!`);
   }, [roomId, players, gameState, checkGameEnd]);
 
-  // End turn when time runs out
+  // End turn callbacks
   const endTurnAutomatically = useCallback(async () => {
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `⏰ Tempo scaduto!`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
+    await sendSystemMessage(roomId, `⏰ Tempo scaduto!`);
     await showRoundResults();
   }, [roomId, showRoundResults]);
 
-  // End turn when everyone guessed
   const endTurnManually = useCallback(async () => {
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `🎉 Tutti hanno indovinato!`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
-
+    await sendSystemMessage(roomId, `🎉 Tutti hanno indovinato!`);
     await showRoundResults();
   }, [roomId, showRoundResults]);
 
-  // Timer logic
-  useEffect(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-
-    if (!gameState?.active || showResults) return;
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-          endTurnAutomatically();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [gameState?.active, gameState?.round, showResults, endTurnAutomatically]);
+  // Timer
+  const timerRef = useGameTimer(gameState, showResults, endTurnAutomatically, setTimeLeft);
 
   // Start game
   const startGame = async () => {
@@ -227,39 +116,7 @@ export function useGame(roomId, nickname, players) {
       return;
     }
 
-    // Reset all player scores
-    const resetPromises = players.map(player => 
-      set(ref(db, `rooms/${roomId}/players/${player.id}/score`), 0)
-    );
-    await Promise.all(resetPromises);
-
-    const firstArtist = players[0]?.name;
-    const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-    
-    await set(ref(db, `rooms/${roomId}/game`), {
-      active: true,
-      currentArtist: firstArtist,
-      word,
-      turnStartedAt: Date.now(),
-      guessedPlayers: [],
-      round: 1,
-      totalRounds: players.length * ROUNDS_PER_GAME,
-      startedBy: user.uid,
-      gameEnded: false
-    });
-
-    await Promise.all([
-      remove(ref(db, `rooms/${roomId}/lines`)),
-      remove(ref(db, `rooms/${roomId}/lines_temp`)),
-      remove(ref(db, `rooms/${roomId}/chat`))
-    ]);
-
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `🎮 Partita iniziata! ${players.length * ROUNDS_PER_GAME} turni totali. Ogni giocatore disegnerà ${ROUNDS_PER_GAME} volte.`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
+    await startNewGame(roomId, players, user.uid);
   };
 
   // Handle correct guess
@@ -268,9 +125,7 @@ export function useGame(roomId, nickname, players) {
     const playerRef = players.find(p => p.name === nickname);
     
     if (playerRef) {
-      await set(ref(db, `rooms/${roomId}/players/${playerRef.id}/score`), 
-        (playerRef.score || 0) + pointsEarned
-      );
+      await awardPlayerPoints(roomId, playerRef.id, playerRef.score, pointsEarned);
     }
 
     const updatedGuessedPlayers = [
@@ -279,13 +134,7 @@ export function useGame(roomId, nickname, players) {
     ];
     
     await set(ref(db, `rooms/${roomId}/game/guessedPlayers`), updatedGuessedPlayers);
-
-    await push(ref(db, `rooms/${roomId}/chat`), {
-      user: "Sistema",
-      message: `🎉 ${nickname} ha indovinato! (+${pointsEarned} punti)`,
-      timestamp: Date.now(),
-      isSystem: true
-    });
+    await sendSystemMessage(roomId, `🎉 ${nickname} ha indovinato! (+${pointsEarned} punti)`);
 
     // Check if everyone guessed
     const totalPlayers = players.length;
@@ -299,7 +148,7 @@ export function useGame(roomId, nickname, players) {
       }
       setTimeout(() => endTurnManually(), 1000);
     }
-  }, [players, gameState, roomId, timeLeft, endTurnManually]);
+  }, [players, gameState, roomId, timeLeft, endTurnManually, timerRef]);
 
   // Restart game
   const restartGame = async () => {

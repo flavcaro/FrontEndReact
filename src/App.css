@@ -1,9 +1,22 @@
 /* Import all modular CSS files */
 @import './styles/base.css';
+@import './styles/common.css';
+@import './styles/lobby.css';
+@import './styles/home.css';
 @import './styles/board.css';
 @import './styles/canvas.css';
-@import './styles/sidebar.css';
-@import './styles/common.css';
+@import './styles/players-sidebar.css';
+@import './styles/chat-sidebar.css';
 @import './styles/buttons.css';
 @import './styles/forms.css';
 @import './styles/results.css';
+
+/* Import responsive CSS files */
+@import './styles/responsive/board-responsive.css';
+@import './styles/responsive/chat-responsive.css';
+@import './styles/responsive/home-responsive.css';
+@import './styles/responsive/players-responsive.css';
+@import './styles/responsive/results-responsive.css';
+
+/* Import ONE simple mobile responsive file */
+@import './styles/responsive/mobile.css';

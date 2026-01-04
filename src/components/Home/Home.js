@@ -1,52 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../../firebase';
 import { signOut } from 'firebase/auth';
-import { ref, onValue } from 'firebase/database';
+import { auth } from '../../firebase';
+import { useUserData } from '../../hooks/useUserData';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import UserHeader from './UserHeader';
+import RoomActions from './RoomActions';
 import { generateRoomCode, validateNickname, validateRoomCode } from '../../utils/roomUtils';
-import './Home.css';
 
 export default function Home() {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [roomCode, setRoomCode] = useState('');
-  const [showJoinInput, setShowJoinInput] = useState(false);
-  const [xpPoints, setXpPoints] = useState(0);
-  const user = auth.currentUser;
-  const isGuest = user?.isAnonymous;
-
-  // Load user data from database
-  useEffect(() => {
-    if (!user) return;
-
-    const userRef = ref(db, `users/${user.uid}`);
-    const unsubscribe = onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setXpPoints(data.xp || 0);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
-  useEffect(() => {
-    const savedNick = localStorage.getItem('nickname');
-    if (savedNick) {
-      setNickname(savedNick);
-    } else if (isGuest) {
-      // Auto-generate nickname for guests
-      const guestNick = `Ospite${Math.floor(Math.random() * 9999)}`;
-      setNickname(guestNick);
-      localStorage.setItem('nickname', guestNick);
-    } else if (user?.email) {
-      // Use email prefix as default nickname for registered users
-      const emailNick = user.email.split('@')[0];
-      setNickname(emailNick);
-    }
-  }, [isGuest, user]);
+  const { nickname, setNickname, xpPoints, user, isGuest } = useUserData();
 
   const handleSignOut = async () => {
     try {
@@ -74,54 +39,27 @@ export default function Home() {
     }
     localStorage.setItem('nickname', nickname);
     const roomId = generateRoomCode();
-    // Navigate to the play route with nickname
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`, { replace: true });
   };
 
-  const joinRoom = () => {
+  const joinRoom = (roomCode) => {
     if (!validateRoomCode(roomCode)) {
       alert('⚠️ Inserisci il codice della stanza (6 caratteri)!');
       return;
     }
-    // Navigate to room entry page (where they'll be asked for nickname if needed)
     navigate(`/room/${roomCode.toUpperCase()}`, { replace: true });
   };
 
   return (
     <div className="home-container">
-      {/* Header with user info */}
-      <header className="home-header">
-        <div className="user-info">
-          <div className="user-nickname">
-            <span className="nickname-icon">{isGuest ? '👤' : '✨'}</span>
-            <span className="nickname-text">{nickname || 'Utente'}</span>
-            {!isGuest && user?.email && (
-              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>
-                ({user.email})
-              </span>
-            )}
-          </div>
-          {/* Only show XP badge for registered users */}
-          {!isGuest && (
-            <div className="user-stats">
-              <span className="xp-badge">⭐ {xpPoints} XP</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="header-actions">
-          {!isGuest && (
-            <button className="btn-profile" onClick={() => alert('Profilo - Coming soon!')}>
-              👤 Profilo
-            </button>
-          )}
-          <button className="btn-logout" onClick={handleSignOut}>
-            🚪 {isGuest ? 'Esci' : 'Logout'}
-          </button>
-        </div>
-      </header>
+      <UserHeader 
+        nickname={nickname}
+        isGuest={isGuest}
+        user={user}
+        xpPoints={xpPoints}
+        onSignOut={handleSignOut}
+      />
 
-      {/* Main content */}
       <div className="home-main">
         <div className="home-card">
           <div className="home-title">
@@ -153,49 +91,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="game-actions">
-            <Button onClick={createRoom} variant="primary" icon="➕">
-              Crea Nuova Stanza
-            </Button>
-
-            <div className="divider">
-              <span>oppure</span>
-            </div>
-
-            {!showJoinInput ? (
-              <Button onClick={() => setShowJoinInput(true)} variant="secondary" icon="🔗">
-                Unisciti a una Stanza
-              </Button>
-            ) : (
-              <div className="join-section">
-                <input
-                  type="text"
-                  className="lobby-input code-input"
-                  placeholder="ABC123"
-                  value={roomCode}
-                  onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => e.key === 'Enter' && joinRoom()}
-                  maxLength={6}
-                  autoFocus
-                />
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Button onClick={joinRoom} variant="primary" size="small">
-                    ✓ Entra
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      setShowJoinInput(false);
-                      setRoomCode('');
-                    }}
-                    variant="tertiary"
-                    size="small"
-                  >
-                    ✕ Annulla
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+          <RoomActions onCreateRoom={createRoom} onJoinRoom={joinRoom} />
         </div>
       </div>
 

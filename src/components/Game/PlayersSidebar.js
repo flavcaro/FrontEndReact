@@ -1,14 +1,14 @@
 import React from 'react';
+import { MAX_PLAYERS } from '../../constants/gameConfig';
 
 export default function PlayersSidebar({ players, gameState, nickname, roomId }) {
-  // Remove nickname from the share URL
   const shareUrl = `${window.location.origin}/room/${roomId}`;
 
   return (
     <aside className="players-sidebar">
       <div className="sidebar-header">
         <h3>👥 Giocatori</h3>
-        <span className="players-badge">{players.length}</span>
+        <span className="players-badge">{players.length}/{MAX_PLAYERS}</span>
       </div>
       
       <ul className="players-list">
@@ -21,7 +21,13 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
               background: p.name === gameState?.currentArtist ? '#dcfce7' : undefined
             }}
           >
-            <div className="player-avatar">
+            <div 
+              className="player-avatar"
+              style={{
+                background: `linear-gradient(135deg, ${p.color || '#667eea'}, ${adjustBrightness(p.color || '#667eea', -20)})`,
+                border: p.name === nickname ? '3px solid #fbbf24' : 'none'
+              }}
+            >
               {p.name === gameState?.currentArtist ? '🎨' : p.name.charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1 }}>
@@ -35,7 +41,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
       </ul>
 
       <div className="share-box">
-        <label>🔗 Invita amici</label>
+        <label>🔗 Invita amici {players.length >= MAX_PLAYERS && <span style={{ color: '#dc2626' }}>(Stanza piena)</span>}</label>
         <input
           value={shareUrl}
           readOnly
@@ -48,4 +54,17 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
       </div>
     </aside>
   );
+}
+
+// Helper function to adjust color brightness
+function adjustBrightness(color, percent) {
+  const num = parseInt(color.replace("#", ""), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = ((num >> 8) & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return "#" + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+    (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+    (B < 255 ? (B < 1 ? 0 : B) : 255))
+    .toString(16).slice(1);
 }

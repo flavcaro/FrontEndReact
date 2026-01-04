@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useGame } from "../../hooks/useGame";
 import { useChat } from "../../hooks/useChat";
@@ -11,7 +12,8 @@ import GameResults from "./GameResults";
 import "../../App.css";
 
 export default function Board({ roomId, nickname }) {
-  const { players } = usePlayers(roomId, nickname);
+  const navigate = useNavigate();
+  const { players, finalNickname, isRoomFull } = usePlayers(roomId, nickname);
   const { 
     gameState, 
     timeLeft, 
@@ -21,7 +23,7 @@ export default function Board({ roomId, nickname }) {
     startGame, 
     handleGuess,
     restartGame
-  } = useGame(roomId, nickname, players);
+  } = useGame(roomId, finalNickname, players);
   const { messages, messagesEndRef } = useChat(roomId);
   const { 
     lines, 
@@ -29,15 +31,40 @@ export default function Board({ roomId, nickname }) {
     handleMouseDown, 
     handleMouseMove, 
     handleMouseUp 
-  } = useDrawing(roomId, nickname, isArtist, gameState?.active);
+  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active);
+
+  // Handle room full
+  useEffect(() => {
+    if (isRoomFull && !players.find(p => p.name === finalNickname)) {
+      alert("⚠️ La stanza è piena! Massimo 6 giocatori.");
+      navigate("/home", { replace: true });
+    }
+  }, [isRoomFull, players, finalNickname, navigate]);
+
+  // Handle page close/refresh - warn user
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (gameState?.active) {
+        e.preventDefault();
+        e.returnValue = 'Sei sicuro di voler uscire? La partita è in corso!';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [gameState]);
 
   return (
     <div className="board-container">
       <PlayersSidebar 
         players={players} 
         gameState={gameState} 
-        nickname={nickname} 
-        roomId={roomId} 
+        nickname={finalNickname} 
+        roomId={roomId}
       />
 
       <main className="board-main">
@@ -62,7 +89,7 @@ export default function Board({ roomId, nickname }) {
 
       <ChatSidebar
         roomId={roomId}
-        nickname={nickname}
+        nickname={finalNickname}
         messages={messages}
         messagesEndRef={messagesEndRef}
         gameState={gameState}

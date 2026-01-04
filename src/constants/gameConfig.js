@@ -8,6 +8,7 @@ export const WORDS = [
 export const TURN_DURATION = 60; // seconds per turn
 export const POINTS_PER_GUESS = 100; // base points for guessing
 export const ARTIST_POINTS = 50; // points artist gets per correct guess
-export const MIN_PLAYERS = 2;
+export const MIN_PLAYERS = 2; // Minimum players to start
+export const MAX_PLAYERS = 6; // Maximum players allowed
 export const ROUNDS_PER_GAME = 3; // Each player draws 3 times
 export const TIME_BONUS_MULTIPLIER = 2; // Faster guess = more points
