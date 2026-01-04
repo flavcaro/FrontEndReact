@@ -39,7 +39,8 @@ export function usePlayers(roomId, nickname) {
   const playerRefRef = useRef(null);
   const isAddingPlayer = useRef(false);
   const sessionId = useRef(getSessionId());
-  const playerNicknameRef = useRef(null); // Store nickname for cleanup
+  const playerNicknameRef = useRef(null);
+  const disconnectSetup = useRef(false); // Track if disconnect is setup
 
   // Add or update player with disconnect handling
   useEffect(() => {
@@ -151,42 +152,25 @@ export function usePlayers(roomId, nickname) {
 
         // Store nickname for cleanup
         playerNicknameRef.current = playerNickname;
-
-        // Set up disconnect handler - send leave message and remove player
-        const disconnectHandler = onDisconnect(playerReference);
-        
-        // If owner disconnects, end the game
-        if (isFirstPlayer || (existingSessionEntry && existingSessionEntry[1].isOwner)) {
-          disconnectHandler.remove().then(async () => {
-            // Send leave message
-            await sendSystemMessage(roomId, `🚪 ${playerNickname} ha abbandonato la stanza`);
-            
-            // Check if game is active
-            const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
-            const gameData = gameSnapshot.val();
-            
-            if (gameData?.active) {
-              await endGameByOwnerLeaving(roomId, playersList);
-            }
-          });
-        } else {
-          // Regular player disconnect
-          await disconnectHandler.set({
-            name: playerNickname,
-            originalNickname: nickname,
-            sessionId: currentSessionId,
-            connected: false,
-            leftAt: Date.now()
-          }).then(async () => {
-            // Send leave message when player disconnects
-            await sendSystemMessage(roomId, `🚪 ${playerNickname} ha abbandonato la stanza`);
-            // Then remove after message is sent
-            await remove(playerReference);
-          });
-        }
-
         playerRefRef.current = playerReference;
         setPlayerId(playerKey);
+
+        // Set up disconnect handler ONLY ONCE
+        if (!disconnectSetup.current) {
+          disconnectSetup.current = true;
+          
+          const disconnectHandler = onDisconnect(playerReference);
+          
+          // If owner disconnects, end the game
+          if (isFirstPlayer || (existingSessionEntry && existingSessionEntry[1].isOwner)) {
+            await disconnectHandler.remove();
+            console.log('Owner disconnect handler set up');
+          } else {
+            // Regular player disconnect - just remove
+            await disconnectHandler.remove();
+            console.log('Player disconnect handler set up');
+          }
+        }
 
       } catch (error) {
         console.error("Error adding/updating player:", error);
@@ -204,35 +188,38 @@ export function usePlayers(roomId, nickname) {
           try {
             const playerName = playerNicknameRef.current;
             
-            // Send leave message first
-            await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
+            // Only remove if user is actually leaving (not just re-rendering)
+            const isReallyLeaving = !document.hasFocus() || performance.navigation.type === 1;
             
-            const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
-            const ownerData = ownerSnapshot.val();
-            
-            if (ownerData?.sessionId === currentSessionId) {
-              // This is the owner leaving
-              const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
-              const gameData = gameSnapshot.val();
+            if (isReallyLeaving) {
+              // Send leave message first
+              await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
               
-              if (gameData?.active) {
-                const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-                const playersData = playersSnapshot.val() || {};
-                const playersList = Object.values(playersData);
-                await endGameByOwnerLeaving(roomId, playersList);
+              const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
+              const ownerData = ownerSnapshot.val();
+              
+              if (ownerData?.sessionId === currentSessionId) {
+                // This is the owner leaving
+                const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
+                const gameData = gameSnapshot.val();
+                
+                if (gameData?.active) {
+                  const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                  const playersData = playersSnapshot.val() || {};
+                  const playersList = Object.values(playersData);
+                  await endGameByOwnerLeaving(roomId, playersList);
+                }
               }
+              
+              // Remove player
+              await remove(playerRefRef.current);
             }
-            
-            // Remove player
-            await remove(playerRefRef.current);
           } catch (err) {
             console.error("Error removing player:", err);
           }
         };
         
         checkOwnerAndRemove();
-        playerRefRef.current = null;
-        playerNicknameRef.current = null;
       }
     };
   }, [roomId, nickname]);
