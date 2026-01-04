@@ -18,7 +18,7 @@ export default function AuthForm({
       <div className="lobby-card">
         <div className="lobby-header">
           <div className="logo">🎨</div>
-          <h1>SketchGuess</h1>
+          <h1>SketchUp</h1>
           <p>{isSignUp ? "Crea un account" : "Accedi al tuo account"}</p>
         </div>
 

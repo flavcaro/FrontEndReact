@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
@@ -7,11 +7,13 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import UserHeader from './UserHeader';
 import RoomActions from './RoomActions';
+import GameModeSelector from './GameModeSelector';
 import { generateRoomCode, validateNickname, validateRoomCode } from '../../utils/roomUtils';
 
 export default function Home() {
   const navigate = useNavigate();
   const { nickname, setNickname, xpPoints, user, isGuest } = useUserData();
+  const [showModeSelector, setShowModeSelector] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -32,14 +34,21 @@ export default function Home() {
     alert('✅ Nickname salvato!');
   };
 
-  const createRoom = () => {
+  const initiateCreateRoom = () => {
     if (!validateNickname(nickname)) {
       alert('⚠️ Inserisci un nickname prima di continuare!');
       return;
     }
     localStorage.setItem('nickname', nickname);
+    setShowModeSelector(true);
+  };
+
+  const createRoom = (gameMode) => {
     const roomId = generateRoomCode();
-    navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`, { replace: true });
+    // Store game mode in localStorage for the room
+    localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(gameMode));
+    navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}&mode=${gameMode.id}`, { replace: true });
+    setShowModeSelector(false);
   };
 
   const joinRoom = (roomCode) => {
@@ -64,7 +73,7 @@ export default function Home() {
         <div className="home-card">
           <div className="home-title">
             <div className="logo">🎨</div>
-            <h1>SketchGuess</h1>
+            <h1>SketchUp</h1>
             <p>Benvenuto{isGuest ? ', Ospite' : ''}! Scegli come vuoi giocare</p>
           </div>
 
@@ -91,9 +100,16 @@ export default function Home() {
             </Button>
           </div>
 
-          <RoomActions onCreateRoom={createRoom} onJoinRoom={joinRoom} />
+          <RoomActions onCreateRoom={initiateCreateRoom} onJoinRoom={joinRoom} />
         </div>
       </div>
+
+      {showModeSelector && (
+        <GameModeSelector 
+          onSelectMode={createRoom}
+          onCancel={() => setShowModeSelector(false)}
+        />
+      )}
 
       <div className="home-bg-shapes">
         <div className="shape shape-1"></div>

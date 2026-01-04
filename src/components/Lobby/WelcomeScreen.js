@@ -7,7 +7,7 @@ export default function WelcomeScreen({ onGuestLogin, onShowAuthForm, authError 
       <div className="lobby-card">
         <div className="lobby-header">
           <div className="logo">🎨</div>
-          <h1>SketchGuess</h1>
+          <h1>SketchUp</h1>
           <p>Disegna, indovina e divertiti con i tuoi amici!</p>
         </div>
 

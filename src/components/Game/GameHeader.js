@@ -15,6 +15,7 @@ export default function GameHeader({
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
   const totalRounds = gameState?.totalRounds || 0;
+  const gameMode = gameState?.mode || 'Classica';
   
   const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS;
 
@@ -32,6 +33,13 @@ export default function GameHeader({
         <div>
           <div className="room-label">Stanza</div>
           <div className="room-code">{roomId}</div>
+        </div>
+
+        <div style={{ marginLeft: 20 }}>
+          <div className="room-label">Modalità</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#6366f1' }}>
+            🎨 {gameMode}
+          </div>
         </div>
         
         {gameState?.active && (
