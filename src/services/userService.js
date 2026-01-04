@@ -33,6 +33,7 @@ export const updateLastLogin = async (uid) => {
 
 export const updateGameStats = async (userId, score, isWinner) => {
   try {
+    console.log(`📊 Aggiornamento statistiche per userId: ${userId}, score: ${score}, winner: ${isWinner}`);
     const userRef = ref(db, `users/${userId}`);
     const snapshot = await get(userRef);
     const userData = snapshot.val() || {};
@@ -43,6 +44,8 @@ export const updateGameStats = async (userId, score, isWinner) => {
     const bestScore = Math.max(userData.bestScore || 0, score);
     const xp = (userData.xp || 0) + (isWinner ? 50 : 20); // 50 XP per vittoria, 20 per partecipazione
 
+    console.log(`📊 Nuove statistiche:`, { gamesPlayed, gamesWon, totalScore, bestScore, xp });
+    
     await update(userRef, {
       gamesPlayed,
       gamesWon,
@@ -51,6 +54,8 @@ export const updateGameStats = async (userId, score, isWinner) => {
       xp,
       lastPlayed: serverTimestamp()
     });
+    
+    console.log(`✅ Statistiche aggiornate con successo per ${userId}`);
   } catch (error) {
     console.error("Error updating game stats:", error);
   }
