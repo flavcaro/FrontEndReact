@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
-import { signOut } from 'firebase/auth';
+import { 
+  signOut, 
+  updateEmail, 
+  updatePassword, 
+  reauthenticateWithCredential, 
+  EmailAuthProvider 
+} from 'firebase/auth';
 import { ref, onValue, set } from 'firebase/database';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -23,6 +29,14 @@ export default function Profile() {
   });
   const [editingNickname, setEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState('');
+  
+  // Account edit states
+  const [editingAccount, setEditingAccount] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -81,6 +95,98 @@ export default function Profile() {
     } catch (error) {
       alert('❌ Errore durante l\'aggiornamento del nickname');
     }
+  };
+
+  const reauthenticate = async (password) => {
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      password
+    );
+    return await reauthenticateWithCredential(user, credential);
+  };
+
+  const handleUpdateEmail = async () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      alert('⚠️ Inserisci un\'email valida!');
+      return;
+    }
+
+    if (!currentPassword) {
+      alert('⚠️ Inserisci la tua password attuale per confermare!');
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      // Reauthentica l'utente prima di aggiornare l'email
+      await reauthenticate(currentPassword);
+      await updateEmail(user, newEmail);
+      alert('✅ Email aggiornata con successo!');
+      setEditingAccount(false);
+      setCurrentPassword('');
+      setNewEmail('');
+    } catch (error) {
+      console.error('Error updating email:', error);
+      if (error.code === 'auth/wrong-password') {
+        alert('❌ Password corrente non corretta');
+      } else if (error.code === 'auth/email-already-in-use') {
+        alert('❌ Questa email è già in uso');
+      } else if (error.code === 'auth/requires-recent-login') {
+        alert('❌ Per motivi di sicurezza, effettua nuovamente il login prima di modificare l\'email');
+      } else {
+        alert('❌ Errore durante l\'aggiornamento dell\'email: ' + error.message);
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      alert('⚠️ La password deve contenere almeno 6 caratteri!');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert('⚠️ Le password non corrispondono!');
+      return;
+    }
+
+    if (!currentPassword) {
+      alert('⚠️ Inserisci la tua password attuale per confermare!');
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      // Reauthentica l'utente prima di aggiornare la password
+      await reauthenticate(currentPassword);
+      await updatePassword(user, newPassword);
+      alert('✅ Password aggiornata con successo!');
+      setEditingAccount(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error('Error updating password:', error);
+      if (error.code === 'auth/wrong-password') {
+        alert('❌ Password corrente non corretta');
+      } else if (error.code === 'auth/requires-recent-login') {
+        alert('❌ Per motivi di sicurezza, effettua nuovamente il login prima di modificare la password');
+      } else {
+        alert('❌ Errore durante l\'aggiornamento della password: ' + error.message);
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAccount(false);
+    setNewEmail('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setCurrentPassword('');
   };
 
   const winRate = userData.gamesPlayed > 0 
@@ -259,32 +365,115 @@ export default function Profile() {
 
         {/* Account Info */}
         <div className="profile-section">
-          <h3 className="section-title">ℹ️ Informazioni Account</h3>
-          <div className="info-list">
-            <div className="info-item">
-              <span className="info-label">Account creato:</span>
-              <span className="info-value">
-                {userData.createdAt 
-                  ? new Date(userData.createdAt).toLocaleDateString('it-IT', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    })
-                  : 'N/A'
-                }
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">Email:</span>
-              <span className="info-value">{user?.email}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">ID Utente:</span>
-              <span className="info-value" style={{ fontSize: '0.8em', color: '#64748b' }}>
-                {user?.uid}
-              </span>
-            </div>
+          <div className="section-title-with-action">
+            <h3 className="section-title">ℹ️ Informazioni Account</h3>
+            {!editingAccount && (
+              <button 
+                className="edit-account-btn"
+                onClick={() => {
+                  setEditingAccount(true);
+                  setNewEmail(user?.email || '');
+                }}
+              >
+                ✏️ Modifica Credenziali
+              </button>
+            )}
           </div>
+
+          {!editingAccount ? (
+            <div className="info-list">
+              <div className="info-item">
+                <span className="info-label">Account creato:</span>
+                <span className="info-value">
+                  {userData.createdAt 
+                    ? new Date(userData.createdAt).toLocaleDateString('it-IT', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })
+                    : 'N/A'
+                  }
+                </span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Email:</span>
+                <span className="info-value">{user?.email}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">ID Utente:</span>
+                <span className="info-value" style={{ fontSize: '0.8em', color: '#64748b' }}>
+                  {user?.uid}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="account-edit-form">
+              <div className="edit-section">
+                <h4 className="edit-section-title">📧 Modifica Email</h4>
+                <Input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="Nuova email"
+                />
+                <Button 
+                  onClick={handleUpdateEmail} 
+                  variant="primary" 
+                  size="small"
+                  disabled={isUpdating || !newEmail || newEmail === user?.email}
+                >
+                  {isUpdating ? '⏳ Aggiornamento...' : '✓ Aggiorna Email'}
+                </Button>
+              </div>
+
+              <div className="edit-section">
+                <h4 className="edit-section-title">🔒 Modifica Password</h4>
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Nuova password (min. 6 caratteri)"
+                />
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Conferma nuova password"
+                />
+                <Button 
+                  onClick={handleUpdatePassword} 
+                  variant="primary" 
+                  size="small"
+                  disabled={isUpdating || !newPassword || !confirmPassword}
+                >
+                  {isUpdating ? '⏳ Aggiornamento...' : '✓ Aggiorna Password'}
+                </Button>
+              </div>
+
+              <div className="edit-section password-confirmation">
+                <h4 className="edit-section-title">🔐 Conferma Identità</h4>
+                <p className="security-notice">
+                  Per motivi di sicurezza, inserisci la tua password attuale per confermare le modifiche.
+                </p>
+                <Input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Password attuale"
+                />
+              </div>
+
+              <div className="edit-actions-bottom">
+                <Button 
+                  onClick={handleCancelEdit} 
+                  variant="tertiary" 
+                  disabled={isUpdating}
+                >
+                  ✕ Annulla
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -35,8 +35,9 @@
 }
 
 .profile-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 15px;
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
@@ -48,6 +49,14 @@
   font-size: 28px;
   color: #1e293b;
   font-weight: 700;
+  text-align: center;
+  justify-self: center;
+}
+
+.profile-header > button {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  white-space: nowrap;
 }
 
 .profile-section {
@@ -225,6 +234,84 @@
 }
 
 /* Info List */
+.section-title-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.edit-account-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.edit-account-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.edit-account-btn:active {
+  transform: translateY(0);
+}
+
+.account-edit-form {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+}
+
+.edit-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.edit-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 15px;
+}
+
+.edit-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 12px 0;
+}
+
+.edit-section input {
+  margin-bottom: 10px;
+}
+
+.password-confirmation {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #fbbf24;
+}
+
+.security-notice {
+  font-size: 13px;
+  color: #92400e;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.edit-actions-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
 .info-list {
   display: flex;
   flex-direction: column;
@@ -364,6 +451,20 @@
     gap: 8px;
     text-align: center;
   }
+
+  .section-title-with-action {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .edit-account-btn {
+    width: 100%;
+  }
+
+  .account-edit-form {
+    padding: 15px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -373,5 +474,19 @@
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .profile-header h2 {
+    font-size: 20px;
+  }
+
+  .profile-header > button {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
   }
 }
