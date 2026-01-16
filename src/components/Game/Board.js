@@ -22,7 +22,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
     finalResults,
     startGame, 
     handleGuess,
-    restartGame
+    restartGame,
+    showResults
   } = useGame(roomId, finalNickname, players);
   const { messages, messagesEndRef } = useChat(roomId);
   const { 
@@ -31,7 +32,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     handleMouseDown, 
     handleMouseMove, 
     handleMouseUp 
-  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active);
+  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults);
 
   // Handle room full
   useEffect(() => {
@@ -92,9 +93,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
         <Canvas
           lines={lines}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onMouseDown={showResults ? undefined : handleMouseDown}
+          onMouseMove={showResults ? undefined : handleMouseMove}
+          onMouseUp={showResults ? undefined : handleMouseUp}
           isArtist={isArtist}
           nickname={finalNickname}
         />

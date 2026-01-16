@@ -142,9 +142,10 @@ export function useGame(roomId, nickname, players) {
 
   // End turn callbacks
   const endTurnAutomatically = useCallback(async () => {
+    if (!isArtist) return; // Solo l'artista gestisce la fine turno per timeout
     await sendSystemMessage(roomId, `⏰ Tempo scaduto!`);
     await showRoundResults();
-  }, [roomId, showRoundResults]);
+  }, [roomId, showRoundResults, isArtist]);
 
   const endTurnManually = useCallback(async () => {
     await sendSystemMessage(roomId, `🎉 Tutti hanno indovinato!`);
