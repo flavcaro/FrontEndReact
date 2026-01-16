@@ -133,14 +133,16 @@ export function useGame(roomId, nickname, players) {
 
   // End turn callbacks
   const endTurnAutomatically = useCallback(async () => {
+    if (!isArtist) return;
     await sendSystemMessage(roomId, `⏰ Tempo scaduto!`);
     await showRoundResults();
-  }, [roomId, showRoundResults]);
+  }, [roomId, showRoundResults, isArtist]);
 
   const endTurnManually = useCallback(async () => {
+    if (!isArtist) return;
     await sendSystemMessage(roomId, `🎉 Tutti hanno indovinato!`);
     await showRoundResults();
-  }, [roomId, showRoundResults]);
+  }, [roomId, showRoundResults, isArtist]);
 
   // Timer
   const timerRef = useGameTimer(gameState, showResults, endTurnAutomatically, setTimeLeft);
