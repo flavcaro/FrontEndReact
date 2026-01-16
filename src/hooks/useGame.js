@@ -197,6 +197,10 @@ export function useGame(roomId, nickname, players) {
     
     if (guessedCount >= totalPlayersInGame - artistCount) {
       console.log('✅ Tutti hanno indovinato! Chiamando endTurnManually...');
+      
+      // Disattiva subito il gioco per impedire all'artista di continuare a disegnare
+      await set(ref(db, `rooms/${roomId}/game/active`), false);
+      
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
