@@ -52,8 +52,32 @@ export function useGame(roomId, nickname, players) {
   const nextTurn = useCallback(async () => {
     const difficultyId = gameState?.difficultyId || 'medium';
     const playerOrder = gameState?.playerOrder || players.map(p => p.name);
+    const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
     
-    // First, advance to next turn and increment counter
+    // Get current draw counts BEFORE advancing
+    const drawCountsSnapshotBefore = await get(ref(db, `rooms/${roomId}/game/drawCounts`));
+    const currentDrawCounts = drawCountsSnapshotBefore.val() || {};
+    
+    // Check if game should end BEFORE next turn
+    const allPlayersFinished = playerOrder.every(playerName => {
+      const count = currentDrawCounts[playerName] || 0;
+      return count >= roundsPerPlayer;
+    });
+
+    console.log(`🔍 Check fine gioco PRIMA del prossimo turno:`, {
+      roundsPerPlayer,
+      currentDrawCounts,
+      allPlayersFinished,
+      currentArtist: gameState?.currentArtist
+    });
+    
+    if (allPlayersFinished) {
+      console.log('🏁 Partita finita! Tutti hanno disegnato', roundsPerPlayer, 'volte');
+      await endGame(roomId, players);
+      return;
+    }
+    
+    // Advance to next turn and increment counter
     const { nextArtist, word } = await advanceToNextTurn(
       roomId, 
       players, 
@@ -65,27 +89,6 @@ export function useGame(roomId, nickname, players) {
     // Get updated draw counts after increment
     const drawCountsSnapshot = await get(ref(db, `rooms/${roomId}/game/drawCounts`));
     const updatedDrawCounts = drawCountsSnapshot.val() || {};
-    
-    // Now check if game should end (after incrementing)
-    const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
-    
-    // Only check players that are in the playerOrder (original rotation)
-    const allPlayersFinished = playerOrder.every(playerName => {
-      const count = updatedDrawCounts[playerName] || 0;
-      return count >= roundsPerPlayer;
-    });
-
-    console.log(`🔍 Check fine gioco dopo turno:`, {
-      roundsPerPlayer,
-      updatedDrawCounts,
-      allPlayersFinished
-    });
-    
-    if (allPlayersFinished) {
-      console.log('🏁 Partita finita! Tutti hanno disegnato', roundsPerPlayer, 'volte');
-      await endGame(roomId, players);
-      return;
-    }
 
     // Continue with next turn
     const nextRound = (gameState?.round || 0) + 1;
