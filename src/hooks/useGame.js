@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ref, set, onValue, get } from "firebase/database";
+import { ref, set, onValue, get, remove } from "firebase/database";
 import { db, auth } from "../firebase";
 import { TURN_DURATION } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
@@ -121,6 +121,12 @@ export function useGame(roomId, nickname, players) {
   // Show round results
   const showRoundResults = useCallback(async () => {
     setShowResults(true);
+
+    // Pulisci la canvas subito
+    await Promise.all([
+      remove(ref(db, `rooms/${roomId}/lines`)),
+      remove(ref(db, `rooms/${roomId}/lines_temp`)),
+    ]);
     
     await sendSystemMessage(roomId, `📊 Fine turno! La parola era: "${gameState?.word}"`);
     await awardArtistPoints();

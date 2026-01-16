@@ -38,6 +38,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     guessedPlayers: [],
     round: 1,
     roundsPerPlayer: roundsPerPlayer, // Rounds each player should draw
+    totalRounds: roundsPerPlayer * players.length, // <-- totale turni per partita
     drawCounts: drawCounts, // Track how many times each player has drawn
     playerOrder: playerOrder, // Fixed rotation order
     startedBy: userId,
