@@ -184,9 +184,8 @@ export function useGame(roomId, nickname, players) {
     await set(ref(db, `rooms/${roomId}/game/guessedPlayers`), updatedGuessedPlayers);
     await sendSystemMessage(roomId, `🎉 ${nickname} ha indovinato! (+${pointsEarned} punti)`);
 
-    // Check if everyone guessed - use playerOrder for accurate count
-    const playerOrder = gameState?.playerOrder || players.map(p => p.name);
-    const totalPlayersInGame = playerOrder.length;
+    // Check if everyone guessed - usa sempre la lista aggiornata dei giocatori
+    const totalPlayersInGame = players.length;
     const artistCount = 1;
     const guessedCount = updatedGuessedPlayers.length;
     

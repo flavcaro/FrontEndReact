@@ -33,8 +33,11 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
         setLines([]);
         return;
       }
-      
-      const data = snapshot.val() || {};
+      const data = snapshot.val();
+      if (!data || Object.keys(data).length === 0) {
+        setLines((prev) => prev.filter((l) => l.temp)); // Solo temp
+        return;
+      }
       const saved = Object.entries(data).map(([firebaseKey, value]) => ({ 
         ...value, 
         id: firebaseKey,
@@ -53,10 +56,14 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     const tempRef = ref(db, `rooms/${roomId}/lines_temp`);
     const unsubscribe = onValue(tempRef, (snapshot) => {
       if (!gameActive) {
+        setLines((prev) => prev.filter((l) => !l.temp)); // Solo definitive
         return;
       }
-      
-      const data = snapshot.val() || {};
+      const data = snapshot.val();
+      if (!data || Object.keys(data).length === 0) {
+        setLines((prev) => prev.filter((l) => !l.temp)); // Solo definitive
+        return;
+      }
       const otherTemp = Object.entries(data)
         .filter(([user]) => user !== nickname)
         .map(([user, value]) => ({ 
