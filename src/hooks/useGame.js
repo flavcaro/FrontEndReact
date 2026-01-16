@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ref, set, onValue } from "firebase/database";
+import { ref, set, onValue, get } from "firebase/database";
 import { db, auth } from "../firebase";
 import { TURN_DURATION } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
@@ -75,16 +75,40 @@ export function useGame(roomId, nickname, players) {
 
   // Next turn logic
   const nextTurn = useCallback(async () => {
-    const gameEnded = await checkGameEnd();
-    if (gameEnded) return;
-
     const difficultyId = gameState?.difficultyId || 'medium';
+    
+    // First, advance to next turn and increment counter
     const { nextArtist, word } = await advanceToNextTurn(
       roomId, 
       players, 
       gameState?.currentArtist,
       difficultyId
     );
+    
+    // Get updated draw counts after increment
+    const drawCountsSnapshot = await get(ref(db, `rooms/${roomId}/game/drawCounts`));
+    const updatedDrawCounts = drawCountsSnapshot.val() || {};
+    
+    // Now check if game should end (after incrementing)
+    const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
+    const allPlayersFinished = players.every(player => {
+      const count = updatedDrawCounts[player.name] || 0;
+      return count >= roundsPerPlayer;
+    });
+
+    console.log(`🔍 Check fine gioco dopo turno:`, {
+      roundsPerPlayer,
+      updatedDrawCounts,
+      allPlayersFinished
+    });
+    
+    if (allPlayersFinished) {
+      console.log('🏁 Partita finita! Tutti hanno disegnato', roundsPerPlayer, 'volte');
+      await endGame(roomId, players);
+      return;
+    }
+
+    // Continue with next turn
     const nextRound = (gameState?.round || 0) + 1;
 
     await set(ref(db, `rooms/${roomId}/game`), {
@@ -94,10 +118,11 @@ export function useGame(roomId, nickname, players) {
       word,
       turnStartedAt: Date.now(),
       guessedPlayers: [],
-      round: nextRound
+      round: nextRound,
+      drawCounts: updatedDrawCounts
     });
 
-    const drawCount = gameState.drawCounts?.[nextArtist] || 0;
+    const drawCount = updatedDrawCounts[nextArtist] || 0;
     await sendSystemMessage(roomId, `🎨 Turno ${nextRound}: ${nextArtist} sta disegnando! (${drawCount}/${gameState.roundsPerPlayer})`);
   }, [roomId, players, gameState, checkGameEnd]);
 
