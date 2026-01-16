@@ -18,8 +18,16 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   const firstArtist = players[0]?.name;
   const word = getRandomWord(gameConfig.difficulty?.id);
   
-  // Use the selected rounds directly from gameConfig
-  const totalRounds = gameConfig.roundsPerGame || 6;
+  // Rounds per player (not total rounds)
+  const roundsPerPlayer = gameConfig.roundsPerGame || 6;
+  
+  // Initialize draw count for each player
+  const drawCounts = {};
+  players.forEach(player => {
+    drawCounts[player.name] = 0;
+  });
+  // First artist will draw first
+  drawCounts[firstArtist] = 1;
   
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
@@ -28,7 +36,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     turnStartedAt: Date.now(),
     guessedPlayers: [],
     round: 1,
-    totalRounds: totalRounds, // Store the actual selected rounds
+    roundsPerPlayer: roundsPerPlayer, // Rounds each player should draw
+    drawCounts: drawCounts, // Track how many times each player has drawn
     startedBy: userId,
     ownerId: userId,
     gameEnded: false,
@@ -46,7 +55,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎮 Partita iniziata! ${totalRounds} turni - Difficoltà: ${gameConfig.difficulty?.name}`,
+    message: `🎮 Partita iniziata! Ogni giocatore disegnerà ${roundsPerPlayer} volte - Difficoltà: ${gameConfig.difficulty?.name}`,
     timestamp: Date.now(),
     isSystem: true
   });
@@ -131,6 +140,12 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   const nextIndex = (currentIndex + 1) % players.length;
   const nextArtist = players[nextIndex]?.name;
   const word = getRandomWord(difficultyId);
+  
+  // Increment draw count for next artist
+  const drawCountRef = ref(db, `rooms/${roomId}/game/drawCounts/${nextArtist}`);
+  const snapshot = await get(drawCountRef);
+  const currentCount = snapshot.val() || 0;
+  await set(drawCountRef, currentCount + 1);
   
   return { nextArtist, word };
 };

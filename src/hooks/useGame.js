@@ -50,13 +50,23 @@ export function useGame(roomId, nickname, players) {
 
   // Check if game should end
   const checkGameEnd = useCallback(async () => {
-    const currentRound = gameState?.round || 1;
-    const totalRounds = gameState?.totalRounds || 6;
+    const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
+    const drawCounts = gameState?.drawCounts || {};
 
-    console.log(`🔍 Check fine gioco: round ${currentRound}/${totalRounds}`);
+    // Check if all players have drawn the required number of times
+    const allPlayersFinished = players.every(player => {
+      const count = drawCounts[player.name] || 0;
+      return count >= roundsPerPlayer;
+    });
+
+    console.log(`🔍 Check fine gioco:`, {
+      roundsPerPlayer,
+      drawCounts,
+      allPlayersFinished
+    });
     
-    if (currentRound >= totalRounds) {
-      console.log('🏁 Partita finita! Chiamando endGame...');
+    if (allPlayersFinished) {
+      console.log('🏁 Partita finita! Tutti hanno disegnato', roundsPerPlayer, 'volte');
       await endGame(roomId, players);
       return true;
     }
@@ -87,7 +97,8 @@ export function useGame(roomId, nickname, players) {
       round: nextRound
     });
 
-    await sendSystemMessage(roomId, `🎨 Turno ${nextRound}/${gameState.totalRounds}: ${nextArtist} sta disegnando!`);
+    const drawCount = gameState.drawCounts?.[nextArtist] || 0;
+    await sendSystemMessage(roomId, `🎨 Turno ${nextRound}: ${nextArtist} sta disegnando! (${drawCount}/${gameState.roundsPerPlayer})`);
   }, [roomId, players, gameState, checkGameEnd]);
 
   // Award points to artist

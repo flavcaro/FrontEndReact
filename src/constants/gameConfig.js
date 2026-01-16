@@ -64,9 +64,9 @@ export const DIFFICULTY_LEVELS = {
 
 // Rounds options
 export const ROUNDS_OPTIONS = [
-  { value: 3, label: '3 Round', icon: '⚡', description: 'Partita veloce' },
-  { value: 6, label: '6 Round', icon: '🎯', description: 'Partita media' },
-  { value: 8, label: '8 Round', icon: '🏆', description: 'Partita lunga' }
+  { value: 3, label: '3 Round/giocatore', icon: '⚡', description: 'Partita veloce' },
+  { value: 6, label: '6 Round/giocatore', icon: '🎯', description: 'Partita media' },
+  { value: 8, label: '8 Round/giocatore', icon: '🏆', description: 'Partita lunga' }
 ];
 
 // Game Modes
