@@ -133,16 +133,14 @@ export function useGame(roomId, nickname, players) {
 
   // End turn callbacks
   const endTurnAutomatically = useCallback(async () => {
-    if (!isArtist) return;
     await sendSystemMessage(roomId, `⏰ Tempo scaduto!`);
     await showRoundResults();
-  }, [roomId, showRoundResults, isArtist]);
+  }, [roomId, showRoundResults]);
 
   const endTurnManually = useCallback(async () => {
-    if (!isArtist) return;
     await sendSystemMessage(roomId, `🎉 Tutti hanno indovinato!`);
     await showRoundResults();
-  }, [roomId, showRoundResults, isArtist]);
+  }, [roomId, showRoundResults]);
 
   // Timer
   const timerRef = useGameTimer(gameState, showResults, endTurnAutomatically, setTimeLeft);
@@ -176,12 +174,20 @@ export function useGame(roomId, nickname, players) {
     await set(ref(db, `rooms/${roomId}/game/guessedPlayers`), updatedGuessedPlayers);
     await sendSystemMessage(roomId, `🎉 ${nickname} ha indovinato! (+${pointsEarned} punti)`);
 
-    // Check if everyone guessed
-    const totalPlayers = players.length;
+    // Check if everyone guessed - use playerOrder for accurate count
+    const playerOrder = gameState?.playerOrder || players.map(p => p.name);
+    const totalPlayersInGame = playerOrder.length;
     const artistCount = 1;
     const guessedCount = updatedGuessedPlayers.length;
     
-    if (guessedCount >= totalPlayers - artistCount) {
+    console.log('🔍 Check tutti hanno indovinato:', {
+      totalPlayersInGame,
+      guessedCount,
+      needed: totalPlayersInGame - artistCount
+    });
+    
+    if (guessedCount >= totalPlayersInGame - artistCount) {
+      console.log('✅ Tutti hanno indovinato! Chiamando endTurnManually...');
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
