@@ -48,41 +48,18 @@ export function useGame(roomId, nickname, players) {
     return unsubscribe;
   }, [roomId]);
 
-  // Check if game should end
-  const checkGameEnd = useCallback(async () => {
-    const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
-    const drawCounts = gameState?.drawCounts || {};
-
-    // Check if all players have drawn the required number of times
-    const allPlayersFinished = players.every(player => {
-      const count = drawCounts[player.name] || 0;
-      return count >= roundsPerPlayer;
-    });
-
-    console.log(`🔍 Check fine gioco:`, {
-      roundsPerPlayer,
-      drawCounts,
-      allPlayersFinished
-    });
-    
-    if (allPlayersFinished) {
-      console.log('🏁 Partita finita! Tutti hanno disegnato', roundsPerPlayer, 'volte');
-      await endGame(roomId, players);
-      return true;
-    }
-    return false;
-  }, [roomId, players, gameState]);
-
   // Next turn logic
   const nextTurn = useCallback(async () => {
     const difficultyId = gameState?.difficultyId || 'medium';
+    const playerOrder = gameState?.playerOrder || players.map(p => p.name);
     
     // First, advance to next turn and increment counter
     const { nextArtist, word } = await advanceToNextTurn(
       roomId, 
       players, 
       gameState?.currentArtist,
-      difficultyId
+      difficultyId,
+      playerOrder
     );
     
     // Get updated draw counts after increment
@@ -91,8 +68,10 @@ export function useGame(roomId, nickname, players) {
     
     // Now check if game should end (after incrementing)
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
-    const allPlayersFinished = players.every(player => {
-      const count = updatedDrawCounts[player.name] || 0;
+    
+    // Only check players that are in the playerOrder (original rotation)
+    const allPlayersFinished = playerOrder.every(playerName => {
+      const count = updatedDrawCounts[playerName] || 0;
       return count >= roundsPerPlayer;
     });
 
@@ -124,7 +103,7 @@ export function useGame(roomId, nickname, players) {
 
     const drawCount = updatedDrawCounts[nextArtist] || 0;
     await sendSystemMessage(roomId, `🎨 Turno ${nextRound}: ${nextArtist} sta disegnando! (${drawCount}/${gameState.roundsPerPlayer})`);
-  }, [roomId, players, gameState, checkGameEnd]);
+  }, [roomId, players, gameState]);
 
   // Award points to artist
   const awardArtistPoints = useCallback(async () => {

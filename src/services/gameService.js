@@ -21,13 +21,14 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   // Rounds per player (not total rounds)
   const roundsPerPlayer = gameConfig.roundsPerGame || 6;
   
-  // Initialize draw count for each player
+  // Save player rotation order (fixed for entire game)
+  const playerOrder = players.map(p => p.name);
+  
+  // Initialize draw count for each player starting at 1 for first artist
   const drawCounts = {};
   players.forEach(player => {
-    drawCounts[player.name] = 0;
+    drawCounts[player.name] = player.name === firstArtist ? 1 : 0;
   });
-  // First artist will draw first
-  drawCounts[firstArtist] = 1;
   
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
@@ -38,6 +39,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     round: 1,
     roundsPerPlayer: roundsPerPlayer, // Rounds each player should draw
     drawCounts: drawCounts, // Track how many times each player has drawn
+    playerOrder: playerOrder, // Fixed rotation order
     startedBy: userId,
     ownerId: userId,
     gameEnded: false,
@@ -123,7 +125,7 @@ export const endGameByOwnerLeaving = async (roomId, players) => {
   return finalScores;
 };
 
-export const advanceToNextTurn = async (roomId, players, currentArtist, difficultyId) => {
+export const advanceToNextTurn = async (roomId, players, currentArtist, difficultyId, playerOrder) => {
   await set(ref(db, `rooms/${roomId}/game/active`), false);
   
   // Clear canvas and chat for next round
@@ -135,10 +137,10 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   
   await new Promise(resolve => setTimeout(resolve, 200));
   
-  // Select next artist (rotate through all players)
-  const currentIndex = players.findIndex(p => p.name === currentArtist);
-  const nextIndex = (currentIndex + 1) % players.length;
-  const nextArtist = players[nextIndex]?.name;
+  // Use the saved player order for rotation (not the dynamic sorted players array)
+  const currentIndex = playerOrder.findIndex(name => name === currentArtist);
+  const nextIndex = (currentIndex + 1) % playerOrder.length;
+  const nextArtist = playerOrder[nextIndex];
   const word = getRandomWord(difficultyId);
   
   // Increment draw count for next artist
