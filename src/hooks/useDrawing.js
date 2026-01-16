@@ -80,6 +80,19 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     return unsubscribe;
   }, [roomId, nickname, gameActive]);
 
+  // Cancel any in-progress drawing when the player's role or game state changes
+  useEffect(() => {
+    if (isArtist && gameActive && !showResults) return;
+    // If we are no longer the artist, or the game stopped / results shown,
+    // discard any local in-progress line and remove temp data in firebase.
+    if (isDrawing.current || currentLine.current) {
+      isDrawing.current = false;
+      currentLine.current = null;
+      remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`)).catch(() => {});
+      setLines((prev) => prev.filter((l) => !(l.temp && l.user === nickname)));
+    }
+  }, [isArtist, gameActive, showResults, roomId, nickname]);
+
   // Salva linea
   const saveLine = async (line) => {
     const lineRef = push(ref(db, `rooms/${roomId}/lines`));
@@ -124,7 +137,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   };
 
   const handleMouseUp = async () => {
-    if (!isDrawing.current || showResults) return;
+    if (!isDrawing.current || showResults || !isArtist || !gameActive) return;
     isDrawing.current = false;
     if (currentLine.current) {
       await saveLine(currentLine.current);
