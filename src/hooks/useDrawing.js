@@ -10,14 +10,14 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   const sendTempLine = useRef(null);
   const lineIdCounter = useRef(0);
 
-  // Throttle linee temp
+  // Throttle linee temp - ridotto a 50ms per maggiore fluidità
   useEffect(() => {
     sendTempLine.current = throttle(async (line) => {
       await set(ref(db, `rooms/${roomId}/lines_temp/${nickname}`), {
         ...line,
         updatedAt: Date.now(),
       });
-    }, 150);
+    }, 50);
 
     return () => {
       if (sendTempLine.current?.cancel) sendTempLine.current.cancel();

@@ -22,15 +22,10 @@ export default function Canvas({
       >
         <Layer>
           {lines.map((line, i) => {
-            // Hide transient (temp) strokes from viewers who are not the artist.
-            if (line.temp && !isArtist) {
-              return null;
-            }
-
             // Use the line's saved color for everyone when available.
-            // If the viewer is the artist, show other players' temp lines muted.
             let strokeColor = line.color || "#1e293b";
 
+            // If the viewer is the artist, show other players' temp lines muted.
             if (isArtist && line.temp && line.user !== nickname) {
               strokeColor = "#cbd5e1";
             }
