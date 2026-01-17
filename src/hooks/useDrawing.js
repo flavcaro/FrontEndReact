@@ -88,6 +88,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     if (isDrawing.current || currentLine.current) {
       isDrawing.current = false;
       currentLine.current = null;
+      if (sendTempLine.current?.cancel) sendTempLine.current.cancel();
       remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`)).catch(() => {});
       setLines((prev) => prev.filter((l) => !(l.temp && l.user === nickname)));
     }
