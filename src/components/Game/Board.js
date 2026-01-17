@@ -45,6 +45,17 @@ export default function Board({ roomId, nickname, gameConfig }) {
     }
   }, [isRoomFull, players, finalNickname, navigate]);
 
+  // Auto-redirect if game ended due to owner leaving or not enough players
+  useEffect(() => {
+    if (gameState?.gameEnded && (gameState?.endReason === 'owner_left' || gameState?.endReason === 'not_enough_players')) {
+      // Prevent GameResults from rendering and blocking navigation
+      setTimeout(() => {
+        alert('La partita è terminata: ' + (gameState.endReason === 'owner_left' ? 'il creatore ha abbandonato.' : 'non ci sono abbastanza giocatori.'));
+        navigate('/home', { replace: true });
+      }, 100);
+    }
+  }, [gameState, navigate]);
+
   // Handle page close/refresh - warn user
   useEffect(() => {
     const handleBeforeUnload = (e) => {

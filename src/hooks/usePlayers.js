@@ -181,44 +181,34 @@ export function usePlayers(roomId, nickname) {
 
     addOrUpdatePlayer();
 
-    // Cleanup on unmount - manually remove player and send message
+    // Cleanup on unmount - always remove player and handle owner logic
     return () => {
       if (playerRefRef.current && playerNicknameRef.current) {
         const checkOwnerAndRemove = async () => {
           try {
             const playerName = playerNicknameRef.current;
-            
-            // Only remove if user is actually leaving (not just re-rendering)
-            const isReallyLeaving = !document.hasFocus() || performance.navigation.type === 1;
-            
-            if (isReallyLeaving) {
-              // Send leave message first
-              await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
-              
-              const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
-              const ownerData = ownerSnapshot.val();
-              
-              if (ownerData?.sessionId === currentSessionId) {
-                // This is the owner leaving
-                const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
-                const gameData = gameSnapshot.val();
-                
-                if (gameData?.active) {
-                  const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-                  const playersData = playersSnapshot.val() || {};
-                  const playersList = Object.values(playersData);
-                  await endGameByOwnerLeaving(roomId, playersList);
-                }
+            // Always remove player and send leave message
+            await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
+            const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
+            const ownerData = ownerSnapshot.val();
+            if (ownerData?.sessionId === currentSessionId) {
+              // Owner is leaving: end game and remove owner node
+              const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
+              const gameData = gameSnapshot.val();
+              if (gameData?.active) {
+                const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                const playersData = playersSnapshot.val() || {};
+                const playersList = Object.values(playersData);
+                await endGameByOwnerLeaving(roomId, playersList);
               }
-              
-              // Remove player
-              await remove(playerRefRef.current);
+              await remove(ref(db, `rooms/${roomId}/owner`));
             }
+            // Remove player from list
+            await remove(playerRefRef.current);
           } catch (err) {
             console.error("Error removing player:", err);
           }
         };
-        
         checkOwnerAndRemove();
       }
     };
