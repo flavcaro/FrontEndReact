@@ -3,7 +3,7 @@ import { ref, set, push, onValue, remove } from "firebase/database";
 import throttle from "lodash.throttle";
 import { db } from "../firebase";
 
-export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b') {
+export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b', allGuessed = false) {
   const [lines, setLines] = useState([]);
   const isDrawing = useRef(false);
   const currentLine = useRef(null);
@@ -110,7 +110,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
 
   // Eventi mouse
   const handleMouseDown = (e) => {
-    if (!isArtist || !gameActive || showResults) return;
+    if (!isArtist || !gameActive || showResults || allGuessed) return;
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
     lineIdCounter.current += 1;
@@ -126,7 +126,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   };
 
   const handleMouseMove = (e) => {
-    if (!isDrawing.current || !isArtist || !currentLine.current || showResults) return;
+    if (!isDrawing.current || !isArtist || !currentLine.current || allGuessed) return;
     const pos = e.target.getStage().getPointerPosition();
     currentLine.current.points = [...currentLine.current.points, pos.x, pos.y];
     setLines((prev) => {
@@ -138,7 +138,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   };
 
   const handleMouseUp = async () => {
-    if (!isDrawing.current || showResults || !isArtist || !gameActive) return;
+    if (!isDrawing.current || showResults || !isArtist || !gameActive || allGuessed) return;
     isDrawing.current = false;
     if (currentLine.current) {
       await saveLine(currentLine.current);

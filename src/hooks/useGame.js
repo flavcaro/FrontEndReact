@@ -210,7 +210,8 @@ export function useGame(roomId, nickname, players) {
       turnStartedAt: Date.now(),
       guessedPlayers: [],
       round: nextRound,
-      drawCounts: updatedDrawCounts
+      drawCounts: updatedDrawCounts,
+      allGuessed: false // Reset flag per nuovo turno
     });
 
     const drawCount = updatedDrawCounts[nextArtist] || 0;
@@ -307,8 +308,8 @@ export function useGame(roomId, nickname, players) {
     if (guessedCount >= totalPlayersInGame - artistCount) {
       console.log('✅ Tutti hanno indovinato! Chiamando endTurnManually...');
       
-      // Disattiva subito il gioco per impedire all'artista di continuare a disegnare
-      await set(ref(db, `rooms/${roomId}/game/active`), false);
+      // Invece di disattivare il gioco, impostiamo un flag per bloccare il disegno
+      await set(ref(db, `rooms/${roomId}/game/allGuessed`), true);
       
       if (timerRef.current) {
         clearInterval(timerRef.current);
