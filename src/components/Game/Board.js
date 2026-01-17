@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useGame } from "../../hooks/useGame";
@@ -26,13 +26,15 @@ export default function Board({ roomId, nickname, gameConfig }) {
     showResults
   } = useGame(roomId, finalNickname, players);
   const { messages, messagesEndRef } = useChat(roomId);
+  const [selectedColor, setSelectedColor] = useState('#1e293b');
+
   const { 
     lines, 
     clearBoard, 
     handleMouseDown, 
     handleMouseMove, 
     handleMouseUp 
-  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults);
+  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor);
 
   // Handle room full
   useEffect(() => {
@@ -89,6 +91,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isOwner={isOwner}
           onStartGame={handleStartGame}
           onClearBoard={clearBoard}
+          selectedColor={selectedColor}
+          onChangeColor={setSelectedColor}
         />
 
         <Canvas

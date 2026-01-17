@@ -22,16 +22,14 @@ export default function Canvas({
       >
         <Layer>
           {lines.map((line, i) => {
-            // Mostra le linee temporanee in nero per tutti tranne che per gli altri giocatori che stanno disegnando
-            let strokeColor = "#1e293b";
-            // Se NON sono l'artista, tutte le linee sono nere
-            // Se SONO l'artista, solo le mie temp sono nere, le temp degli altri (teoricamente non dovrebbero esserci) sono grigie
-            if (isArtist) {
-              if (line.temp && line.user !== nickname) {
-                strokeColor = "#cbd5e1";
-              }
+            // Use the line's saved color for everyone when available.
+            // If the viewer is the artist, show other players' temp lines muted.
+            let strokeColor = line.color || "#1e293b";
+
+            if (isArtist && line.temp && line.user !== nickname) {
+              strokeColor = "#cbd5e1";
             }
-            // Se non sono l'artista, tutte nere (anche le temp)
+
             return (
               <Line
                 key={line.id || i}

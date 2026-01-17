@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS } from '../../constants/gameConfig';
+import Palette from './Palette';
 
 export default function GameHeader({ 
   roomId, 
@@ -11,7 +12,9 @@ export default function GameHeader({
   players,
   isOwner,
   onStartGame,
-  onClearBoard
+  onClearBoard,
+  selectedColor,
+  onChangeColor
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -123,13 +126,16 @@ export default function GameHeader({
         )}
         
         {isArtist && gameState?.active && (
-          <button onClick={onClearBoard} className="btn-clear">
+          <>
+            <Palette selectedColor={selectedColor} onChangeColor={onChangeColor} />
+            <button onClick={onClearBoard} className="btn-clear">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             </svg>
             Pulisci
           </button>
+          </>
         )}
 
         <button onClick={handleLeaveRoom} className="btn-leave" style={{
