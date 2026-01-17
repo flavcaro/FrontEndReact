@@ -33,9 +33,15 @@ export function useGame(roomId, nickname, players) {
       const data = snapshot.val();
       setGameState(data);
 
+      // Sincronizza showResults per tutti
+      if (data?.showResults) {
+        setShowResults(true);
+      } else {
+        setShowResults(false);
+      }
+
       if (!data?.gameEnded || !data?.finalScores) return;
 
-      setShowResults(false);
       setFinalResults(data.finalScores);
 
       const earlyEnd =
@@ -212,6 +218,8 @@ export function useGame(roomId, nickname, players) {
 
   /* ---------------- ROUND END ---------------- */
   const showRoundResults = useCallback(async () => {
+    // Aggiorna lo stato globale per tutti
+    await set(ref(db, `rooms/${roomId}/game/showResults`), true);
     setShowResults(true);
 
     await Promise.all([
@@ -227,6 +235,8 @@ export function useGame(roomId, nickname, players) {
     await awardArtistPoints();
 
     setTimeout(async () => {
+      // Reset showResults globale
+      await set(ref(db, `rooms/${roomId}/game/showResults`), false);
       setShowResults(false);
       await nextTurn();
     }, 5000);
