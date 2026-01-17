@@ -13,7 +13,7 @@ import "../../App.css";
 
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
-  const { players, finalNickname, isRoomFull, isOwner } = usePlayers(roomId, nickname);
+  const { players, finalNickname, isRoomFull, isOwner, playerId } = usePlayers(roomId, nickname);
   const { 
     gameState, 
     timeLeft, 
@@ -37,13 +37,19 @@ export default function Board({ roomId, nickname, gameConfig }) {
     handleMouseUp 
   } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, gameState?.allGuessed, selectedInstrument);
 
-  // Handle room full
+  // Handle room full - solo se non siamo già dentro
   useEffect(() => {
-    if (isRoomFull && !players.find(p => p.name === finalNickname)) {
+    // Se abbiamo un playerId, siamo già dentro, non dobbiamo essere espulsi
+    if (!playerId) return;
+    
+    // Controlla se il nostro player esiste ancora nell'array
+    const weAreInRoom = players.some(p => p.id === playerId || p.name === finalNickname);
+    
+    if (isRoomFull && !weAreInRoom) {
       alert("⚠️ La stanza è piena! Massimo 6 giocatori.");
       navigate("/home", { replace: true });
     }
-  }, [isRoomFull, players, finalNickname, navigate]);
+  }, [isRoomFull, players, finalNickname, playerId, navigate]);
 
   // Auto-redirect if game ended due to owner leaving or not enough players
   useEffect(() => {
