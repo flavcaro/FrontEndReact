@@ -22,6 +22,87 @@ export function useGame(roomId, nickname, players) {
   const isArtist = gameState?.currentArtist === nickname;
   const hasGuessed = gameState?.guessedPlayers?.some(g => g.nickname === nickname);
 
+  // End game for all if owner leaves
+  useEffect(() => {
+    if (!roomId || !gameState?.active || gameState?.gameEnded) return;
+    const ownerRef = ref(db, `rooms/${roomId}/owner`);
+    const playersRef = ref(db, `rooms/${roomId}/players`);
+    let unsubOwner, unsubPlayers;
+
+    // Listen for owner changes
+    unsubOwner = onValue(ownerRef, async (ownerSnap) => {
+      const ownerData = ownerSnap.val();
+      if (!ownerData) {
+        // Owner field deleted, end game for all
+        await set(ref(db, `rooms/${roomId}/game`), {
+          ...gameState,
+          active: false,
+          gameEnded: true,
+          endReason: 'owner_left',
+          endedAt: Date.now(),
+          finalScores: players.map(p => ({
+            id: p.id,
+            name: p.name,
+            score: p.score || 0,
+            userId: p.userId || null
+          }))
+        });
+        await sendSystemMessage(roomId, '⚠️ Il creatore della stanza ha abbandonato. Partita terminata!');
+      } else {
+        // Also check if the owner is still in the players list
+        unsubPlayers = onValue(playersRef, (playersSnap) => {
+          const playersData = playersSnap.val() || {};
+          const stillPresent = Object.values(playersData).some(p => p.sessionId === ownerData.sessionId);
+          if (!stillPresent) {
+            (async () => {
+              await set(ref(db, `rooms/${roomId}/game`), {
+                ...gameState,
+                active: false,
+                gameEnded: true,
+                endReason: 'owner_left',
+                endedAt: Date.now(),
+                finalScores: players.map(p => ({
+                  id: p.id,
+                  name: p.name,
+                  score: p.score || 0,
+                  userId: p.userId || null
+                }))
+              });
+              await sendSystemMessage(roomId, '⚠️ Il creatore della stanza ha abbandonato. Partita terminata!');
+            })();
+          }
+        });
+      }
+    });
+    return () => {
+      if (typeof unsubOwner === 'function') unsubOwner();
+      if (typeof unsubPlayers === 'function') unsubPlayers();
+    };
+  }, [roomId, gameState, players]);
+import { useState, useEffect, useCallback } from "react";
+import { ref, set, onValue, get, remove } from "firebase/database";
+import { db, auth } from "../firebase";
+import { TURN_DURATION } from "../constants/gameConfig";
+import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
+import { useGameTimer } from "./useGameTimer";
+import { updateGameStats } from "../services/userService";
+import { 
+  startNewGame, 
+  endGame, 
+  advanceToNextTurn, 
+  awardPlayerPoints, 
+  sendSystemMessage 
+} from "../services/gameService";
+
+export function useGame(roomId, nickname, players) {
+  const [gameState, setGameState] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(TURN_DURATION);
+  const [showResults, setShowResults] = useState(false);
+  const [finalResults, setFinalResults] = useState(null);
+
+  const isArtist = gameState?.currentArtist === nickname;
+  const hasGuessed = gameState?.guessedPlayers?.some(g => g.nickname === nickname);
+
   // Listen to game state
   useEffect(() => {
     const gameRef = ref(db, `rooms/${roomId}/game`);
@@ -29,13 +110,16 @@ export function useGame(roomId, nickname, players) {
       const data = snapshot.val();
       setGameState(data);
 
+      // Prevent XP if game ended for early reasons
+      const endedForEarlyReason = data?.endReason === 'owner_left' || data?.endReason === 'not_enough_players';
+
       if (data?.gameEnded && data?.finalScores) {
         setShowResults(false);
         setFinalResults(data.finalScores);
         
-        // Update own statistics if registered user
+        // Update own statistics if registered user and not early end
         const user = auth.currentUser;
-        if (user && !user.isAnonymous) {
+        if (!endedForEarlyReason && user && !user.isAnonymous) {
           const myScore = data.finalScores.find(p => p.userId === user.uid);
           if (myScore) {
             const isWinner = data.finalScores[0]?.userId === user.uid;
@@ -47,6 +131,31 @@ export function useGame(roomId, nickname, players) {
     });
     return unsubscribe;
   }, [roomId]);
+  // Stop and finish game if only one player remains
+  useEffect(() => {
+    if (!gameState?.active || gameState?.gameEnded) return;
+    if (players.length === 1) {
+      // End game for not enough players
+      (async () => {
+        await set(ref(db, `rooms/${roomId}/game`), {
+          ...gameState,
+          active: false,
+          gameEnded: true,
+          endReason: 'not_enough_players',
+          endedAt: Date.now(),
+          finalScores: [
+            {
+              id: players[0].id,
+              name: players[0].name,
+              score: players[0].score || 0,
+              userId: players[0].userId || null
+            }
+          ]
+        });
+        await sendSystemMessage(roomId, '⚠️ La partita è terminata: non ci sono abbastanza giocatori.');
+      })();
+    }
+  }, [players, gameState, roomId]);
 
   // Next turn logic
   const nextTurn = useCallback(async () => {

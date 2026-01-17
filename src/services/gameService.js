@@ -104,7 +104,8 @@ export const endGameByOwnerLeaving = async (roomId, players) => {
     .map(([id, player]) => ({
       id,
       name: player.name,
-      score: player.score || 0
+      score: player.score || 0,
+      userId: player.userId || null
     }))
     .sort((a, b) => b.score - a.score);
 
@@ -118,7 +119,7 @@ export const endGameByOwnerLeaving = async (roomId, players) => {
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `⚠️ Il creatore della stanza è uscito. Partita terminata! Vincitore: ${finalScores[0].name} con ${finalScores[0].score} punti!`,
+    message: `⚠️ Il creatore della stanza è uscito. Partita terminata! Vincitore: ${finalScores[0]?.name || 'Nessuno'} con ${finalScores[0]?.score || 0} punti!`,
     timestamp: Date.now(),
     isSystem: true
   });
