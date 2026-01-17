@@ -198,12 +198,25 @@ export default function Profile() {
     : 0;
 
   const calculateLevel = (xp) => {
-    return Math.floor(xp / 100) + 1;
+    // Livello 1: 0-99, Livello 2: 100-299, Livello 3: 300-599, ecc.
+    // XP minimo per livello N = 100 × (N-1)×N/2
+    // Formula inversa: N = (1 + sqrt(1 + 8×XP/100)) / 2
+    if (xp < 100) return 1;
+    const level = Math.floor((1 + Math.sqrt(1 + 8 * xp / 100)) / 2);
+    return level;
+  };
+
+  const getXpForLevel = (level) => {
+    // XP minimo per raggiungere un certo livello
+    if (level <= 1) return 0;
+    return 100 * (level - 1) * level / 2;
   };
 
   const level = calculateLevel(userData.xp);
-  const xpForNextLevel = level * 100;
-  const xpProgress = ((userData.xp % 100) / 100) * 100;
+  const xpForCurrentLevel = getXpForLevel(level); // XP minimo per livello attuale
+  const xpForNextLevel = getXpForLevel(level + 1); // XP minimo per prossimo livello
+  const xpNeeded = xpForNextLevel - xpForCurrentLevel; // XP necessari per salire
+  const xpProgress = ((userData.xp - xpForCurrentLevel) / xpNeeded) * 100;
 
   if (isGuest) {
     return (
@@ -309,7 +322,7 @@ export default function Profile() {
             <div className="level-section">
               <div className="level-info">
                 <span className="level-badge">🏆 Livello {level}</span>
-                <span className="xp-text">{userData.xp} / {xpForNextLevel} XP</span>
+                <span className="xp-text">{userData.xp - xpForCurrentLevel} / {xpNeeded} XP (Totale: {userData.xp})</span>
               </div>
               <div className="progress-bar">
                 <div 
