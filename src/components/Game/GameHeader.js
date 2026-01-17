@@ -14,7 +14,9 @@ export default function GameHeader({
   onStartGame,
   onClearBoard,
   selectedColor,
-  onChangeColor
+  onChangeColor,
+  selectedInstrument,
+  onChangeInstrument
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -127,7 +129,7 @@ export default function GameHeader({
         
         {isArtist && gameState?.active && (
           <>
-            <Palette selectedColor={selectedColor} onChangeColor={onChangeColor} />
+            <Palette selectedColor={selectedColor} onChangeColor={onChangeColor} selectedInstrument={selectedInstrument} onChangeInstrument={onChangeInstrument} />
             <button onClick={onClearBoard} className="btn-clear">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>

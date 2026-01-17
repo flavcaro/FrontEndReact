@@ -35,10 +35,11 @@ export default function Canvas({
                 key={line.id || i}
                 points={line.points}
                 stroke={strokeColor}
-                strokeWidth={3}
+                strokeWidth={line.eraser ? 20 : 3}
                 tension={0.5}
                 lineCap="round"
                 lineJoin="round"
+                globalCompositeOperation={line.eraser ? 'destination-out' : 'source-over'}
               />
             );
           })}
