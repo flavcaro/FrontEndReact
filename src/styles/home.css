@@ -60,6 +60,16 @@
   box-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
 }
 
+.level-badge {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
 .header-actions {
   display: flex;
   gap: 12px;

@@ -12,7 +12,7 @@ import { generateRoomCode, validateNickname, extractRoomCode } from '../../utils
 
 export default function Home() {
   const navigate = useNavigate();
-  const { nickname, setNickname, xpPoints, user, isGuest } = useUserData();
+  const { nickname, setNickname, xpPoints, level, user, isGuest } = useUserData();
   const [showModeSelector, setShowModeSelector] = useState(false);
 
   const handleSignOut = async () => {
@@ -79,6 +79,7 @@ export default function Home() {
         isGuest={isGuest}
         user={user}
         xpPoints={xpPoints}
+        level={level}
         onSignOut={handleSignOut}
         navigate={navigate}
       />

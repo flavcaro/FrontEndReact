@@ -198,16 +198,18 @@ export default function Profile() {
     : 0;
 
   const calculateLevel = (xp) => {
-    // Livello 1: 0-99, Livello 2: 100-299, Livello 3: 300-599, ecc.
-    // XP minimo per livello N = 100 × (N-1)×N/2
-    // Formula inversa: N = (1 + sqrt(1 + 8×XP/100)) / 2
-    if (xp < 100) return 1;
-    const level = Math.floor((1 + Math.sqrt(1 + 8 * xp / 100)) / 2);
+    // Progressione crescente: Livello N richiede 100 * (N-1) * N / 2 XP
+    let level = 1;
+    while (true) {
+      const xpForNextLevel = 100 * level * (level + 1) / 2;
+      if (xp < xpForNextLevel) break;
+      level++;
+    }
     return level;
   };
 
   const getXpForLevel = (level) => {
-    // XP minimo per raggiungere un certo livello
+    // XP minimo per raggiungere livello N
     if (level <= 1) return 0;
     return 100 * (level - 1) * level / 2;
   };

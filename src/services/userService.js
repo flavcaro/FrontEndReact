@@ -11,6 +11,7 @@ export const saveUserToDatabase = async (user) => {
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp(),
       xp: 0,
+      level: 1, // Livello iniziale
       gamesPlayed: 0,
       gamesWon: 0,
       totalScore: 0,
@@ -46,16 +47,26 @@ export const updateGameStats = async (userId, score, isWinner) => {
     // XP basati sul punteggio: 1 XP per ogni punto + bonus vittoria
     const baseXp = score; // 1 XP per ogni punto fatto
     const winnerBonus = isWinner ? 100 : 0; // Bonus di 100 XP per vittoria
-    const xp = (userData.xp || 0) + baseXp + winnerBonus;
+    const newXp = (userData.xp || 0) + baseXp + winnerBonus;
+    
+    // Calcolo livello con progressione crescente
+    // Livello N richiede: 100 * (N-1) * N / 2 XP
+    let level = 1;
+    while (true) {
+      const xpForNextLevel = 100 * level * (level + 1) / 2;
+      if (newXp < xpForNextLevel) break;
+      level++;
+    }
 
-    console.log(`📊 Nuove statistiche:`, { gamesPlayed, gamesWon, totalScore, bestScore, xp, xpGuadagnati: baseXp + winnerBonus });
+    console.log(`📊 Nuove statistiche:`, { gamesPlayed, gamesWon, totalScore, bestScore, xp: newXp, level, xpGuadagnati: baseXp + winnerBonus });
     
     await update(userRef, {
       gamesPlayed,
       gamesWon,
       totalScore,
       bestScore,
-      xp,
+      xp: newXp,
+      level,
       lastPlayed: serverTimestamp()
     });
     

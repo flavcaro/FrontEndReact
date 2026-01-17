@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function UserHeader({ nickname, isGuest, user, xpPoints, onSignOut, navigate }) {
+export default function UserHeader({ nickname, isGuest, user, xpPoints, level, onSignOut, navigate }) {
   return (
     <header className="home-header">
       <div className="user-info">
@@ -15,6 +15,7 @@ export default function UserHeader({ nickname, isGuest, user, xpPoints, onSignOu
         </div>
         {!isGuest && (
           <div className="user-stats">
+            <span className="level-badge">🏆 Livello {level}</span>
             <span className="xp-badge">⭐ {xpPoints} XP</span>
           </div>
         )}

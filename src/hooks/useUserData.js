@@ -5,10 +5,11 @@ import { ref, onValue } from 'firebase/database';
 export function useUserData() {
   const [nickname, setNickname] = useState('');
   const [xpPoints, setXpPoints] = useState(0);
+  const [level, setLevel] = useState(1);
   const user = auth.currentUser;
   const isGuest = user?.isAnonymous;
 
-  // Load XP from database
+  // Load XP and level from database
   useEffect(() => {
     if (!user) return;
 
@@ -17,6 +18,7 @@ export function useUserData() {
       const data = snapshot.val();
       if (data) {
         setXpPoints(data.xp || 0);
+        setLevel(data.level || 1);
       }
     });
 
@@ -38,5 +40,5 @@ export function useUserData() {
     }
   }, [isGuest, user]);
 
-  return { nickname, setNickname, xpPoints, user, isGuest };
+  return { nickname, setNickname, xpPoints, level, user, isGuest };
 }

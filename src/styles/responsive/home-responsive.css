@@ -69,6 +69,11 @@
     font-size: 13px;
   }
 
+  .level-badge {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
   .header-actions {
     flex-direction: column;
     gap: 8px;

@@ -275,7 +275,7 @@ export function useGame(roomId, nickname, players) {
 
   /* ---------------- GUESS ---------------- */
   const handleGuess = useCallback(async nick => {
-    const points = calculatePoints(timeLeft);
+    const points = calculatePoints(timeLeft, gameState?.turnDuration || TURN_DURATION);
     const player = players.find(p => p.name === nick);
     if (!player) return;
 
@@ -310,7 +310,7 @@ export function useGame(roomId, nickname, players) {
         await showRoundResults();
       }
     });
-  }, [players, roomId, timeLeft, showRoundResults, timerRef]);
+  }, [players, roomId, timeLeft, showRoundResults, timerRef, gameState?.turnDuration]);
 
   return {
     gameState,
