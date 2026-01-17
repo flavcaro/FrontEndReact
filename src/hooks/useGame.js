@@ -259,28 +259,38 @@ export function useGame(roomId, nickname, players) {
     const player = players.find(p => p.name === nick);
     if (!player) return;
 
-    await awardPlayerPoints(
-      roomId,
-      player.id,
-      player.score,
-      points
-    );
+    const guessedRef = ref(db, `rooms/${roomId}/game/guessedPlayers`);
+    await get(guessedRef).then(async (snapshot) => {
+      const currentGuessed = snapshot.val() || [];
+      // Evita duplicati
+      if (currentGuessed.some(g => g.nickname === nick)) return;
 
-    const guessed = [
-      ...(gameState.guessedPlayers || []),
-      { nickname: nick, points, time: timeLeft }
-    ];
+      const guessed = [
+        ...currentGuessed,
+        { nickname: nick, points, time: timeLeft }
+      ];
 
-    await set(
-      ref(db, `rooms/${roomId}/game/guessedPlayers`),
-      guessed
-    );
+      await set(guessedRef, guessed);
 
-    if (guessed.length >= players.length - 1) {
-      clearInterval(timerRef.current);
-      await showRoundResults();
-    }
-  }, [players, gameState, roomId, timeLeft, showRoundResults, timerRef]);
+      // Messaggio di sistema
+      await sendSystemMessage(
+        roomId,
+        `✅ ${nick} ha indovinato la parola! (+${points} punti)`
+      );
+
+      await awardPlayerPoints(
+        roomId,
+        player.id,
+        player.score,
+        points
+      );
+
+      if (guessed.length >= players.length - 1) {
+        clearInterval(timerRef.current);
+        await showRoundResults();
+      }
+    });
+  }, [players, roomId, timeLeft, showRoundResults, timerRef]);
 
   return {
     gameState,
