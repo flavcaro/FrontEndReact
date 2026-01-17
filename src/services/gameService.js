@@ -46,7 +46,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     gameEnded: false,
     mode: gameConfig.name || 'Classica',
     difficulty: gameConfig.difficulty?.name || 'Medio',
-    difficultyId: gameConfig.difficulty?.id || 'medium'
+    difficultyId: gameConfig.difficulty?.id || 'medium',
+    turnDuration: gameConfig.turnDuration || 60
   });
 
   // Clear board and chat

@@ -69,17 +69,42 @@ export const ROUNDS_OPTIONS = [
   { value: 8, label: '8 Round/giocatore', icon: '🏆', description: 'Partita lunga' }
 ];
 
-// Game Modes
+// Game Modes (true game modes)
 export const GAME_MODES = {
-  CLASSIC: {
-    id: 'classic',
+  CLASSICA: {
+    id: 'classica',
     name: '🎨 Classica',
-    description: 'Modalità standard: disegna e indovina a turno',
+    description: 'Modalità tradizionale con regole standard',
     icon: '🎨',
     turnDuration: 60
   }
 };
 
-export const DEFAULT_GAME_MODE = GAME_MODES.CLASSIC;
+// Turn Time Options
+export const TURN_TIME_OPTIONS = {
+  CLASSIC: {
+    id: 'classic',
+    name: '⏱️ 60 secondi',
+    description: 'Tempo standard per turno',
+    icon: '⏱️',
+    turnDuration: 60
+  },
+  FAST: {
+    id: 'fast',
+    name: '⚡ 45 secondi',
+    description: 'Tempo ridotto per turno',
+    icon: '⚡',
+    turnDuration: 45
+  },
+  BLITZ: {
+    id: 'blitz',
+    name: '💥 30 secondi',
+    description: 'Tempo minimo per turno',
+    icon: '💥',
+    turnDuration: 30
+  }
+};
+
+export const DEFAULT_GAME_MODE = GAME_MODES.CLASSICA;
 export const DEFAULT_DIFFICULTY = DIFFICULTY_LEVELS.MEDIUM;
 export const DEFAULT_ROUNDS = 6;

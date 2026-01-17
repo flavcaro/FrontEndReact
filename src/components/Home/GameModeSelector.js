@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { 
   GAME_MODES, 
   DEFAULT_GAME_MODE, 
+  TURN_TIME_OPTIONS,
   DIFFICULTY_LEVELS,
   DEFAULT_DIFFICULTY,
   ROUNDS_OPTIONS,
@@ -12,16 +13,19 @@ import Button from '../common/Button';
 
 export default function GameModeSelector({ onSelectMode, onCancel }) {
   const [selectedMode, setSelectedMode] = useState(DEFAULT_GAME_MODE.id);
+  const [selectedTime, setSelectedTime] = useState('classic'); // Default to 60 seconds
   const [selectedDifficulty, setSelectedDifficulty] = useState(DEFAULT_DIFFICULTY.id);
   const [selectedRounds, setSelectedRounds] = useState(DEFAULT_ROUNDS);
 
   const handleConfirm = () => {
     const mode = Object.values(GAME_MODES).find(m => m.id === selectedMode);
+    const timeOption = Object.values(TURN_TIME_OPTIONS).find(t => t.id === selectedTime);
     const difficulty = Object.values(DIFFICULTY_LEVELS).find(d => d.id === selectedDifficulty);
     const rounds = selectedRounds;
 
     onSelectMode({
       ...mode,
+      ...timeOption, // Include time properties
       difficulty: difficulty,
       roundsPerGame: rounds
     });
@@ -115,6 +119,58 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   </div>
                 </div>
                 {selectedMode === mode.id && (
+                  <div style={{ fontSize: '20px', color: '#6366f1' }}>✓</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Turn Time Selection */}
+        <div style={{ marginBottom: '24px' }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#334155',
+            marginBottom: '12px'
+          }}>
+            ⏱️ Tempo per Turno
+          </h3>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {Object.values(TURN_TIME_OPTIONS).map((timeOption) => (
+              <div
+                key={timeOption.id}
+                onClick={() => setSelectedTime(timeOption.id)}
+                style={{
+                  padding: '16px',
+                  border: selectedTime === timeOption.id 
+                    ? '3px solid #6366f1' 
+                    : '2px solid #e2e8f0',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: selectedTime === timeOption.id 
+                    ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
+                    : 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ fontSize: '24px' }}>{timeOption.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '14px' }}>
+                    {timeOption.name}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    {timeOption.description}
+                  </div>
+                </div>
+                {selectedTime === timeOption.id && (
                   <div style={{ fontSize: '20px', color: '#6366f1' }}>✓</div>
                 )}
               </div>
@@ -255,13 +311,13 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
               <strong>Modalità:</strong> {GAME_MODES[selectedMode.toUpperCase()].name}
             </div>
             <div>
+              <strong>Tempo per turno:</strong> {TURN_TIME_OPTIONS[selectedTime.toUpperCase()].name}
+            </div>
+            <div>
               <strong>Difficoltà:</strong> {DIFFICULTY_LEVELS[selectedDifficulty.toUpperCase()].name}
             </div>
             <div>
               <strong>Round:</strong> {selectedRounds} turni totali
-            </div>
-            <div>
-              <strong>Tempo per turno:</strong> {GAME_MODES[selectedMode.toUpperCase()].turnDuration}s
             </div>
           </div>
         </div>

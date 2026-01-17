@@ -15,7 +15,7 @@ export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft) {
     // Sync timer with server time
     if (gameState?.turnStartedAt) {
       const elapsed = Math.floor((Date.now() - gameState.turnStartedAt) / 1000);
-      setTimeLeft(Math.max(0, TURN_DURATION - elapsed));
+      setTimeLeft(Math.max(0, (gameState?.turnDuration || TURN_DURATION) - elapsed));
     }
 
     timerRef.current = setInterval(() => {
@@ -36,7 +36,8 @@ export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft) {
         timerRef.current = null;
       }
     };
-  }, [gameState?.active, gameState?.round, gameState?.turnStartedAt, showResults, onTimeUp, setTimeLeft]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.active, gameState?.round, gameState?.turnStartedAt, gameState?.turnDuration, showResults, onTimeUp, setTimeLeft]);
 
   return timerRef;
 }

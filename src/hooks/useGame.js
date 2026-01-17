@@ -24,6 +24,13 @@ export function useGame(roomId, nickname, players) {
     g => g.nickname === nickname
   );
 
+  // Sincronizza timeLeft con turnDuration dal gameState
+  useEffect(() => {
+    if (gameState?.turnDuration) {
+      setTimeLeft(gameState.turnDuration);
+    }
+  }, [gameState?.turnDuration]);
+
   /* ---------------- GAME STATE LISTENER ---------------- */
   useEffect(() => {
     if (!roomId) return;
@@ -186,6 +193,9 @@ export function useGame(roomId, nickname, players) {
       drawCounts: updatedCounts,
       allGuessed: false
     });
+
+    // Reset timer alla durata configurata
+    setTimeLeft(gameState?.turnDuration || TURN_DURATION);
 
     await sendSystemMessage(
       roomId,
