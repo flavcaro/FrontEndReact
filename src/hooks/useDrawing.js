@@ -56,24 +56,29 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     const tempRef = ref(db, `rooms/${roomId}/lines_temp`);
     const unsubscribe = onValue(tempRef, (snapshot) => {
       if (!gameActive) {
-        setLines((prev) => prev.filter((l) => !l.temp)); // Solo definitive
         return;
       }
       const data = snapshot.val();
-      if (!data || Object.keys(data).length === 0) {
-        setLines((prev) => prev.filter((l) => !l.temp)); // Solo definitive
-        return;
-      }
-      const otherTemp = Object.entries(data)
-        .filter(([user]) => user !== nickname)
-        .map(([user, value]) => ({ 
-          ...value, 
-          id: `temp-${user}-${value.updatedAt || Date.now()}`,
-          temp: true 
-        }));
+      
       setLines((prev) => {
-        const myTemp = prev.filter((l) => l.temp && l.user === nickname);
+        // Mantieni le linee salvate e la mia linea temporanea corrente
         const saved = prev.filter((l) => !l.temp);
+        const myTemp = prev.filter((l) => l.temp && l.user === nickname);
+        
+        // Aggiungi le linee temporanee degli altri
+        const otherTemp = [];
+        if (data && Object.keys(data).length > 0) {
+          Object.entries(data).forEach(([user, value]) => {
+            if (user !== nickname && value && value.points) {
+              otherTemp.push({ 
+                ...value, 
+                id: `temp-${user}`,
+                temp: true 
+              });
+            }
+          });
+        }
+        
         return [...saved, ...myTemp, ...otherTemp];
       });
     });
