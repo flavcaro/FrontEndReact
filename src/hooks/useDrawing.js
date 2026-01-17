@@ -3,7 +3,7 @@ import { ref, set, push, onValue, remove } from "firebase/database";
 import throttle from "lodash.throttle";
 import { db } from "../firebase";
 
-export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b', allGuessed = false) {
+export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b', allGuessed = false, selectedInstrument = 'pencil') {
   const [lines, setLines] = useState([]);
   const isDrawing = useRef(false);
   const currentLine = useRef(null);
@@ -119,7 +119,8 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       points: [pos.x, pos.y], 
       user: nickname,
       temp: true,
-      color: selectedColor
+      color: selectedInstrument === 'eraser' ? null : selectedColor,
+      eraser: selectedInstrument === 'eraser'
     };
     setLines((prev) => [...prev, currentLine.current]);
     if (sendTempLine.current) sendTempLine.current(currentLine.current);

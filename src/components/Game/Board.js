@@ -27,6 +27,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
   } = useGame(roomId, finalNickname, players);
   const { messages, messagesEndRef } = useChat(roomId);
   const [selectedColor, setSelectedColor] = useState('#1e293b');
+  const [selectedInstrument, setSelectedInstrument] = useState('pencil');
 
   const { 
     lines, 
@@ -34,7 +35,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     handleMouseDown, 
     handleMouseMove, 
     handleMouseUp 
-  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, gameState?.allGuessed);
+  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, gameState?.allGuessed, selectedInstrument);
 
   // Handle room full
   useEffect(() => {
@@ -93,6 +94,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
           onClearBoard={clearBoard}
           selectedColor={selectedColor}
           onChangeColor={setSelectedColor}
+          selectedInstrument={selectedInstrument}
+          onChangeInstrument={setSelectedInstrument}
         />
 
         <Canvas
