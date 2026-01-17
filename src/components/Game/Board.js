@@ -35,7 +35,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     handleMouseDown, 
     handleMouseMove, 
     handleMouseUp 
-  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, selectedInstrument);
+  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, gameState?.allGuessed, selectedInstrument);
 
   // Handle room full
   useEffect(() => {
