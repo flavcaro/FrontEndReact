@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
 import { db, auth } from "../firebase";
 import { TURN_DURATION } from "../constants/gameConfig";
@@ -121,11 +121,30 @@ export function useGame(roomId, nickname, players) {
   }, [roomId, gameState, players]);
 
   /* ---------------- NOT ENOUGH PLAYERS (ANYONE LEFT) ---------------- */
-  useEffect(() => {
-    if (!gameState?.active || gameState?.gameEnded) return;
-    if (players.length !== 1) return;
+  // Timeout per evitare falsi positivi su disconnessioni temporanee
+  const notEnoughPlayersTimeout = useRef(null);
 
-    (async () => {
+  useEffect(() => {
+    if (!gameState?.active || gameState?.gameEnded) {
+      if (notEnoughPlayersTimeout.current) {
+        clearTimeout(notEnoughPlayersTimeout.current);
+        notEnoughPlayersTimeout.current = null;
+      }
+      return;
+    }
+    if (players.length !== 1) {
+      if (notEnoughPlayersTimeout.current) {
+        clearTimeout(notEnoughPlayersTimeout.current);
+        notEnoughPlayersTimeout.current = null;
+      }
+      return;
+    }
+
+    // Se scendiamo a 1 giocatore, aspetta 3 secondi prima di terminare
+    notEnoughPlayersTimeout.current = setTimeout(async () => {
+      // Ricontrolla che siamo ancora a 1 giocatore e partita attiva
+      if (!gameState?.active || gameState?.gameEnded) return;
+      if (players.length !== 1) return;
       await set(ref(db, `rooms/${roomId}/game`), {
         ...gameState,
         active: false,
@@ -139,12 +158,18 @@ export function useGame(roomId, nickname, players) {
           userId: players[0].userId || null
         }]
       });
-
       await sendSystemMessage(
         roomId,
         "⚠️ Partita terminata: non ci sono abbastanza giocatori."
       );
-    })();
+    }, 3000);
+
+    return () => {
+      if (notEnoughPlayersTimeout.current) {
+        clearTimeout(notEnoughPlayersTimeout.current);
+        notEnoughPlayersTimeout.current = null;
+      }
+    };
   }, [players.length, gameState, roomId, players]);
 
   /* ---------------- NEXT TURN ---------------- */
