@@ -15,7 +15,7 @@ export default function AuthForm({
 }) {
   return (
     <div className="lobby-container">
-      <div className="lobby-card">
+      <div className={`lobby-card ${isSignUp ? 'auth-signup' : 'auth-login'}`}>
         <div className="lobby-header">
           <div className="logo">🎨</div>
           <h1>SketchUp</h1>
