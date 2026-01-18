@@ -16,55 +16,77 @@ export default function Canvas({
     const updateDimensions = () => {
       if (containerRef.current) {
         const { clientWidth, clientHeight } = containerRef.current;
-        // Canvas quadrata (1:1)
-        let size = Math.min(clientWidth, clientHeight);
+        const size = Math.min(clientWidth, clientHeight);
         setDimensions({ width: size, height: size });
       }
     };
 
     updateDimensions();
+
+    const node = containerRef.current;
+    let ro;
+    if (typeof ResizeObserver !== 'undefined' && node) {
+      ro = new ResizeObserver(updateDimensions);
+      ro.observe(node);
+    }
+
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    document.addEventListener('fullscreenchange', updateDimensions);
+
+    return () => {
+      if (ro && node) ro.unobserve(node);
+      window.removeEventListener('resize', updateDimensions);
+      document.removeEventListener('fullscreenchange', updateDimensions);
+    };
   }, []);
 
-    return (
-      <div className="canvas-wrapper" ref={containerRef} style={{ width: dimensions.width || '100%', height: dimensions.height || '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-        {dimensions.width > 0 && dimensions.height > 0 && (
-          <Stage
-            width={dimensions.width}
-            height={dimensions.height}
-            className="canvas-stage"
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-          >
-            <Layer>
-              {lines.map((line, i) => {
-                // Use the line's saved color for everyone when available.
-                let strokeColor = line.color || "#1e293b";
+  return (
+    <div
+      className="canvas-wrapper"
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {dimensions.width > 0 && dimensions.height > 0 && (
+        <Stage
+          width={dimensions.width}
+          height={dimensions.height}
+          className="canvas-stage"
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+        >
+          <Layer>
+            {lines.map((line, i) => {
+              let strokeColor = line.color || "#1e293b";
+              if (isArtist && line.temp && line.user !== nickname) {
+                strokeColor = "#cbd5e1";
+              }
 
-                // If the viewer is the artist, show other players' temp lines muted.
-                if (isArtist && line.temp && line.user !== nickname) {
-                  strokeColor = "#cbd5e1";
-                }
-
-                return (
-                  <Line
-                    key={line.id || i}
-                    points={line.points.map((p, i) => i % 2 === 0 ? p * dimensions.width : p * dimensions.height)}
-                    stroke={strokeColor}
-                    strokeWidth={line.eraser ? 20 : 3}
-                    tension={0.5}
-                    lineCap="round"
-                    lineJoin="round"
-                    globalCompositeOperation={line.eraser ? 'destination-out' : 'source-over'}
-                  />
-                );
-              })}
-            </Layer>
-          </Stage>
-        )}
-      </div>
-    );
+              return (
+                <Line
+                  key={line.id || i}
+                  points={line.points.map((p, idx) => (idx % 2 === 0 ? p * dimensions.width : p * dimensions.height))}
+                  stroke={strokeColor}
+                  strokeWidth={line.eraser ? 20 : 3}
+                  tension={0.5}
+                  lineCap="round"
+                  lineJoin="round"
+                  globalCompositeOperation={line.eraser ? 'destination-out' : 'source-over'}
+                />
+              );
+            })}
+          </Layer>
+        </Stage>
+      )}
+    </div>
+  );
 }
