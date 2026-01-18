@@ -39,11 +39,24 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
         setLines((prev) => prev.filter((l) => l.temp)); // Solo temp
         return;
       }
-      const saved = Object.entries(data).map(([firebaseKey, value]) => ({ 
-        ...value, 
-        id: firebaseKey,
-        temp: false 
-      }));
+      const saved = Object.entries(data).map(([firebaseKey, value]) => {
+        // Normalize points if not already (assume old lines are absolute, new are normalized)
+        const points = value.points ? value.points.map((p, i) => {
+          const maxP = Math.max(...value.points);
+          if (maxP > 1) {
+            // Assume old absolute coordinates, normalize by dividing by 800 (approximate canvas size)
+            return p / 800;
+          } else {
+            return p;
+          }
+        }) : [];
+        return { 
+          ...value, 
+          points,
+          id: firebaseKey,
+          temp: false 
+        };
+      });
       setLines((prev) => {
         const tempLines = prev.filter((l) => l.temp);
         return [...saved, ...tempLines];
@@ -71,8 +84,18 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
         if (data && Object.keys(data).length > 0) {
           Object.entries(data).forEach(([user, value]) => {
             if (user !== nickname && value && value.points) {
+              // Normalize points if not already
+              const points = value.points.map((p, i) => {
+                const maxP = Math.max(...value.points);
+                if (maxP > 1) {
+                  return p / 800;
+                } else {
+                  return p;
+                }
+              });
               otherTemp.push({ 
                 ...value, 
+                points,
                 id: `temp-${user}`,
                 temp: true 
               });
@@ -156,9 +179,11 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     }
     isDrawing.current = true;
     lineIdCounter.current += 1;
+    const normalizedX = pos.x / stage.width();
+    const normalizedY = pos.y / stage.height();
     currentLine.current = {
       id: `${nickname}-${Date.now()}-${lineIdCounter.current}`,
-      points: [pos.x, pos.y],
+      points: [normalizedX, normalizedY],
       user: nickname,
       temp: true,
       color: selectedInstrument === 'eraser' ? null : selectedColor,
@@ -189,11 +214,15 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     // Aggiungi il punto solo se la distanza dal precedente è almeno 1px
     const pts = currentLine.current.points;
     if (pts.length >= 2) {
-      const dx = pos.x - pts[pts.length - 2];
-      const dy = pos.y - pts[pts.length - 1];
+      const lastX = pts[pts.length - 2] * stage.width(); // denormalize for distance
+      const lastY = pts[pts.length - 1] * stage.height();
+      const dx = pos.x - lastX;
+      const dy = pos.y - lastY;
       if (Math.sqrt(dx * dx + dy * dy) < 1) return;
     }
-    currentLine.current.points = [...pts, pos.x, pos.y];
+    const normalizedX = pos.x / stage.width();
+    const normalizedY = pos.y / stage.height();
+    currentLine.current.points = [...pts, normalizedX, normalizedY];
     // Invio al server solo ogni 50ms tramite throttle
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
     // L'aggiornamento visivo locale avviene tramite requestAnimationFrame

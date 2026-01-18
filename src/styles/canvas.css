@@ -1,200 +1,58 @@
+/* =========================
+   GLOBAL
+========================= */
 html, body {
-  overflow-x: hidden !important;
-  max-width: 100vw;
-}
-/* Canvas */
-.canvas-wrapper {
-  position: relative;
-  width: 100vw;
-  max-width: 100vw;
-  height: 70vh;
-  background: #f8fafc;
   overflow-x: hidden;
-  overflow-y: visible;
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-
-.canvas-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 75vw;
-  max-height: 75vh;
-  margin: 0 auto;
-  position: relative;
-}
-
-.canvas-stage {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  cursor: crosshair;
-  border: 1px solid #e2e8f0;
-  width: 100%;
-  height: 100%;
   max-width: 100vw;
-  max-height: 90vh;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
-  
+
+/* =========================
+   CANVAS WRAPPER
+========================= */
+.canvas-wrapper {
+  flex: 1; /* prende tutto lo spazio disponibile tra sidebar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 12px; /* padding base */
+  aspect-ratio: 1 / 1;
+}
+
+/* =========================
+   CANVAS STAGE
+========================= */
 .canvas-stage {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
   width: 100%;
   height: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 75vw;
-  max-height: 75vh;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  cursor: crosshair;
   min-width: 200px;
   min-height: 200px;
-  transition: box-shadow 0.2s;
-}
-  overflow-x: hidden;
-
-/* Responsive - Large Tablets */
-@media (max-width: 1400px) {
-  .canvas-wrapper {
-    padding: 20px;
-  }
-
-  .canvas-stage {
-    max-width: 700px;
-    max-height: 500px;
-  }
 }
 
-/* Responsive - Tablets */
-@media (max-width: 1024px) {
-  .canvas-wrapper {
-    padding: 16px;
-    flex: 1;
-  }
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1400px) { .canvas-wrapper { padding: 20px; } }
+@media (max-width: 1024px) { .canvas-wrapper { padding: 16px; } }
+@media (max-width: 768px)  { .canvas-wrapper { padding: 12px; } }
+@media (max-width: 480px)  { .canvas-wrapper { padding: 8px; } }
+@media (max-width: 375px)  { .canvas-wrapper { padding: 6px; } }
 
-  .canvas-stage {
-    max-width: 90vw;
-    max-height: 100%;
-    width: 700px !important;
-    height: auto !important;
-  }
-}
+@media (max-height: 600px) and (orientation: landscape) { .canvas-wrapper { padding: 8px; } }
+@media (max-height: 450px) and (orientation: landscape) { .canvas-wrapper { padding: 4px; } }
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) { .canvas-wrapper { padding: 12px; } }
 
-/* Responsive - Mobile */
-@media (max-width: 768px) {
-  .canvas-wrapper {
-    padding: 12px;
-  }
-
-  .canvas-stage {
-    max-width: calc(100vw - 24px);
-    width: 600px !important;
-    height: auto !important;
-  }
-}
-
-/* Responsive - Small Mobile */
-@media (max-width: 480px) {
-  .canvas-wrapper {
-    padding: 8px;
-  }
-
-  .canvas-stage {
-    max-width: calc(100vw - 16px);
-    width: 100% !important;
-    height: auto !important;
-  }
-}
-
-/* Responsive - Extra Small */
-@media (max-width: 375px) {
-  .canvas-wrapper {
-    padding: 6px;
-  }
-
-  .canvas-stage {
-    max-width: calc(100vw - 12px);
-  }
-}
-
-/* Responsive - Landscape Mobile */
-@media (max-height: 600px) and (orientation: landscape) {
-  .canvas-wrapper {
-    padding: 8px;
-  }
-
-  .canvas-stage {
-    max-height: calc(100vh - 100px);
-    max-width: 100%;
-  }
-}
-
-/* Responsive - Very Small Landscape */
-@media (max-height: 450px) and (orientation: landscape) {
-  .canvas-wrapper {
-    padding: 4px;
-  }
-}
-
-/* Responsive - Tablet Landscape */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-  .canvas-wrapper {
-    padding: 12px;
-  }
-
-  .canvas-stage {
-    max-width: 600px;
-    max-height: calc(100vh - 150px);
-  }
-}
-
-/* Responsive - High Resolution */
-@media (min-width: 1920px) {
-  .canvas-stage {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .canvas-wrapper {
-    padding: 20px;
-  }
-}
-
-/* Ultra Wide Screens */
-@media (min-width: 2560px) {
-  .canvas-stage {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .canvas-wrapper {
-    padding: 16px;
-  }
-}
-
-/* Very Large Displays */
-@media (min-width: 3440px) {
-  .canvas-stage {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .canvas-wrapper {
-    padding: 12px;
-  }
-}
-
-/* Ultra Wide + High Resolution */
-@media (min-width: 2560px) and (min-height: 1440px) {
-  .canvas-stage {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .canvas-wrapper {
-    padding: 12px;
-  }
-}
+@media (min-width: 1920px) { .canvas-wrapper { padding: 20px; } }
+@media (min-width: 2560px) { .canvas-wrapper { padding: 16px; } }
+@media (min-width: 3440px) { .canvas-wrapper { padding: 12px; } }
+@media (min-width: 2560px) and (min-height: 1440px) { .canvas-wrapper { padding: 12px; } }

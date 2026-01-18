@@ -166,16 +166,12 @@
 
 /* High Resolution */
 @media (min-width: 1920px) {
-  .board-container {
-    /* Allow full expansion on very large screens */
-  }
+  /* Allow full expansion on very large screens */
 }
 
 /* Ultra Wide Screens */
 @media (min-width: 2560px) {
-  .board-container {
-    /* Full expansion for ultra-wide displays */
-  }
+  /* Full expansion for ultra-wide displays */
 }
 
 /* High Resolution Vertical */

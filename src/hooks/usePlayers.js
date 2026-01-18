@@ -94,12 +94,10 @@ export function usePlayers(roomId, nickname) {
             joinedAt: Date.now(),
             score: playerData.score || 0,
             color: playerData.color || getPlayerColor(playersList.length),
-            connected: true,
-            isOwner: playerData.isOwner || false
+            connected: true
           });
           
           setFinalNickname(playerData.name);
-          setIsOwner(playerData.isOwner || false);
         } else {
           // New session - create new player with unique name if needed
           const uniqueName = generateUniqueNickname(nickname, playersList);
@@ -129,12 +127,10 @@ export function usePlayers(roomId, nickname) {
             joinedAt: Date.now(),
             score: 0,
             color: getPlayerColor(playersList.length),
-            connected: true,
-            isOwner: isFirstPlayer
+            connected: true
           });
           
           setFinalNickname(uniqueName);
-          setIsOwner(isFirstPlayer);
 
           // Send join message
           await sendSystemMessage(roomId, `👋 ${uniqueName} è entrato nella stanza`);
@@ -161,15 +157,9 @@ export function usePlayers(roomId, nickname) {
           
           const disconnectHandler = onDisconnect(playerReference);
           
-          // If owner disconnects, end the game
-          if (isFirstPlayer || (existingSessionEntry && existingSessionEntry[1].isOwner)) {
-            await disconnectHandler.remove();
-            console.log('Owner disconnect handler set up');
-          } else {
-            // Regular player disconnect - just remove
-            await disconnectHandler.remove();
-            console.log('Player disconnect handler set up');
-          }
+          // Always remove player on disconnect
+          await disconnectHandler.remove();
+          console.log('Player disconnect handler set up');
         }
 
       } catch (error) {
@@ -236,6 +226,20 @@ export function usePlayers(roomId, nickname) {
     });
     return unsubscribe;
   }, [roomId]);
+
+  // Listen to owner
+  useEffect(() => {
+    const ownerRef = ref(db, `rooms/${roomId}/owner`);
+    const unsubscribe = onValue(ownerRef, (snapshot) => {
+      const ownerData = snapshot.val();
+      if (ownerData && playerId) {
+        setIsOwner(ownerData.playerId === playerId);
+      } else {
+        setIsOwner(false);
+      }
+    });
+    return unsubscribe;
+  }, [roomId, playerId]);
 
   return { players, finalNickname, isRoomFull, playerId, isOwner };
 }

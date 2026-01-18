@@ -28,7 +28,7 @@ export default function Canvas({
   }, []);
 
     return (
-      <div className="canvas-wrapper" ref={containerRef} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div className="canvas-wrapper" ref={containerRef} style={{ width: dimensions.width || '100%', height: dimensions.height || '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
         {dimensions.width > 0 && dimensions.height > 0 && (
           <Stage
             width={dimensions.width}
@@ -52,7 +52,7 @@ export default function Canvas({
                 return (
                   <Line
                     key={line.id || i}
-                    points={line.points}
+                    points={line.points.map((p, i) => i % 2 === 0 ? p * dimensions.width : p * dimensions.height)}
                     stroke={strokeColor}
                     strokeWidth={line.eraser ? 20 : 3}
                     tension={0.5}
