@@ -1,3 +1,11 @@
+/* Font size globale aumentato */
+html, body {
+  font-size: 22px;
+}
+
+body, * {
+  font-size: inherit;
+}
 /* Divider */
 .divider {
   text-align: center;

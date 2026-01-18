@@ -18,18 +18,18 @@
 }
 
 .sidebar-header h3 {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 34px;
+  font-weight: 700;
   color: #0f172a;
 }
 
 .players-badge {
   background: #6366f1;
   color: white;
-  font-size: 24px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 14px;
 }
 
 .players-list {
@@ -59,34 +59,34 @@
 }
 
 .player-avatar {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 24px;
+  font-weight: 700;
+  font-size: 30px;
   flex-shrink: 0;
 }
 
 .player-name {
   flex: 1;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
   color: #334155;
   word-break: break-word;
 }
 
 .you-tag {
-  font-size: 21px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: #6366f1;
   background: #e0e7ff;
-  padding: 2px 8px;
-  border-radius: 6px;
+  padding: 3px 10px;
+  border-radius: 8px;
 }
 
 .share-box {
@@ -97,18 +97,18 @@
 
 .share-box label {
   display: block;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   color: #64748b;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .share-box input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 16px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 22px;
+  border-radius: 10px;
+  font-size: 24px;
   font-family: 'Courier New', monospace;
   background: white;
   color: #475569;

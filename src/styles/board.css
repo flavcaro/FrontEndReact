@@ -59,8 +59,10 @@
 .room-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
   flex-wrap: wrap;
+  font-size: 36px;
+  font-weight: 700;
 }
 
 .room-code {

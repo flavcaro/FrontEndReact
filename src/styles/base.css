@@ -1,3 +1,6 @@
+html {
+  font-size: 22px;
+}
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
