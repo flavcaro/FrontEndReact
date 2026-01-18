@@ -186,7 +186,14 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
       return;
     }
-    currentLine.current.points = [...currentLine.current.points, pos.x, pos.y];
+    // Aggiungi il punto solo se la distanza dal precedente è almeno 1px
+    const pts = currentLine.current.points;
+    if (pts.length >= 2) {
+      const dx = pos.x - pts[pts.length - 2];
+      const dy = pos.y - pts[pts.length - 1];
+      if (Math.sqrt(dx * dx + dy * dy) < 1) return;
+    }
+    currentLine.current.points = [...pts, pos.x, pos.y];
     // Invio al server solo ogni 50ms tramite throttle
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
     // L'aggiornamento visivo locale avviene tramite requestAnimationFrame
