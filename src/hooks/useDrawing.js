@@ -125,6 +125,17 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     };
   }, [isArtist, gameActive, showResults, allGuessed, roomId, nickname, stopDrawing]);
 
+  // Ensure we clear any in-progress temp drawing when the player loses drawing privileges
+  useEffect(() => {
+    const shouldClear = !isArtist || !gameActive || showResults || allGuessed;
+    if (!shouldClear) return;
+
+    isDrawing.current = false;
+    currentLine.current = null;
+    setLines((prev) => prev.filter((l) => !(l.temp && l.user === nickname)));
+    remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`)).catch(() => {});
+  }, [isArtist, gameActive, showResults, allGuessed, roomId, nickname]);
+
   // Pulisci lavagna
   const clearBoard = useCallback(async () => {
     await Promise.all([
