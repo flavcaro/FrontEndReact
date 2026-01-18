@@ -235,9 +235,13 @@ export function useGame(roomId, nickname, players) {
     );
     if (!artist) return;
 
-    const bonus = calculateArtistBonus(
-      gameState?.guessedPlayers?.length || 0
-    );
+    // Leggi direttamente guessedPlayers dal database per avere il valore aggiornato
+    const guessedRef = ref(db, `rooms/${roomId}/game/guessedPlayers`);
+    const guessedSnapshot = await get(guessedRef);
+    const guessedPlayers = guessedSnapshot.val() || [];
+    const guessedCount = guessedPlayers.length;
+
+    const bonus = calculateArtistBonus(guessedCount);
 
     await awardPlayerPoints(
       roomId,
