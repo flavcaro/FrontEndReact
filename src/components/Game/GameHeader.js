@@ -48,7 +48,7 @@ export default function GameHeader({
 
         <div style={{ marginLeft: 20 }}>
           <div className="room-label">Modalità</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#6366f1' }}>
+          <div style={{ fontSize: 24, fontWeight: 600, color: '#6366f1' }}>
             🎨 {gameMode}
           </div>
         </div>
@@ -57,20 +57,20 @@ export default function GameHeader({
           <>
             <div style={{ marginLeft: 20 }}>
               <div className="room-label">Difficoltà</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#f59e0b' }}>
+              <div style={{ fontSize: 24, fontWeight: 600, color: '#f59e0b' }}>
                 {difficulty}
               </div>
             </div>
 
             <div style={{ marginLeft: 20 }}>
               <div className="room-label">Round {currentRound}/{totalRounds}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: '#6366f1' }}>
+              <div style={{ fontSize: 26, fontWeight: 600, color: '#6366f1' }}>
                 {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
               </div>
             </div>
             <div style={{ marginLeft: 20 }}>
               <div className="room-label">Parola</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: isArtist ? '#22c55e' : '#6366f1' }}>
+              <div style={{ fontSize: 30, fontWeight: 700, color: isArtist ? '#22c55e' : '#6366f1' }}>
                 {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function GameHeader({
         
         {canStartGame && (
           <button onClick={onStartGame} className="btn-start">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
             👑 Inizia Partita
@@ -107,7 +107,7 @@ export default function GameHeader({
             background: '#fef3c7',
             color: '#92400e',
             borderRadius: 8,
-            fontSize: 14,
+            fontSize: 24,
             fontWeight: 600
           }}>
             👑 In attesa che il creatore avvii la partita...
@@ -120,7 +120,7 @@ export default function GameHeader({
             background: '#fef3c7',
             color: '#92400e',
             borderRadius: 8,
-            fontSize: 14,
+            fontSize: 24,
             fontWeight: 600
           }}>
             ⏳ In attesa di altri giocatori ({players.length}/{MIN_PLAYERS})
@@ -131,7 +131,7 @@ export default function GameHeader({
           <>
             <Palette selectedColor={selectedColor} onChangeColor={onChangeColor} selectedInstrument={selectedInstrument} onChangeInstrument={onChangeInstrument} />
             <button onClick={onClearBoard} className="btn-clear">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             </svg>
@@ -143,17 +143,17 @@ export default function GameHeader({
         <button onClick={handleLeaveRoom} className="btn-leave" style={{
           background: isOwner ? '#dc2626' : '#64748b',
           color: 'white',
-          padding: '10px 18px',
+          padding: '12px 20px',
           borderRadius: 8,
           border: 'none',
           cursor: 'pointer',
-          fontSize: 14,
+          fontSize: 24,
           fontWeight: 600,
           display: 'flex',
           alignItems: 'center',
           gap: 8
         }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>

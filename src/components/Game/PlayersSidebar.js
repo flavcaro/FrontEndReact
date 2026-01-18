@@ -35,7 +35,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
                 {p.isOwner && '👑 '}
                 {p.name}
               </div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>{p.score || 0} punti</div>
+              <div style={{ fontSize: 21, color: '#64748b' }}>{p.score || 0} punti</div>
             </div>
             {p.name === nickname && <span className="you-tag">Tu</span>}
             {gameState?.guessedPlayers?.some(g => g.nickname === p.name) && <span style={{ fontSize: 18 }}>✅</span>}

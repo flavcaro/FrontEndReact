@@ -85,25 +85,45 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     return unsubscribe;
   }, [roomId, nickname, gameActive]);
 
-  // Cancel any in-progress drawing when the player's role or game state changes
-  useEffect(() => {
-    if (isArtist && gameActive && !showResults) return;
-    // If we are no longer the artist, or the game stopped / results shown,
-    // discard any local in-progress line and remove temp data in firebase.
-    if (isDrawing.current || currentLine.current) {
-      isDrawing.current = false;
-      currentLine.current = null;
-      if (sendTempLine.current?.cancel) sendTempLine.current.cancel();
-      remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`)).catch(() => {});
-      setLines((prev) => prev.filter((l) => !(l.temp && l.user === nickname)));
-    }
-  }, [isArtist, gameActive, showResults, roomId, nickname]);
-
   // Salva linea
-  const saveLine = async (line) => {
+  const saveLine = useCallback(async (line) => {
     const lineRef = push(ref(db, `rooms/${roomId}/lines`));
     await set(lineRef, { ...line, createdAt: Date.now() });
-  };
+  }, [roomId]);
+
+  // Function to stop drawing and save the line
+  const stopDrawing = useCallback(async () => {
+    if (!isDrawing.current || showResults || !isArtist || !gameActive || allGuessed) return;
+    isDrawing.current = false;
+    if (currentLine.current) {
+      await saveLine(currentLine.current);
+      await remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`));
+      currentLine.current = null;
+    }
+  }, [showResults, isArtist, gameActive, allGuessed, saveLine, roomId, nickname]);
+
+  // Global mouse event listeners to handle drawing outside canvas
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDrawing.current) {
+        stopDrawing();
+      }
+    };
+
+    const handleGlobalMouseLeave = () => {
+      if (isDrawing.current) {
+        stopDrawing();
+      }
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('mouseleave', handleGlobalMouseLeave);
+
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('mouseleave', handleGlobalMouseLeave);
+    };
+  }, [isArtist, gameActive, showResults, allGuessed, roomId, nickname, stopDrawing]);
 
   // Pulisci lavagna
   const clearBoard = useCallback(async () => {
@@ -117,8 +137,16 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   // Eventi mouse
   const handleMouseDown = (e) => {
     if (!isArtist || !gameActive || showResults || allGuessed) return;
-    isDrawing.current = true;
+    
     const pos = e.target.getStage().getPointerPosition();
+    const stage = e.target.getStage();
+    
+    // Check if mouse is outside canvas boundaries
+    if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
+      return;
+    }
+    
+    isDrawing.current = true;
     lineIdCounter.current += 1;
     currentLine.current = { 
       id: `${nickname}-${Date.now()}-${lineIdCounter.current}`,
@@ -135,6 +163,13 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   const handleMouseMove = (e) => {
     if (!isDrawing.current || !isArtist || !currentLine.current || allGuessed) return;
     const pos = e.target.getStage().getPointerPosition();
+    
+    // Check if mouse is outside canvas boundaries
+    const stage = e.target.getStage();
+    if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
+      return;
+    }
+    
     currentLine.current.points = [...currentLine.current.points, pos.x, pos.y];
     setLines((prev) => {
       const updated = [...prev];
@@ -144,14 +179,8 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
   };
 
-  const handleMouseUp = async () => {
-    if (!isDrawing.current || showResults || !isArtist || !gameActive || allGuessed) return;
-    isDrawing.current = false;
-    if (currentLine.current) {
-      await saveLine(currentLine.current);
-      await remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`));
-      currentLine.current = null;
-    }
+  const handleMouseUp = () => {
+    return stopDrawing();
   };
 
   return {

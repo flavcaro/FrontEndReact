@@ -13,92 +13,108 @@ import "../../App.css";
 
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
-  const { players, finalNickname, isRoomFull, isOwner, playerId } = usePlayers(roomId, nickname);
-  const { 
-    gameState, 
-    timeLeft, 
-    isArtist, 
-    hasGuessed, 
+
+  const { players, finalNickname, isRoomFull, isOwner, playerId } =
+    usePlayers(roomId, nickname);
+
+  const {
+    gameState,
+    timeLeft,
+    isArtist,
+    hasGuessed,
     finalResults,
-    startGame, 
+    startGame,
     handleGuess,
     restartGame,
     showResults
   } = useGame(roomId, finalNickname, players);
+
   const { messages, messagesEndRef } = useChat(roomId);
-  const [selectedColor, setSelectedColor] = useState('#1e293b');
-  const [selectedInstrument, setSelectedInstrument] = useState('pencil');
 
-  const { 
-    lines, 
-    clearBoard, 
-    handleMouseDown, 
-    handleMouseMove, 
-    handleMouseUp 
-  } = useDrawing(roomId, finalNickname, isArtist, gameState?.active, showResults, selectedColor, gameState?.allGuessed, selectedInstrument);
+  const [selectedColor, setSelectedColor] = useState("#1e293b");
+  const [selectedInstrument, setSelectedInstrument] = useState("pencil");
 
-  // Handle room full - solo se non siamo già dentro
+  const {
+    lines,
+    clearBoard,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp
+  } = useDrawing(
+    roomId,
+    finalNickname,
+    isArtist,
+    gameState?.active,
+    showResults,
+    selectedColor,
+    gameState?.allGuessed,
+    selectedInstrument
+  );
+
+  // Room full protection
   useEffect(() => {
-    // Se abbiamo un playerId, siamo già dentro, non dobbiamo essere espulsi
     if (!playerId) return;
-    
-    // Controlla se il nostro player esiste ancora nell'array
-    const weAreInRoom = players.some(p => p.id === playerId || p.name === finalNickname);
-    
+
+    const weAreInRoom = players.some(
+      (p) => p.id === playerId || p.name === finalNickname
+    );
+
     if (isRoomFull && !weAreInRoom) {
       alert("⚠️ La stanza è piena! Massimo 6 giocatori.");
       navigate("/home", { replace: true });
     }
   }, [isRoomFull, players, finalNickname, playerId, navigate]);
 
-  // Auto-redirect if game ended due to owner leaving or not enough players
+  // Game ended unexpectedly
   useEffect(() => {
-    if (gameState?.gameEnded && (gameState?.endReason === 'owner_left' || gameState?.endReason === 'not_enough_players')) {
-      // Prevent GameResults from rendering and blocking navigation
+    if (
+      gameState?.gameEnded &&
+      (gameState.endReason === "owner_left" ||
+        gameState.endReason === "not_enough_players")
+    ) {
       setTimeout(() => {
-        alert('La partita è terminata: ' + (gameState.endReason === 'owner_left' ? 'il creatore ha abbandonato.' : 'non ci sono abbastanza giocatori.'));
-        navigate('/home', { replace: true });
+        alert(
+          "La partita è terminata: " +
+            (gameState.endReason === "owner_left"
+              ? "il creatore ha abbandonato."
+              : "non ci sono abbastanza giocatori.")
+        );
+        navigate("/home", { replace: true });
       }, 100);
     }
   }, [gameState, navigate]);
 
-  // Handle page close/refresh - warn user
+  // Warn on refresh/close
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (gameState?.active) {
         e.preventDefault();
-        e.returnValue = 'Sei sicuro di voler uscire? La partita è in corso!';
-        return e.returnValue;
+        e.returnValue =
+          "Sei sicuro di voler uscire? La partita è in corso!";
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [gameState]);
 
-  // Handler to start game with config
+  // Start game handler
   const handleStartGame = () => {
-    if (gameConfig) {
-      console.log('Starting game with stored config:', gameConfig); // Debug
-      startGame(gameConfig);
-    } else {
-      alert('⚠️ Errore: configurazione di gioco non trovata!');
-    }
+    if (!gameConfig) return;
+    console.log("Starting game with config:", gameConfig);
+    startGame(gameConfig);
   };
 
   return (
-    <div className="board-container">
-      <PlayersSidebar 
-        players={players} 
-        gameState={gameState} 
-        nickname={finalNickname} 
+    <div className="board-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <PlayersSidebar
+        players={players}
+        gameState={gameState}
+        nickname={finalNickname}
         roomId={roomId}
       />
-
-      <main className="board-main">
+      <div className="board-center" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, height: '100vh', overflow: 'auto' }}>
         <GameHeader
           roomId={roomId}
           gameState={gameState}
@@ -114,17 +130,25 @@ export default function Board({ roomId, nickname, gameConfig }) {
           selectedInstrument={selectedInstrument}
           onChangeInstrument={setSelectedInstrument}
         />
-
-        <Canvas
-          lines={lines}
-          onMouseDown={showResults ? undefined : handleMouseDown}
-          onMouseMove={showResults ? undefined : handleMouseMove}
-          onMouseUp={showResults ? undefined : handleMouseUp}
-          isArtist={isArtist}
-          nickname={finalNickname}
-        />
-      </main>
-
+        <main className="board-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <div className="game-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <Canvas
+              lines={lines}
+              onMouseDown={showResults ? undefined : handleMouseDown}
+              onMouseMove={showResults ? undefined : handleMouseMove}
+              onMouseUp={showResults ? undefined : handleMouseUp}
+              isArtist={isArtist}
+              nickname={finalNickname}
+            />
+          </div>
+        </main>
+        {finalResults && (
+          <GameResults
+            finalResults={finalResults}
+            onRestart={restartGame}
+          />
+        )}
+      </div>
       <ChatSidebar
         roomId={roomId}
         nickname={finalNickname}
@@ -135,13 +159,6 @@ export default function Board({ roomId, nickname, gameConfig }) {
         hasGuessed={hasGuessed}
         onGuessCorrect={handleGuess}
       />
-
-      {finalResults && (
-        <GameResults 
-          finalResults={finalResults}
-          onRestart={restartGame}
-        />
-      )}
     </div>
   );
 }

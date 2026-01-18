@@ -46,7 +46,7 @@
 
 .profile-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 38px;
   color: #1e293b;
   font-weight: 700;
   text-align: center;
@@ -54,7 +54,7 @@
 }
 
 .profile-header > button {
-  font-size: 13px !important;
+  font-size: 23px !important;
   padding: 8px 12px !important;
   white-space: nowrap;
 }
@@ -64,7 +64,7 @@
 }
 
 .section-title {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 600;
   color: #334155;
   margin-bottom: 15px;
@@ -123,7 +123,7 @@
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 4px 10px;
-  font-size: 14px;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -168,13 +168,13 @@
   color: white;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 24px;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
 }
 
 .xp-text {
-  font-size: 14px;
+  font-size: 24px;
   color: #64748b;
   font-weight: 600;
 }
@@ -228,7 +228,7 @@
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 23px;
   color: #64748b;
   font-weight: 500;
 }
@@ -247,7 +247,7 @@
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 24px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -300,7 +300,7 @@
 }
 
 .security-notice {
-  font-size: 13px;
+  font-size: 23px;
   color: #92400e;
   margin: 0 0 12px 0;
   line-height: 1.5;
@@ -331,12 +331,12 @@
 .info-label {
   font-weight: 600;
   color: #475569;
-  font-size: 14px;
+  font-size: 24px;
 }
 
 .info-value {
   color: #1e293b;
-  font-size: 14px;
+  font-size: 24px;
 }
 
 /* Guest Message */
@@ -358,7 +358,7 @@
 
 .guest-message p {
   color: #64748b;
-  font-size: 16px;
+  font-size: 26px;
   margin-bottom: 20px;
 }
 
@@ -416,7 +416,7 @@
   }
 
   .profile-header h2 {
-    font-size: 24px;
+    font-size: 34px;
   }
 
   .user-section {
@@ -465,6 +465,14 @@
   .account-edit-form {
     padding: 15px;
   }
+
+  .info-label {
+    font-size: 20px;
+  }
+
+  .info-value {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -488,5 +496,13 @@
   .profile-header > button {
     font-size: 12px !important;
     padding: 6px 10px !important;
+  }
+
+  .info-label {
+    font-size: 18px;
+  }
+
+  .info-value {
+    font-size: 18px;
   }
 }

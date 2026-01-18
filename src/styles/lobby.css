@@ -28,7 +28,7 @@
 }
 
 .lobby-header h1 {
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 8px;
@@ -40,7 +40,7 @@
 
 .lobby-header p {
   color: #64748b;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .lobby-footer {

@@ -53,10 +53,10 @@ export default function RoomActions({ onCreateRoom, onJoinRoom }) {
             <label 
               className="lobby-label" 
               style={{ 
-                fontSize: 14, 
+                fontSize: 18, 
                 fontWeight: 600, 
                 color: '#334155', 
-                marginBottom: 8,
+                marginBottom: 10,
                 display: 'block'
               }}
             >
@@ -72,7 +72,7 @@ export default function RoomActions({ onCreateRoom, onJoinRoom }) {
               autoFocus
               style={{
                 fontFamily: roomInput.includes('://') ? 'inherit' : "'Courier New', monospace",
-                fontSize: roomInput.includes('://') ? '13px' : '16px',
+                fontSize: roomInput.includes('://') ? '18px' : '20px',
                 textAlign: roomInput.includes('://') ? 'left' : 'center'
               }}
             />

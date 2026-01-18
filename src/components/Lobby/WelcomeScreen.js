@@ -14,7 +14,7 @@ export default function WelcomeScreen({ onGuestLogin, onShowAuthForm, authError 
         {authError && (
           <div style={{ 
             color: '#dc2626', 
-            fontSize: '14px', 
+            fontSize: '16px', 
             marginBottom: '20px',
             padding: '12px',
             background: '#fee2e2',

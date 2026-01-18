@@ -1,29 +1,60 @@
-/* Board Container */
+/* =========================
+   LAYOUT PRINCIPALE
+========================= */
+
 .board-container {
   display: flex;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
+
+/* =========================
+   COLONNA CENTRALE
+========================= */
+
+.board-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f8fafc;
+}
+
+/* =========================
+   CONTENUTO BOARD
+========================= */
 
 .board-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
   min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Board Header */
-.board-header {
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 16px 24px;
+.game-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  overflow-x: hidden;
 }
+
+/* =========================
+   HEADER / ROOM INFO
+========================= */
 
 .room-info {
   display: flex;
@@ -32,19 +63,13 @@
   flex-wrap: wrap;
 }
 
-.room-label {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
 .room-code {
-  font-size: 18px;
+  font-size: 30px;
   font-weight: 700;
   color: #6366f1;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background: #eef2ff;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   letter-spacing: 1px;
 }
@@ -55,19 +80,25 @@
   flex-wrap: wrap;
 }
 
+/* =========================
+   BOTTONI
+========================= */
+
 .btn-clear,
 .btn-start {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
-  border: none;
+  padding: 12px 18px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  font-size: 24px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
+
+/* CLEAR */
 
 .btn-clear {
   background: #ef4444;
@@ -84,6 +115,8 @@
   transform: translateY(0);
 }
 
+/* START */
+
 .btn-start {
   background: #22c55e;
   color: white;
@@ -92,4 +125,26 @@
 .btn-start:hover {
   background: #16a34a;
   transform: translateY(-1px);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1200px) {
+  .board-container {
+    flex-direction: column;
+  }
+
+  .board-center {
+    height: auto;
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 900px) {
+  .board-center {
+    width: 100vw;
+    padding: 0;
+  }
 }

@@ -21,7 +21,7 @@
   }
 
   .room-code {
-    font-size: 16px;
+    font-size: 26px;
     padding: 5px 12px;
   }
 }
@@ -70,7 +70,7 @@
   }
 
   .room-code {
-    font-size: 14px;
+    font-size: 24px;
     padding: 4px 10px;
   }
 
@@ -106,7 +106,7 @@
   }
 
   .room-code {
-    font-size: 13px;
+    font-size: 23px;
     padding: 3px 8px;
   }
 
@@ -146,7 +146,7 @@
   }
 
   .room-code {
-    font-size: 12px;
+    font-size: 22px;
     padding: 3px 8px;
   }
 
@@ -167,8 +167,25 @@
 /* High Resolution */
 @media (min-width: 1920px) {
   .board-container {
-    max-width: 1920px;
-    margin: 0 auto;
+    /* Allow full expansion on very large screens */
+  }
+}
+
+/* Ultra Wide Screens */
+@media (min-width: 2560px) {
+  .board-container {
+    /* Full expansion for ultra-wide displays */
+  }
+}
+
+/* High Resolution Vertical */
+@media (min-height: 1440px) {
+  .board-header {
+    padding: 20px 32px;
+  }
+  
+  .canvas-stage {
+    max-height: 1200px;
   }
 }
 

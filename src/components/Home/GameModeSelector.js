@@ -50,14 +50,17 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         background: 'white',
         borderRadius: '24px',
         padding: '32px',
-        maxWidth: '600px',
+        maxWidth: '800px',
         width: '100%',
         maxHeight: '90vh',
         overflowY: 'auto',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
         animation: 'slideUp 0.4s ease-out'
-      }}>
+      }}
+      className="hide-scrollbar">
         <h2 style={{
-          fontSize: '28px',
+          fontSize: '38px',
           fontWeight: '700',
           color: '#1e293b',
           marginBottom: '8px',
@@ -67,7 +70,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         </h2>
         <p style={{
           color: '#64748b',
-          fontSize: '14px',
+          fontSize: '26px',
           marginBottom: '24px',
           textAlign: 'center'
         }}>
@@ -77,7 +80,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Game Mode Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '26px',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -111,10 +114,10 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
               >
                 <div style={{ fontSize: '24px' }}>{mode.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '14px' }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
                     {mode.name}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  <div style={{ fontSize: '24px', color: '#64748b' }}>
                     {mode.description}
                   </div>
                 </div>
@@ -129,7 +132,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Turn Time Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '26px',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -163,10 +166,10 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
               >
                 <div style={{ fontSize: '24px' }}>{timeOption.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '14px' }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
                     {timeOption.name}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  <div style={{ fontSize: '24px', color: '#64748b' }}>
                     {timeOption.description}
                   </div>
                 </div>
@@ -181,7 +184,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Difficulty Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '26px',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -219,12 +222,12 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                 <div style={{
                   fontWeight: '600',
                   color: selectedDifficulty === difficulty.id ? difficulty.color : '#334155',
-                  fontSize: '14px',
+                  fontSize: '26px',
                   marginBottom: '4px'
                 }}>
                   {difficulty.name}
                 </div>
-                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                <div style={{ fontSize: '23px', color: '#64748b' }}>
                   {difficulty.description}
                 </div>
               </button>
@@ -235,7 +238,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Rounds Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '16px',
+            fontSize: '26px',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -271,12 +274,12 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                 <div style={{
                   fontWeight: '700',
                   color: selectedRounds === option.value ? '#6366f1' : '#334155',
-                  fontSize: '16px',
+                  fontSize: '26px',
                   marginBottom: '2px'
                 }}>
                   {option.label}
                 </div>
-                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                <div style={{ fontSize: '20px', color: '#64748b' }}>
                   {option.description}
                 </div>
               </button>
@@ -293,7 +296,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
           border: '1px solid #e2e8f0'
         }}>
           <div style={{
-            fontSize: '12px',
+            fontSize: '22px',
             color: '#64748b',
             fontWeight: '600',
             marginBottom: '8px'
@@ -304,7 +307,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
             display: 'flex',
             flexDirection: 'column',
             gap: '6px',
-            fontSize: '13px',
+            fontSize: '23px',
             color: '#334155'
           }}>
             <div>

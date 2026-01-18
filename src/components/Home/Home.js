@@ -12,7 +12,7 @@ import { generateRoomCode, validateNickname, extractRoomCode } from '../../utils
 
 export default function Home() {
   const navigate = useNavigate();
-  const { nickname, setNickname, xpPoints, level, user, isGuest } = useUserData();
+  const { nickname, setNickname, xpPoints, level, gamesPlayed, gamesWon, totalScore, bestScore, user, isGuest } = useUserData();
   const [showModeSelector, setShowModeSelector] = useState(false);
 
   const handleSignOut = async () => {
@@ -80,6 +80,10 @@ export default function Home() {
         user={user}
         xpPoints={xpPoints}
         level={level}
+        gamesPlayed={gamesPlayed}
+        gamesWon={gamesWon}
+        totalScore={totalScore}
+        bestScore={bestScore}
         onSignOut={handleSignOut}
         navigate={navigate}
       />
@@ -130,6 +134,8 @@ export default function Home() {
         <div className="shape shape-1"></div>
         <div className="shape shape-2"></div>
         <div className="shape shape-3"></div>
+        <div className="shape shape-4"></div>
+        <div className="shape shape-5"></div>
       </div>
     </div>
   );

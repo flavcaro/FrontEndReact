@@ -34,7 +34,7 @@
 }
 
 .chat-user {
-  font-size: 12px;
+  font-size: 22px;
   font-weight: 600;
   color: #6366f1;
   margin-bottom: 4px;
@@ -42,7 +42,7 @@
 }
 
 .chat-text {
-  font-size: 14px;
+  font-size: 24px;
   color: #334155;
   word-wrap: break-word;
 }
@@ -59,7 +59,7 @@
   padding: 10px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 24px;
   min-width: 0;
 }
 
@@ -130,11 +130,11 @@
   }
 
   .chat-user {
-    font-size: 11px;
+    font-size: 21px;
   }
 
   .chat-text {
-    font-size: 13px;
+    font-size: 23px;
   }
 
   .chat-input {
@@ -142,7 +142,7 @@
   }
 
   .chat-input input {
-    font-size: 14px;
+    font-size: 24px;
     padding: 10px 12px;
   }
 
@@ -171,11 +171,11 @@
   }
 
   .chat-user {
-    font-size: 10px;
+    font-size: 20px;
   }
 
   .chat-text {
-    font-size: 12px;
+    font-size: 22px;
   }
 
   .chat-input {
@@ -183,7 +183,7 @@
   }
 
   .chat-input input {
-    font-size: 13px;
+    font-size: 23px;
     padding: 9px 10px;
   }
 
@@ -215,7 +215,7 @@
   }
 
   .chat-input input {
-    font-size: 12px;
+    font-size: 22px;
     padding: 8px;
   }
 
@@ -263,11 +263,11 @@
   }
 
   .chat-user {
-    font-size: 9px;
+    font-size: 19px;
   }
 
   .chat-text {
-    font-size: 11px;
+    font-size: 21px;
   }
 
   .chat-input {
@@ -275,7 +275,7 @@
   }
 
   .chat-input input {
-    font-size: 11px;
+    font-size: 21px;
     padding: 6px 8px;
   }
 
@@ -301,6 +301,20 @@
 @media (min-width: 1920px) {
   .chat-sidebar {
     width: 360px;
+  }
+}
+
+/* Ultra Wide Screens */
+@media (min-width: 2560px) {
+  .chat-sidebar {
+    width: 420px;
+  }
+}
+
+/* High Resolution Vertical */
+@media (min-height: 1440px) {
+  .chat-messages {
+    max-height: 600px;
   }
 }
 

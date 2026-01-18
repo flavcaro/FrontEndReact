@@ -324,7 +324,7 @@ export default function Profile() {
             <div className="level-section">
               <div className="level-info">
                 <span className="level-badge">🏆 Livello {level}</span>
-                <span className="xp-text">{userData.xp - xpForCurrentLevel} / {xpNeeded} XP (Totale: {userData.xp})</span>
+                {/* <span className="xp-text">{userData.xp - xpForCurrentLevel} / {xpNeeded} XP (Totale: {userData.xp})</span> */}
               </div>
               <div className="progress-bar">
                 <div 
@@ -416,7 +416,7 @@ export default function Profile() {
               </div>
               <div className="info-item">
                 <span className="info-label">ID Utente:</span>
-                <span className="info-value" style={{ fontSize: '0.8em', color: '#64748b' }}>
+                <span className="info-value" style={{ fontSize: '0.9em', color: '#64748b' }}>
                   {user?.uid}
                 </span>
               </div>

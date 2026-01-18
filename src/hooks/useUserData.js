@@ -6,6 +6,10 @@ export function useUserData() {
   const [nickname, setNickname] = useState('');
   const [xpPoints, setXpPoints] = useState(0);
   const [level, setLevel] = useState(1);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [gamesWon, setGamesWon] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
+  const [bestScore, setBestScore] = useState(0);
   const user = auth.currentUser;
   const isGuest = user?.isAnonymous;
 
@@ -17,8 +21,22 @@ export function useUserData() {
     const unsubscribe = onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        setXpPoints(data.xp || 0);
-        setLevel(data.level || 1);
+        const xp = data.xp || 0;
+        setXpPoints(xp);
+        
+        // Calcola il livello dinamicamente dagli XP
+        let calculatedLevel = 1;
+        while (true) {
+          const xpForNextLevel = 100 * calculatedLevel * (calculatedLevel + 1) / 2;
+          if (xp < xpForNextLevel) break;
+          calculatedLevel++;
+        }
+        setLevel(calculatedLevel);
+        
+        setGamesPlayed(data.gamesPlayed || 0);
+        setGamesWon(data.gamesWon || 0);
+        setTotalScore(data.totalScore || 0);
+        setBestScore(data.bestScore || 0);
       }
     });
 
@@ -40,5 +58,5 @@ export function useUserData() {
     }
   }, [isGuest, user]);
 
-  return { nickname, setNickname, xpPoints, level, user, isGuest };
+  return { nickname, setNickname, xpPoints, level, gamesPlayed, gamesWon, totalScore, bestScore, user, isGuest };
 }

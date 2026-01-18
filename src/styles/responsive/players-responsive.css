@@ -60,11 +60,11 @@
   }
 
   .sidebar-header h3 {
-    font-size: 14px;
+    font-size: 24px;
   }
 
   .players-badge {
-    font-size: 11px;
+    font-size: 21px;
     padding: 3px 8px;
   }
 
@@ -81,15 +81,15 @@
   .player-avatar {
     width: 32px;
     height: 32px;
-    font-size: 12px;
+    font-size: 22px;
   }
 
   .player-name {
-    font-size: 13px;
+    font-size: 23px;
   }
 
   .you-tag {
-    font-size: 10px;
+    font-size: 20px;
     padding: 2px 6px;
   }
 
@@ -98,11 +98,11 @@
   }
 
   .share-box label {
-    font-size: 11px;
+    font-size: 21px;
   }
 
   .share-box input {
-    font-size: 11px;
+    font-size: 21px;
     padding: 8px 10px;
   }
 }
@@ -119,11 +119,11 @@
   }
 
   .sidebar-header h3 {
-    font-size: 13px;
+    font-size: 23px;
   }
 
   .players-badge {
-    font-size: 10px;
+    font-size: 20px;
     padding: 2px 6px;
   }
 
@@ -140,15 +140,15 @@
   .player-avatar {
     width: 30px;
     height: 30px;
-    font-size: 11px;
+    font-size: 21px;
   }
 
   .player-name {
-    font-size: 12px;
+    font-size: 22px;
   }
 
   .you-tag {
-    font-size: 9px;
+    font-size: 19px;
   }
 }
 
@@ -171,11 +171,11 @@
   .player-avatar {
     width: 28px;
     height: 28px;
-    font-size: 10px;
+    font-size: 20px;
   }
 
   .player-name {
-    font-size: 11px;
+    font-size: 21px;
   }
 }
 
@@ -275,6 +275,13 @@
 @media (min-width: 1920px) {
   .players-sidebar {
     width: 320px;
+  }
+}
+
+/* Ultra Wide Screens */
+@media (min-width: 2560px) {
+  .players-sidebar {
+    width: 380px;
   }
 }
 

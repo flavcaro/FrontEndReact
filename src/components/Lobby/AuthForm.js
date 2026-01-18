@@ -43,7 +43,7 @@ export default function AuthForm({
         {authError && (
           <div style={{ 
             color: '#dc2626', 
-            fontSize: '14px', 
+            fontSize: '16px', 
             marginTop: '10px',
             padding: '10px',
             background: '#fee2e2',

@@ -148,3 +148,8 @@
     font-size: 40px;
   }
 }
+
+/* Hide scrollbar for modal */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -1,10 +1,10 @@
 /* Lobby Buttons */
 .lobby-btn {
   width: 100%;
-  padding: 16px 24px;
+  padding: 20px 30px;
   border: none;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 28px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
@@ -45,8 +45,8 @@
 }
 
 .lobby-btn.small {
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 14px 24px;
+  font-size: 26px;
 }
 
 .lobby-btn:active {
@@ -54,7 +54,7 @@
 }
 
 .btn-icon {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .btn-text {

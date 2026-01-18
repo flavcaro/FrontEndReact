@@ -18,7 +18,7 @@
 }
 
 .sidebar-header h3 {
-  font-size: 16px;
+  font-size: 28px;
   font-weight: 600;
   color: #0f172a;
 }
@@ -26,9 +26,9 @@
 .players-badge {
   background: #6366f1;
   color: white;
-  font-size: 12px;
+  font-size: 24px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 12px;
 }
 
@@ -68,20 +68,20 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 24px;
   flex-shrink: 0;
 }
 
 .player-name {
   flex: 1;
-  font-size: 14px;
+  font-size: 24px;
   font-weight: 500;
   color: #334155;
   word-break: break-word;
 }
 
 .you-tag {
-  font-size: 11px;
+  font-size: 21px;
   font-weight: 600;
   color: #6366f1;
   background: #e0e7ff;
@@ -97,7 +97,7 @@
 
 .share-box label {
   display: block;
-  font-size: 12px;
+  font-size: 22px;
   font-weight: 600;
   color: #64748b;
   margin-bottom: 8px;
@@ -108,7 +108,7 @@
   padding: 10px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 22px;
   font-family: 'Courier New', monospace;
   background: white;
   color: #475569;
@@ -131,5 +131,12 @@
 @media (max-width: 1400px) {
   .players-sidebar {
     width: 240px;
+  }
+}
+
+/* High Resolution Vertical */
+@media (min-height: 1440px) {
+  .players-list {
+    max-height: 600px;
   }
 }

@@ -4,8 +4,8 @@
 @media (max-width: 768px) {
   .home-header {
     flex-direction: column;
-    gap: 15px;
-    padding: 15px 20px;
+    gap: 20px;
+    padding: 35px 45px;
   }
 
   .user-info {
@@ -20,93 +20,117 @@
   }
 
   .home-main {
-    padding: 24px 16px;
+    padding: 40px 20px;
   }
 
   .home-card {
-    padding: 32px 24px;
+    padding: 50px 40px;
+    max-width: 600px;
   }
 
-  .home-title h1 {
-    font-size: 32px;
+  .logo {
+    font-size: 58px;
+  }
+
+  .home-title p {
+    font-size: 22px;
   }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
   .home-header {
-    padding: 12px 16px;
-    gap: 12px;
+    padding: 30px 35px;
+    gap: 16px;
   }
 
   .user-info {
-    gap: 12px;
+    gap: 16px;
     flex-direction: column;
     align-items: stretch;
   }
 
   .user-nickname {
-    padding: 10px 16px;
+    padding: 14px 22px;
     justify-content: center;
     flex-wrap: wrap;
     text-align: center;
   }
 
   .nickname-icon {
-    font-size: 20px;
+    font-size: 28px;
   }
 
   .nickname-text {
-    font-size: 14px;
+    font-size: 28px;
   }
 
   .user-stats {
-    justify-content: center;
+    gap: 6px;
   }
 
-  .xp-badge {
-    padding: 6px 12px;
-    font-size: 13px;
+  .stats-row {
+    gap: 6px;
+  }
+
+  .xp-badge,
+  .games-badge,
+  .winrate-badge {
+    padding: 12px 16px;
+    font-size: 16px;
   }
 
   .level-badge {
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 20px 28px;
+    font-size: 32px;
   }
 
   .header-actions {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .btn-profile,
   .btn-logout {
     width: 100%;
-    padding: 10px 16px;
-    font-size: 13px;
+    padding: 14px 24px;
+    font-size: 16px;
   }
 
   .home-main {
-    padding: 16px 12px;
+    padding: 20px 16px;
     align-items: flex-start;
     padding-top: 20px;
   }
 
   .home-card {
-    padding: 28px 20px;
-    border-radius: 20px;
+    padding: 20px 16px;
+    border-radius: 16px;
   }
 
   .home-title {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .home-title h1 {
+    font-size: 24px;
+  }
+
+  .logo {
     font-size: 28px;
   }
 
   .home-title p {
     font-size: 14px;
+  }
+
+  .nickname-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stats-sidebar {
+    display: none;
   }
 }
 
@@ -125,14 +149,6 @@
   }
 
   .nickname-text {
-    font-size: 13px;
-  }
-}
-
-/* Touch Devices */
-@media (hover: none) and (pointer: coarse) {
-  .btn-profile,
-  .btn-logout {
-    min-height: 48px;
+    font-size: 23px;
   }
 }
