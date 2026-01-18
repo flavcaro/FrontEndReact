@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS } from '../../constants/gameConfig';
-import Palette from './Palette';
 
 export default function GameHeader({ 
   roomId, 
@@ -129,7 +128,6 @@ export default function GameHeader({
         
         {isArtist && gameState?.active && (
           <>
-            <Palette selectedColor={selectedColor} onChangeColor={onChangeColor} selectedInstrument={selectedInstrument} onChangeInstrument={onChangeInstrument} />
             <button onClick={onClearBoard} className="btn-clear">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>

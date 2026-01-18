@@ -8,6 +8,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   const isDrawing = useRef(false);
   const currentLine = useRef(null);
   const sendTempLine = useRef(null);
+  const rafId = useRef(null);
   const lineIdCounter = useRef(0);
 
   // Throttle linee temp - ridotto a 50ms per maggiore fluidità
@@ -148,20 +149,16 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   // Eventi mouse
   const handleMouseDown = (e) => {
     if (!isArtist || !gameActive || showResults || allGuessed) return;
-    
     const pos = e.target.getStage().getPointerPosition();
     const stage = e.target.getStage();
-    
-    // Check if mouse is outside canvas boundaries
     if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
       return;
     }
-    
     isDrawing.current = true;
     lineIdCounter.current += 1;
-    currentLine.current = { 
+    currentLine.current = {
       id: `${nickname}-${Date.now()}-${lineIdCounter.current}`,
-      points: [pos.x, pos.y], 
+      points: [pos.x, pos.y],
       user: nickname,
       temp: true,
       color: selectedInstrument === 'eraser' ? null : selectedColor,
@@ -169,28 +166,37 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     };
     setLines((prev) => [...prev, currentLine.current]);
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
+    // Avvia animazione per aggiornare la linea localmente
+    const drawLoop = () => {
+      if (!isDrawing.current) return;
+      setLines((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...currentLine.current };
+        return updated;
+      });
+      rafId.current = requestAnimationFrame(drawLoop);
+    };
+    rafId.current = requestAnimationFrame(drawLoop);
   };
 
   const handleMouseMove = (e) => {
     if (!isDrawing.current || !isArtist || !currentLine.current || allGuessed) return;
     const pos = e.target.getStage().getPointerPosition();
-    
-    // Check if mouse is outside canvas boundaries
     const stage = e.target.getStage();
     if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
       return;
     }
-    
     currentLine.current.points = [...currentLine.current.points, pos.x, pos.y];
-    setLines((prev) => {
-      const updated = [...prev];
-      updated[updated.length - 1] = currentLine.current;
-      return updated;
-    });
+    // Invio al server solo ogni 50ms tramite throttle
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
+    // L'aggiornamento visivo locale avviene tramite requestAnimationFrame
   };
 
   const handleMouseUp = () => {
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
     return stopDrawing();
   };
 

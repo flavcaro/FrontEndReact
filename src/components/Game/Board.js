@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePlayers } from "../../hooks/usePlayers";
-import { useGame } from "../../hooks/useGame";
-import { useChat } from "../../hooks/useChat";
-import { useDrawing } from "../../hooks/useDrawing";
+
+import SimplePopup from "./SimplePopup";
 import PlayersSidebar from "./PlayersSidebar";
 import ChatSidebar from "./ChatSidebar";
 import GameHeader from "./GameHeader";
 import Canvas from "./Canvas";
 import GameResults from "./GameResults";
-import "../../App.css";
+import Palette from "./Palette";
+
+import { usePlayers } from "../../hooks/usePlayers";
+import { useGame } from "../../hooks/useGame";
+import { useChat } from "../../hooks/useChat";
+import { useDrawing } from "../../hooks/useDrawing";
 
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
 
-  const { players, finalNickname, isRoomFull, isOwner, playerId } =
+  const { players, finalNickname, isOwner } =
     usePlayers(roomId, nickname);
 
   const {
@@ -51,40 +54,33 @@ export default function Board({ roomId, nickname, gameConfig }) {
     selectedInstrument
   );
 
-  // Room full protection
-  useEffect(() => {
-    if (!playerId) return;
+  const [popup, setPopup] = useState({ open: false, message: "" });
 
-    const weAreInRoom = players.some(
-      (p) => p.id === playerId || p.name === finalNickname
-    );
-
-    if (isRoomFull && !weAreInRoom) {
-      alert("⚠️ La stanza è piena! Massimo 6 giocatori.");
-      navigate("/home", { replace: true });
-    }
-  }, [isRoomFull, players, finalNickname, playerId, navigate]);
-
-  // Game ended unexpectedly
+  /* =========================
+     FINE PARTITA
+  ========================= */
   useEffect(() => {
     if (
-      gameState?.gameEnded &&
+      gameState?.ended &&
       (gameState.endReason === "owner_left" ||
         gameState.endReason === "not_enough_players")
     ) {
       setTimeout(() => {
-        alert(
-          "La partita è terminata: " +
+        setPopup({
+          open: true,
+          message:
+            "La partita è terminata: " +
             (gameState.endReason === "owner_left"
               ? "il creatore ha abbandonato."
               : "non ci sono abbastanza giocatori.")
-        );
-        navigate("/home", { replace: true });
+        });
       }, 100);
     }
-  }, [gameState, navigate]);
+  }, [gameState]);
 
-  // Warn on refresh/close
+  /* =========================
+     WARN ON REFRESH
+  ========================= */
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (gameState?.active) {
@@ -99,66 +95,99 @@ export default function Board({ roomId, nickname, gameConfig }) {
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [gameState]);
 
-  // Start game handler
+  const handleClosePopup = () => {
+    setPopup({ open: false, message: "" });
+    navigate("/home", { replace: true });
+  };
+
   const handleStartGame = () => {
     if (!gameConfig) return;
-    console.log("Starting game with config:", gameConfig);
     startGame(gameConfig);
   };
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
-    <div className="board-container" style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <PlayersSidebar
-        players={players}
-        gameState={gameState}
-        nickname={finalNickname}
-        roomId={roomId}
+    <>
+      <SimplePopup
+        open={popup.open}
+        message={popup.message}
+        onClose={handleClosePopup}
       />
-      <div className="board-center" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0, height: '100vh', overflow: 'auto' }}>
-        <GameHeader
+
+      <div
+        className="board-container"
+        style={{ display: "flex", height: "100dvh", overflow: "hidden" }}
+      >
+        <PlayersSidebar
+          players={players}
+          gameState={gameState}
+          nickname={finalNickname}
           roomId={roomId}
+        />
+
+        <div className="board-center">
+          <GameHeader
+            roomId={roomId}
+            gameState={gameState}
+            isArtist={isArtist}
+            hasGuessed={hasGuessed}
+            timeLeft={timeLeft}
+            players={players}
+            isOwner={isOwner}
+            onStartGame={handleStartGame}
+            onClearBoard={clearBoard}
+            selectedColor={selectedColor}
+            onChangeColor={setSelectedColor}
+            selectedInstrument={selectedInstrument}
+            onChangeInstrument={setSelectedInstrument}
+          />
+
+          <main className="board-main">
+            <div className="game-content">
+              <Canvas
+                lines={lines}
+                onMouseDown={showResults ? undefined : handleMouseDown}
+                onMouseMove={showResults ? undefined : handleMouseMove}
+                onMouseUp={showResults ? undefined : handleMouseUp}
+                isArtist={isArtist}
+                nickname={finalNickname}
+              />
+
+              {isArtist && (
+                <div className="palette-floating">
+                  <Palette
+                    selectedColor={selectedColor}
+                    onChangeColor={setSelectedColor}
+                    selectedInstrument={selectedInstrument}
+                    onChangeInstrument={setSelectedInstrument}
+                    showColors={selectedInstrument === "pencil"}
+                  />
+                </div>
+              )}
+            </div>
+          </main>
+
+          {finalResults && (
+            <GameResults
+              finalResults={finalResults}
+              onRestart={restartGame}
+            />
+          )}
+        </div>
+
+        <ChatSidebar
+          roomId={roomId}
+          nickname={finalNickname}
+          messages={messages}
+          messagesEndRef={messagesEndRef}
           gameState={gameState}
           isArtist={isArtist}
           hasGuessed={hasGuessed}
-          timeLeft={timeLeft}
-          players={players}
-          isOwner={isOwner}
-          onStartGame={handleStartGame}
-          onClearBoard={clearBoard}
-          selectedColor={selectedColor}
-          onChangeColor={setSelectedColor}
-          selectedInstrument={selectedInstrument}
-          onChangeInstrument={setSelectedInstrument}
+          onGuessCorrect={handleGuess}
         />
-        <main className="board-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          <div className="game-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <Canvas
-              lines={lines}
-              onMouseDown={showResults ? undefined : handleMouseDown}
-              onMouseMove={showResults ? undefined : handleMouseMove}
-              onMouseUp={showResults ? undefined : handleMouseUp}
-              isArtist={isArtist}
-              nickname={finalNickname}
-            />
-          </div>
-        </main>
-        {finalResults && (
-          <GameResults
-            finalResults={finalResults}
-            onRestart={restartGame}
-          />
-        )}
       </div>
-      <ChatSidebar
-        roomId={roomId}
-        nickname={finalNickname}
-        messages={messages}
-        messagesEndRef={messagesEndRef}
-        gameState={gameState}
-        isArtist={isArtist}
-        hasGuessed={hasGuessed}
-        onGuessCorrect={handleGuess}
-      />
-    </div>
+    </>
   );
 }

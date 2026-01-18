@@ -1,0 +1,23 @@
+.palette-floating {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 8px 18px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .palette-floating {
+    bottom: 16px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    gap: 10px;
+  }
+}
