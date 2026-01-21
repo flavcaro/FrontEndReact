@@ -1,3 +1,8 @@
+// Game Modes (import from separate files)
+import { CLASSICA } from './gameModes/classica';
+import { CHAOS_TOOLS, generateChaosEffects } from './gameModes/chaosTools';
+import { SOPRAVVIVENZA, getSurvivalDifficulty, applySurvivalPenalties } from './gameModes/sopravvivenza';
+
 // Words by difficulty
 export const WORDS_BY_DIFFICULTY = {
   EASY: [
@@ -69,34 +74,6 @@ export const ROUNDS_OPTIONS = [
   { value: 8, label: '8 Round/giocatore', icon: '🏆', description: 'Partita lunga' }
 ];
 
-// Game Modes (true game modes)
-export const GAME_MODES = {
-  CLASSICA: {
-    id: 'classica',
-    name: '🎨 Classica',
-    description: 'Modalità tradizionale con regole standard',
-    icon: '🎨',
-    turnDuration: 60
-  },
-  CHAOS_TOOLS: {
-    id: 'chaos_tools',
-    name: '🌀 Chaos Tools',
-    description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, zoom imprevisti, linee tremolanti',
-    icon: '🌀',
-    turnDuration: 45,
-    hasChaosEffects: true
-  },
-  SOPRAVVIVENZA: {
-    id: 'sopravvivenza',
-    name: '🏃 Sopravvivenza',
-    description: 'Difficoltà crescente per round. Penalità per non indovinare: perdita vite, eliminazione. Vince l\'ultimo rimasto!',
-    icon: '🏃',
-    turnDuration: 30,
-    survivalMode: true,
-    startingLives: 3
-  }
-};
-
 // Turn Time Options
 export const TURN_TIME_OPTIONS = {
   CLASSIC: {
@@ -122,6 +99,16 @@ export const TURN_TIME_OPTIONS = {
   }
 };
 
+// Game Modes (import from separate files)
+export const GAME_MODES = {
+  CLASSICA,
+  CHAOS_TOOLS,
+  SOPRAVVIVENZA
+};
+
 export const DEFAULT_GAME_MODE = GAME_MODES.CLASSICA;
 export const DEFAULT_DIFFICULTY = DIFFICULTY_LEVELS.MEDIUM;
 export const DEFAULT_ROUNDS = 6;
+
+// Export mode-specific functions
+export { generateChaosEffects, getSurvivalDifficulty, applySurvivalPenalties };

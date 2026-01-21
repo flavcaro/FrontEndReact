@@ -1,6 +1,6 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
-import { WORDS_BY_DIFFICULTY } from "../constants/gameConfig";
+import { WORDS_BY_DIFFICULTY, generateChaosEffects } from "../constants/gameConfig";
 
 // Get random word based on difficulty
 const getRandomWord = (difficulty = 'MEDIUM') => {
@@ -182,29 +182,6 @@ export const sendSystemMessage = async (roomId, message) => {
     timestamp: Date.now(),
     isSystem: true
   });
-};
-
-// Generate random chaos effects for Chaos Tools mode
-export const generateChaosEffects = () => {
-  const possibleEffects = [
-    { id: 'mirror', style: { transform: 'scaleX(-1)' }, name: 'Specchio' },
-    { id: 'upsideDown', style: { transform: 'scaleY(-1)' }, name: 'Capovolto' },
-    { id: 'rotate', style: { transform: 'rotate(15deg)' }, name: 'Ruotato' },
-    { id: 'zoom', style: { transform: 'scale(1.2)' }, name: 'Zoom' },
-    { id: 'tremble', style: { animation: 'tremble 0.1s infinite' }, name: 'Tremolio' },
-    { id: 'skew', style: { transform: 'skew(10deg, 5deg)' }, name: 'Deformato' }
-  ];
-
-  // Select 1-3 random effects
-  const numEffects = Math.floor(Math.random() * 3) + 1;
-  const selected = [];
-  const shuffled = [...possibleEffects].sort(() => 0.5 - Math.random());
-  
-  for (let i = 0; i < numEffects; i++) {
-    selected.push(shuffled[i]);
-  }
-
-  return selected;
 };
 
 export const clearChat = async (roomId) => {

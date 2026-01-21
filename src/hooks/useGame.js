@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
 import { db, auth } from "../firebase";
-import { TURN_DURATION } from "../constants/gameConfig";
+import { TURN_DURATION, generateChaosEffects, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
 import { useGameTimer } from "./useGameTimer";
 import { updateGameStats } from "../services/userService";
@@ -10,8 +10,7 @@ import {
   endGame,
   advanceToNextTurn,
   awardPlayerPoints,
-  sendSystemMessage,
-  generateChaosEffects
+  sendSystemMessage
 } from "../services/gameService";
 
 export function useGame(roomId, nickname, players) {
@@ -179,9 +178,7 @@ export function useGame(roomId, nickname, players) {
     // Survival mode: increasing difficulty
     if (gameState?.survivalMode) {
       const round = (gameState?.round || 0) + 1;
-      if (round <= 3) difficultyId = 'easy';
-      else if (round <= 6) difficultyId = 'medium';
-      else difficultyId = 'hard';
+      difficultyId = getSurvivalDifficulty(round);
     }
     
     const playerOrder =
@@ -286,25 +283,7 @@ export function useGame(roomId, nickname, players) {
     await awardArtistPoints();
 
     // Survival mode penalties
-    if (gameState?.survivalMode && gameState?.playerLives) {
-      const guessedNames = gameState.guessedPlayers.map(g => g.nickname);
-      
-      for (const player of players) {
-        if (player.name === gameState.currentArtist || guessedNames.includes(player.name)) continue;
-        
-        const currentLives = gameState.playerLives[player.name] || 0;
-        if (currentLives > 0) {
-          const newLives = currentLives - 1;
-          await set(ref(db, `rooms/${roomId}/game/playerLives/${player.name}`), newLives);
-          
-          if (newLives === 0) {
-            await sendSystemMessage(roomId, `💀 ${player.name} ha perso tutte le vite ed è eliminato!`);
-          } else {
-            await sendSystemMessage(roomId, `❤️ ${player.name} perde una vita! (${newLives} rimanenti)`);
-          }
-        }
-      }
-    }
+    await applySurvivalPenalties(roomId, gameState, players, sendSystemMessage, db, set, ref);
 
     setTimeout(async () => {
       // Reset showResults globale
