@@ -197,20 +197,7 @@ export function useGame(roomId, nickname, players) {
       gameState?.playerOrder || players.map(p => p.name);
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
 
-    const snap = await get(
-      ref(db, `rooms/${roomId}/game/drawCounts`)
-    );
-    const drawCounts = snap.val() || {};
-
-    const finished = playerOrder.every(
-      name => (drawCounts[name] || 0) >= roundsPerPlayer
-    );
-
-    if (finished) {
-      await endGame(roomId, players);
-      return;
-    }
-
+    // Determina chi è il prossimo artista (senza incrementare ancora)
     const { nextArtist, word } = await advanceToNextTurn(
       roomId,
       players,
@@ -219,9 +206,26 @@ export function useGame(roomId, nickname, players) {
       playerOrder
     );
 
-    const updatedCounts = (
-      await get(ref(db, `rooms/${roomId}/game/drawCounts`))
-    ).val();
+    // Leggi i contatori attuali
+    const drawCountsSnapshot = await get(ref(db, `rooms/${roomId}/game/drawCounts`));
+    const currentCounts = drawCountsSnapshot.val() || {};
+
+    // Controlla quante volte il prossimo artista ha già disegnato
+    const nextArtistCount = currentCounts[nextArtist] || 0;
+    
+    // Se il prossimo artista ha già disegnato abbastanza volte, cerca il prossimo disponibile
+    // oppure termina il gioco se tutti hanno finito
+    if (nextArtistCount >= roundsPerPlayer) {
+      // Tutti hanno completato i loro turni
+      await endGame(roomId, players);
+      return;
+    }
+
+    // Incrementa il contatore del prossimo artista che sta per disegnare
+    currentCounts[nextArtist] = nextArtistCount + 1;
+
+    // Salva il nuovo contatore
+    await set(ref(db, `rooms/${roomId}/game/drawCounts`), currentCounts);
 
     // Leggi playerLives aggiornato dal database
     const playerLivesSnapshot = await get(ref(db, `rooms/${roomId}/game/playerLives`));
@@ -239,7 +243,7 @@ export function useGame(roomId, nickname, players) {
       turnStartedAt: Date.now(),
       guessedPlayers: [],
       round: nextRound,
-      drawCounts: updatedCounts,
+      drawCounts: currentCounts,
       allGuessed: false,
       chaosEffects,
       playerLives: currentPlayerLives  // Usa il valore aggiornato dal database

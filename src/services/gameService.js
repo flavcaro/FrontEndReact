@@ -37,10 +37,11 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   // Save player rotation order (fixed for entire game)
   const playerOrder = players.map(p => p.name);
   
-  // Initialize draw count for each player starting at 1 for first artist
+  // Initialize draw count for each player starting at 0
+  // The first artist will get their count incremented to 1 when starting
   const drawCounts = {};
   players.forEach(player => {
-    drawCounts[player.name] = player.name === firstArtist ? 1 : 0;
+    drawCounts[player.name] = 0;
   });
   
   await set(ref(db, `rooms/${roomId}/game`), {
@@ -70,6 +71,9 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     playerLives: resolvedSurvival ? players.reduce((acc, p) => ({ ...acc, [p.name]: resolvedStartingLives }), {}) : null
   });
 
+  // Increment the first artist's count since they're starting now
+  await set(ref(db, `rooms/${roomId}/game/drawCounts/${firstArtist}`), 1);
+
   // Clear board and chat
   await Promise.all([
     remove(ref(db, `rooms/${roomId}/lines`)),
@@ -97,7 +101,7 @@ export const endGame = async (roomId, players) => {
       id,
       name: player.name,
       score: player.score || 0,
-      userId: player.userId
+      userId: player.userId || null
     }));
   
   // Survival mode: only count players with lives > 0
@@ -174,12 +178,6 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   const nextIndex = (currentIndex + 1) % playerOrder.length;
   const nextArtist = playerOrder[nextIndex];
   const word = getRandomWord(difficultyId);
-  
-  // Increment draw count for next artist
-  const drawCountRef = ref(db, `rooms/${roomId}/game/drawCounts/${nextArtist}`);
-  const snapshot = await get(drawCountRef);
-  const currentCount = snapshot.val() || 0;
-  await set(drawCountRef, currentCount + 1);
   
   return { nextArtist, word };
 };
