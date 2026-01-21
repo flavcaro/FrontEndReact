@@ -7,7 +7,8 @@ import {
   DIFFICULTY_LEVELS,
   DEFAULT_DIFFICULTY,
   ROUNDS_OPTIONS,
-  DEFAULT_ROUNDS
+  DEFAULT_ROUNDS,
+  SURVIVAL_DEFAULT_THRESHOLD
 } from '../../constants/gameConfig';
 import Button from '../common/Button';
 
@@ -16,6 +17,8 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
   const [selectedTime, setSelectedTime] = useState('classic'); // Default to 60 seconds
   const [selectedDifficulty, setSelectedDifficulty] = useState(DEFAULT_DIFFICULTY.id);
   const [selectedRounds, setSelectedRounds] = useState(DEFAULT_ROUNDS);
+  const [survivalThresholdType, setSurvivalThresholdType] = useState(SURVIVAL_DEFAULT_THRESHOLD.thresholdType);
+  const [survivalThresholdValue, setSurvivalThresholdValue] = useState(SURVIVAL_DEFAULT_THRESHOLD.thresholdValue);
 
   const handleConfirm = () => {
     const mode = Object.values(GAME_MODES).find(m => m.id === selectedMode);
@@ -23,7 +26,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
     const difficulty = Object.values(DIFFICULTY_LEVELS).find(d => d.id === selectedDifficulty);
     const rounds = selectedRounds;
 
-    onSelectMode({
+    const payload = {
       // Base mode properties (preserve mode.id)
       ...mode,
       // Explicitly set turn/time properties to avoid clobbering mode.id
@@ -32,8 +35,19 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
       turnTimeName: timeOption?.name || null,
       difficulty: difficulty,
       roundsPerGame: rounds
-    });
+    };
+
+    // If survival mode selected, include threshold config
+    if (mode?.survivalMode) {
+      payload.survivalThreshold = {
+        thresholdType: survivalThresholdType,
+        thresholdValue: Number(survivalThresholdValue)
+      };
+    }
+
+    onSelectMode(payload);
   };
+
 
   return (
     <div style={{
@@ -290,6 +304,36 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
             ))}
           </div>
         </div>
+
+        {/* Survival Threshold (only for survival mode) */}
+        {Object.values(GAME_MODES).find(m => m.id === selectedMode)?.survivalMode && (
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{
+              fontSize: '26px',
+              fontWeight: '600',
+              color: '#334155',
+              marginBottom: '12px'
+            }}>
+              ⚖️ Soglia Sopravvivenza
+            </h3>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: 6 }}>Tipo</label>
+                <select value={survivalThresholdType} onChange={(e) => setSurvivalThresholdType(e.target.value)}>
+                  <option value="turn">Per Turno</option>
+                  <option value="game">Per Partita</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 6 }}>Valore soglia</label>
+                <input type="number" min={0} value={survivalThresholdValue} onChange={(e) => setSurvivalThresholdValue(e.target.value)} style={{ width: 120, padding: 8 }} />
+              </div>
+              <div style={{ color: '#64748b', fontSize: 16 }}>
+                Se sotto soglia, il giocatore perde 1 vita
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Summary */}
         <div style={{

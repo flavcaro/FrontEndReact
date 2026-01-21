@@ -32,6 +32,11 @@ export default function Board({ roomId, nickname, gameConfig }) {
     showResults
   } = useGame(roomId, finalNickname, players);
 
+  // Survival threshold info (may be stored as {type,value} or {thresholdType,thresholdValue})
+  const survivalThreshold = gameState?.survivalThreshold;
+  const survivalThresholdType = survivalThreshold?.type || survivalThreshold?.thresholdType;
+  const survivalThresholdValue = survivalThreshold?.value ?? survivalThreshold?.thresholdValue;
+
   const { messages, messagesEndRef } = useChat(roomId);
 
   const [selectedColor, setSelectedColor] = useState("#1e293b");
@@ -148,6 +153,11 @@ export default function Board({ roomId, nickname, gameConfig }) {
           {gameState?.survivalMode && gameState?.playerLives && (
             <div className="lives-display">
               <div className="lives-title">❤️ Vite Giocatori</div>
+                  {typeof survivalThresholdValue !== 'undefined' && (
+                    <div className="lives-subtitle">
+                      Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
+                    </div>
+                  )}
               <div className="lives-container">
                 {players.map((player) => {
                   const lives = gameState.playerLives[player.name] || 0;
@@ -217,6 +227,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           messages={messages}
           messagesEndRef={messagesEndRef}
           gameState={gameState}
+          timeLeft={timeLeft}
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}

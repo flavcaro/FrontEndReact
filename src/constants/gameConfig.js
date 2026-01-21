@@ -1,7 +1,7 @@
 // Game Modes (import from separate files)
 import { CLASSICA } from './gameModes/classica';
 import { CHAOS_TOOLS, generateChaosEffects } from './gameModes/chaosTools';
-import { SOPRAVVIVENZA, getSurvivalDifficulty, applySurvivalPenalties } from './gameModes/sopravvivenza';
+import { SOPRAVVIVENZA, getSurvivalDifficulty, applySurvivalPenalties, SURVIVAL_DEFAULT_THRESHOLD } from './gameModes/sopravvivenza';
 
 // Words by difficulty
 export const WORDS_BY_DIFFICULTY = {
@@ -111,4 +111,4 @@ export const DEFAULT_DIFFICULTY = DIFFICULTY_LEVELS.MEDIUM;
 export const DEFAULT_ROUNDS = 6;
 
 // Export mode-specific functions
-export { generateChaosEffects, getSurvivalDifficulty, applySurvivalPenalties };
+export { generateChaosEffects, getSurvivalDifficulty, applySurvivalPenalties, SURVIVAL_DEFAULT_THRESHOLD };

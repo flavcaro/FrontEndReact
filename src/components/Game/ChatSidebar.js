@@ -9,6 +9,7 @@ export default function ChatSidebar({
   messages, 
   messagesEndRef, 
   gameState, 
+  timeLeft,
   isArtist, 
   hasGuessed,
   onGuessCorrect
@@ -31,7 +32,7 @@ export default function ChatSidebar({
   }, [roomId]);
 
   const sendMessage = useCallback(async () => {
-    if (!inputMessage.trim() || !gameState?.active) return;
+    if (!inputMessage.trim() || !gameState?.active || (typeof timeLeft === 'number' && timeLeft <= 0)) return;
 
     const msg = inputMessage.trim();
     const msgLower = msg.toLowerCase();
@@ -45,12 +46,12 @@ export default function ChatSidebar({
         user: nickname,
         message: msg,
         timestamp: Date.now(),
-        isSystem: false,
+          isSystem: false,
         isCorrect: false
       });
       setInputMessage("");
     }
-  }, [inputMessage, gameState, isArtist, hasGuessed, nickname, roomId, onGuessCorrect]);
+  }, [inputMessage, gameState, isArtist, hasGuessed, nickname, roomId, onGuessCorrect, timeLeft]);
 
   // Helper function to determine message style based on type
   const getMessageStyle = (msg) => {
@@ -173,20 +174,22 @@ export default function ChatSidebar({
         <input
           type="text"
           placeholder={
-            isArtist 
-              ? "Stai disegnando..." 
-              : hasGuessed 
-                ? "Hai già indovinato!" 
-                : "Scrivi la tua risposta..."
+            (typeof timeLeft === 'number' && timeLeft <= 0)
+              ? "Tempo scaduto"
+              : isArtist 
+                ? "Stai disegnando..." 
+                : hasGuessed 
+                  ? "Hai già indovinato!" 
+                  : "Scrivi la tua risposta..."
           }
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          disabled={!gameState?.active || isArtist || hasGuessed}
+          disabled={!gameState?.active || isArtist || hasGuessed || (typeof timeLeft === 'number' && timeLeft <= 0)}
         />
         <button 
           onClick={sendMessage}
-          disabled={!gameState?.active || isArtist || hasGuessed}
+          disabled={!gameState?.active || isArtist || hasGuessed || (typeof timeLeft === 'number' && timeLeft <= 0)}
         >
           ➤
         </button>

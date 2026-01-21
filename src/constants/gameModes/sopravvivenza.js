@@ -9,6 +9,14 @@ export const SOPRAVVIVENZA = {
   startingLives: 3
 };
 
+// Default threshold settings for Survival mode
+// thresholdType: 'turn' -> compare points scored this turn
+// thresholdType: 'game' -> compare total score
+export const SURVIVAL_DEFAULT_THRESHOLD = {
+  thresholdType: 'turn',
+  thresholdValue: 10
+};
+
 // Calcola la difficoltà basata sul round per Survival
 export const getSurvivalDifficulty = (round) => {
   if (round <= 3) return 'easy';
@@ -29,8 +37,34 @@ export const applySurvivalPenalties = async (roomId, gameState, players, sendSys
   const guessedPlayers = guessedSnapshot.val() || [];
   const guessedNames = guessedPlayers.map(g => g.nickname);
 
+  // Determine threshold configuration: prefer gameState, fallback to defaults
+  const thresholdConfig = {
+    thresholdType: gameState.survivalThreshold?.type || gameState.survivalThreshold?.thresholdType || SURVIVAL_DEFAULT_THRESHOLD.thresholdType,
+    thresholdValue: gameState.survivalThreshold?.value || gameState.survivalThreshold?.thresholdValue || SURVIVAL_DEFAULT_THRESHOLD.thresholdValue
+  };
+
   for (const player of players) {
-    if (player.name === gameState.currentArtist || guessedNames.includes(player.name)) continue;
+    if (player.name === gameState.currentArtist) continue;
+
+    // Points this turn for the player (from guessedPlayers entries)
+    const guessedEntry = guessedPlayers.find(g => g.nickname === player.name);
+    const pointsThisTurn = guessedEntry ? (guessedEntry.points || 0) : 0;
+
+    let shouldPenalize = false;
+
+    if (thresholdConfig.thresholdType === 'turn') {
+      // Penalize if didn't reach per-turn threshold
+      if (pointsThisTurn < thresholdConfig.thresholdValue) shouldPenalize = true;
+    } else if (thresholdConfig.thresholdType === 'game') {
+      // Penalize if total score below threshold
+      const totalScore = player.score || 0;
+      if (totalScore < thresholdConfig.thresholdValue) shouldPenalize = true;
+    } else {
+      // Fallback: penalize non-guessers
+      if (!guessedNames.includes(player.name)) shouldPenalize = true;
+    }
+
+    if (!shouldPenalize) continue;
 
     const currentLives = gameState.playerLives[player.name] || 0;
     if (currentLives > 0) {

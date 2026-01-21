@@ -65,7 +65,9 @@ export default function Home() {
         survivalMode: gameMode.survivalMode || false,
         startingLives: gameMode.startingLives || null,
         playerLives: gameMode.survivalMode ? {} : null,
-        roundsPerPlayer: gameMode.roundsPerGame || undefined
+        roundsPerPlayer: gameMode.roundsPerGame || undefined,
+        // include survival threshold if provided by selector
+        survivalThreshold: gameMode.survivalThreshold || null
       };
       set(ref(db, `rooms/${roomId}/game`), initial).catch(err => console.error('Error init game node:', err));
     } catch (err) {

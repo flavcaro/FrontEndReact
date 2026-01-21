@@ -65,6 +65,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     hasChaosEffects: resolvedHasChaos,
     survivalMode: resolvedSurvival,
     startingLives: resolvedStartingLives,
+    // Persist survival threshold from config so penalties use it
+    survivalThreshold: gameConfig.survivalThreshold || null,
     playerLives: resolvedSurvival ? players.reduce((acc, p) => ({ ...acc, [p.name]: resolvedStartingLives }), {}) : null
   });
 
