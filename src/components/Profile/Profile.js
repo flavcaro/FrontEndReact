@@ -46,24 +46,28 @@ export default function Profile() {
 
     const userRef = ref(db, `users/${user.uid}`);
     const unsubscribe = onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setUserData(data);
-        setNewNickname(data.nickname || '');
-      } else {
-        // Initialize user data if not exists
-        const initialData = {
-          nickname: localStorage.getItem('nickname') || user.email?.split('@')[0] || 'Giocatore',
-          xp: 0,
-          gamesPlayed: 0,
-          gamesWon: 0,
-          totalScore: 0,
-          bestScore: 0,
-          createdAt: Date.now(),
-        };
-        set(userRef, initialData);
-        setUserData(initialData);
-        setNewNickname(initialData.nickname);
+      try {
+        const data = snapshot.val();
+        if (data) {
+          setUserData(data);
+          setNewNickname(data.nickname || '');
+        } else {
+          // Initialize user data if not exists
+          const initialData = {
+            nickname: localStorage.getItem('nickname') || user.email?.split('@')[0] || 'Giocatore',
+            xp: 0,
+            gamesPlayed: 0,
+            gamesWon: 0,
+            totalScore: 0,
+            bestScore: 0,
+            createdAt: Date.now(),
+          };
+          set(userRef, initialData);
+          setUserData(initialData);
+          setNewNickname(initialData.nickname);
+        }
+      } catch (error) {
+        console.error('Error in profile user data listener:', error);
       }
     });
 

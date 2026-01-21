@@ -16,6 +16,7 @@ import Profile from "./components/Profile/Profile";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
+import { GAME_MODES, DEFAULT_DIFFICULTY, DEFAULT_ROUNDS, TURN_DURATION } from './constants/gameConfig';
 
 function ProtectedHome() {
   const navigate = useNavigate();
@@ -113,6 +114,24 @@ function RoomPlay() {
         setGameConfig(config);
       } catch (e) {
         console.error("Error parsing stored config:", e);
+      }
+    }
+
+    // If no stored config, try to infer from URL param `mode`
+    if (!storedConfig) {
+      const modeParam = query.get('mode');
+      if (modeParam) {
+        const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
+        if (modeObj) {
+          const inferred = {
+            ...modeObj,
+            difficulty: DEFAULT_DIFFICULTY,
+            roundsPerGame: DEFAULT_ROUNDS,
+            turnDuration: modeObj.turnDuration || TURN_DURATION
+          };
+          console.log('Inferred game config from URL mode param:', inferred);
+          setGameConfig(inferred);
+        }
       }
     }
 

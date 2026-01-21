@@ -1,6 +1,6 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
-import { WORDS_BY_DIFFICULTY, generateChaosEffects } from "../constants/gameConfig";
+import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
 
 // Get random word based on difficulty
 const getRandomWord = (difficulty = 'MEDIUM') => {
@@ -9,6 +9,7 @@ const getRandomWord = (difficulty = 'MEDIUM') => {
 };
 
 export const startNewGame = async (roomId, players, userId, gameConfig) => {
+  console.log('[startNewGame] incoming gameConfig:', gameConfig);
   // Reset all player scores
   const resetPromises = players.map(player => 
     set(ref(db, `rooms/${roomId}/players/${player.id}/score`), 0)
@@ -16,6 +17,18 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   await Promise.all(resetPromises);
 
   const firstArtist = players[0]?.name;
+
+  // Normalize / resolve selected mode from provided gameConfig
+  const providedId = gameConfig?.id || gameConfig?.gameModeId || gameConfig?.modeId || null;
+  const selectedMode = Object.values(GAME_MODES).find(m => m.id === providedId) || null;
+
+  // If a selectedMode exists, prefer its values; otherwise fall back to gameConfig fields
+  const resolvedModeName = selectedMode?.name || gameConfig?.name || 'Classica';
+  const resolvedModeId = selectedMode?.id || gameConfig?.id || gameConfig?.gameModeId || 'classica';
+  const resolvedHasChaos = selectedMode?.hasChaosEffects || gameConfig?.hasChaosEffects || false;
+  const resolvedSurvival = selectedMode?.survivalMode || gameConfig?.survivalMode || false;
+  const resolvedStartingLives = selectedMode?.startingLives || gameConfig?.startingLives || 3;
+
   const word = getRandomWord(gameConfig.difficulty?.id);
   
   // Rounds per player (not total rounds)
@@ -44,15 +57,15 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     startedBy: userId,
     ownerId: userId,
     gameEnded: false,
-    mode: gameConfig.name || 'Classica',
+    mode: resolvedModeName,
     difficulty: gameConfig.difficulty?.name || 'Medio',
     difficultyId: gameConfig.difficulty?.id || 'medium',
     turnDuration: gameConfig.turnDuration || 60,
-    gameModeId: gameConfig.id,
-    hasChaosEffects: gameConfig.hasChaosEffects || false,
-    survivalMode: gameConfig.survivalMode || false,
-    startingLives: gameConfig.startingLives || 3,
-    playerLives: gameConfig.survivalMode ? players.reduce((acc, p) => ({ ...acc, [p.name]: gameConfig.startingLives }), {}) : null
+    gameModeId: resolvedModeId,
+    hasChaosEffects: resolvedHasChaos,
+    survivalMode: resolvedSurvival,
+    startingLives: resolvedStartingLives,
+    playerLives: resolvedSurvival ? players.reduce((acc, p) => ({ ...acc, [p.name]: resolvedStartingLives }), {}) : null
   });
 
   // Clear board and chat

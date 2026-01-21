@@ -144,6 +144,39 @@ export default function Board({ roomId, nickname, gameConfig }) {
             onChangeInstrument={setSelectedInstrument}
           />
 
+          {/* Lives Display - Solo in modalità sopravvivenza */}
+          {gameState?.survivalMode && gameState?.playerLives && (
+            <div className="lives-display">
+              <div className="lives-title">❤️ Vite Giocatori</div>
+              <div className="lives-container">
+                {players.map((player) => {
+                  const lives = gameState.playerLives[player.name] || 0;
+                  const isEliminated = lives === 0;
+                  
+                  return (
+                    <div 
+                      key={player.id} 
+                      className={`player-lives ${isEliminated ? 'eliminated' : ''} ${player.name === finalNickname ? 'current-player' : ''}`}
+                    >
+                      <div className="player-name">{player.name}</div>
+                      <div className="hearts-container">
+                        {Array.from({ length: gameState.startingLives || 3 }, (_, i) => (
+                          <span 
+                            key={i} 
+                            className={`heart ${i < lives ? 'filled' : 'empty'}`}
+                          >
+                            {i < lives ? '❤️' : '🤍'}
+                          </span>
+                        ))}
+                      </div>
+                      {isEliminated && <div className="eliminated-text">ELIMINATO</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <main className="board-main">
             <div className="game-content">
               <Canvas

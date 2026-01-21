@@ -20,8 +20,12 @@ export default function ChatSidebar({
   React.useEffect(() => {
     const playersRef = ref(db, `rooms/${roomId}/players`);
     const unsubscribe = onValue(playersRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      setPlayers(Object.values(data));
+      try {
+        const data = snapshot.val() || {};
+        setPlayers(Object.values(data));
+      } catch (error) {
+        console.error('Error in chat sidebar players listener:', error);
+      }
     });
     return () => unsubscribe();
   }, [roomId]);

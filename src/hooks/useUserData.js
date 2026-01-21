@@ -19,24 +19,28 @@ export function useUserData() {
 
     const userRef = ref(db, `users/${user.uid}`);
     const unsubscribe = onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const xp = data.xp || 0;
-        setXpPoints(xp);
-        
-        // Calcola il livello dinamicamente dagli XP
-        let calculatedLevel = 1;
-        while (true) {
-          const xpForNextLevel = 100 * calculatedLevel * (calculatedLevel + 1) / 2;
-          if (xp < xpForNextLevel) break;
-          calculatedLevel++;
+      try {
+        const data = snapshot.val();
+        if (data) {
+          const xp = data.xp || 0;
+          setXpPoints(xp);
+          
+          // Calcola il livello dinamicamente dagli XP
+          let calculatedLevel = 1;
+          while (true) {
+            const xpForNextLevel = 100 * calculatedLevel * (calculatedLevel + 1) / 2;
+            if (xp < xpForNextLevel) break;
+            calculatedLevel++;
+          }
+          setLevel(calculatedLevel);
+          
+          setGamesPlayed(data.gamesPlayed || 0);
+          setGamesWon(data.gamesWon || 0);
+          setTotalScore(data.totalScore || 0);
+          setBestScore(data.bestScore || 0);
         }
-        setLevel(calculatedLevel);
-        
-        setGamesPlayed(data.gamesPlayed || 0);
-        setGamesWon(data.gamesWon || 0);
-        setTotalScore(data.totalScore || 0);
-        setBestScore(data.bestScore || 0);
+      } catch (error) {
+        console.error('Error in user data listener:', error);
       }
     });
 

@@ -9,12 +9,16 @@ export function useChat(roomId) {
   useEffect(() => {
     const chatRef = ref(db, `rooms/${roomId}/chat`);
     const unsubscribe = onValue(chatRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const msgs = Object.entries(data)
-        .map(([id, value]) => ({ id, ...value }))
-        .sort((a, b) => a.timestamp - b.timestamp);
-      setMessages(msgs);
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      try {
+        const data = snapshot.val() || {};
+        const msgs = Object.entries(data)
+          .map(([id, value]) => ({ id, ...value }))
+          .sort((a, b) => a.timestamp - b.timestamp);
+        setMessages(msgs);
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      } catch (error) {
+        console.error('Error in chat listener:', error);
+      }
     });
     return unsubscribe;
   }, [roomId]);

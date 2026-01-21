@@ -17,10 +17,17 @@ export const getSurvivalDifficulty = (round) => {
 };
 
 // Applica penalità per Survival mode
-export const applySurvivalPenalties = async (roomId, gameState, players, sendSystemMessage, db, set, ref) => {
+export const applySurvivalPenalties = async (roomId, gameState, players, sendSystemMessage, db, set, ref, get) => {
   if (!gameState?.survivalMode || !gameState?.playerLives) return;
 
-  const guessedNames = (gameState.guessedPlayers || []).map(g => g.nickname);
+  // Aspetta un momento per assicurarsi che guessedPlayers sia aggiornato
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  // Leggi direttamente guessedPlayers dal database per avere il valore più aggiornato
+  const guessedRef = ref(db, `rooms/${roomId}/game/guessedPlayers`);
+  const guessedSnapshot = await get(guessedRef);
+  const guessedPlayers = guessedSnapshot.val() || [];
+  const guessedNames = guessedPlayers.map(g => g.nickname);
 
   for (const player of players) {
     if (player.name === gameState.currentArtist || guessedNames.includes(player.name)) continue;

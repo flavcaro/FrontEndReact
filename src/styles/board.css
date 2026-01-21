@@ -137,3 +137,141 @@
     padding: 0;
   }
 }
+
+/* =========================
+   LIVES DISPLAY
+========================= */
+
+.lives-display {
+  width: 100%;
+  max-width: 1200px;
+  margin: 10px 0;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.lives-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #92400e;
+  text-align: center;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.lives-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.player-lives {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.player-lives.current-player {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.player-lives.eliminated {
+  opacity: 0.6;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hearts-container {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.heart {
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+
+.heart.filled {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.eliminated-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ef4444;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lives-display {
+    padding: 12px 15px;
+    margin: 8px 0;
+  }
+  
+  .lives-container {
+    gap: 12px;
+  }
+  
+  .player-lives {
+    padding: 8px 12px;
+    min-width: 100px;
+  }
+  
+  .heart {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lives-container {
+    gap: 8px;
+  }
+  
+  .player-lives {
+    min-width: 80px;
+    padding: 6px 8px;
+  }
+  
+  .player-name {
+    font-size: 12px;
+    max-width: 80px;
+  }
+  
+  .heart {
+    font-size: 16px;
+  }
+}

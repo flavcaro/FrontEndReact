@@ -75,7 +75,9 @@ export function usePlayers(roomId, nickname) {
 
         let playerReference;
         let playerKey;
-        let isFirstPlayer = playersList.length === 0;
+        // Check if there's already an owner to prevent race conditions
+        const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
+        const hasExistingOwner = ownerSnapshot.exists();
         let playerNickname;
 
         if (existingSessionEntry) {
@@ -136,7 +138,7 @@ export function usePlayers(roomId, nickname) {
           await sendSystemMessage(roomId, `👋 ${uniqueName} è entrato nella stanza`);
 
           // Store room ownership in separate location
-          if (isFirstPlayer) {
+          if (!hasExistingOwner) {
             await set(ref(db, `rooms/${roomId}/owner`), {
               playerId: playerKey,
               nickname: uniqueName,
@@ -150,6 +152,22 @@ export function usePlayers(roomId, nickname) {
         playerNicknameRef.current = playerNickname;
         playerRefRef.current = playerReference;
         setPlayerId(playerKey);
+
+        // If the game is in survival mode, ensure this player's lives are initialized
+        try {
+          const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
+          const gameData = gameSnapshot.val() || {};
+          if (gameData.survivalMode) {
+            const starting = gameData.startingLives || 3;
+            const playerLivesRef = ref(db, `rooms/${roomId}/game/playerLives/${playerNickname}`);
+            const livesSnap = await get(playerLivesRef);
+            if (!livesSnap.exists()) {
+              await set(playerLivesRef, starting);
+            }
+          }
+        } catch (err) {
+          console.error('Error ensuring player lives:', err);
+        }
 
         // Set up disconnect handler ONLY ONCE
         if (!disconnectSetup.current) {
@@ -191,7 +209,28 @@ export function usePlayers(roomId, nickname) {
                 const playersList = Object.values(playersData);
                 await endGameByOwnerLeaving(roomId, playersList);
               }
+              
+              // Remove current owner
               await remove(ref(db, `rooms/${roomId}/owner`));
+              
+              // Assign new owner to the oldest remaining player (by joinedAt)
+              const remainingPlayersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+              const remainingPlayers = remainingPlayersSnapshot.val() || {};
+              const remainingPlayerList = Object.entries(remainingPlayers)
+                .map(([id, data]) => ({ id, ...data }))
+                .filter(player => player.sessionId !== currentSessionId) // Exclude the leaving player
+                .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0)); // Sort by join time
+              
+              if (remainingPlayerList.length > 0) {
+                const newOwner = remainingPlayerList[0];
+                await set(ref(db, `rooms/${roomId}/owner`), {
+                  playerId: newOwner.id,
+                  nickname: newOwner.name,
+                  sessionId: newOwner.sessionId,
+                  createdAt: Date.now()
+                });
+                await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
+              }
             }
             // Remove player from list
             await remove(playerRefRef.current);
@@ -208,21 +247,26 @@ export function usePlayers(roomId, nickname) {
   useEffect(() => {
     const playersRef = ref(db, `rooms/${roomId}/players`);
     const unsubscribe = onValue(playersRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      
-      // Convert to array - Keep ALL connected players
-      const allPlayers = Object.entries(data)
-        .map(([id, player]) => ({
-          id,
-          ...player
-        }))
-        .filter(player => player.connected !== false);
+      try {
+        const data = snapshot.val() || {};
+        
+        // Convert to array - Keep ALL connected players
+        const allPlayers = Object.entries(data)
+          .map(([id, player]) => ({
+            id,
+            ...player
+          }))
+          .filter(player => player.connected !== false);
 
-      // Sort by score (highest first)
-      const sortedPlayers = allPlayers.sort((a, b) => (b.score || 0) - (a.score || 0));
-      
-      setPlayers(sortedPlayers);
-      setIsRoomFull(sortedPlayers.length >= MAX_PLAYERS);
+        // Sort by score (highest first)
+        const sortedPlayers = allPlayers.sort((a, b) => (b.score || 0) - (a.score || 0));
+        
+        setPlayers(sortedPlayers);
+        setIsRoomFull(sortedPlayers.length >= MAX_PLAYERS);
+      } catch (error) {
+        console.error("Error in players listener:", error);
+        // Don't crash the app, just log the error
+      }
     });
     return unsubscribe;
   }, [roomId]);
@@ -231,11 +275,16 @@ export function usePlayers(roomId, nickname) {
   useEffect(() => {
     const ownerRef = ref(db, `rooms/${roomId}/owner`);
     const unsubscribe = onValue(ownerRef, (snapshot) => {
-      const ownerData = snapshot.val();
-      if (ownerData && playerId) {
-        setIsOwner(ownerData.playerId === playerId);
-      } else {
-        setIsOwner(false);
+      try {
+        const ownerData = snapshot.val();
+        if (ownerData && playerId) {
+          setIsOwner(ownerData.playerId === playerId);
+        } else {
+          setIsOwner(false);
+        }
+      } catch (error) {
+        console.error("Error in owner listener:", error);
+        // Don't crash the app, just log the error
       }
     });
     return unsubscribe;

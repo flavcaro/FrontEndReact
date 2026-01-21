@@ -24,8 +24,12 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
     const rounds = selectedRounds;
 
     onSelectMode({
+      // Base mode properties (preserve mode.id)
       ...mode,
-      ...timeOption, // Include time properties
+      // Explicitly set turn/time properties to avoid clobbering mode.id
+      turnDuration: timeOption?.turnDuration || mode.turnDuration,
+      turnTimeId: timeOption?.id || null,
+      turnTimeName: timeOption?.name || null,
       difficulty: difficulty,
       roundsPerGame: rounds
     });

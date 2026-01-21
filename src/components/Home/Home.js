@@ -9,6 +9,8 @@ import UserHeader from './UserHeader';
 import RoomActions from './RoomActions';
 import GameModeSelector from './GameModeSelector';
 import { generateRoomCode, validateNickname, extractRoomCode } from '../../utils/roomUtils';
+import { db } from '../../firebase';
+import { ref, set } from 'firebase/database';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -46,7 +48,29 @@ export default function Home() {
   const createRoom = (gameMode) => {
     const roomId = generateRoomCode();
     // Store game mode in localStorage for the room
+    console.log('[createRoom] storing gameMode for', roomId, gameMode);
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(gameMode));
+
+    // Initialize game config in database so other players see selected mode before start
+    try {
+      const initial = {
+        active: false,
+        gameEnded: false,
+        mode: gameMode.name,
+        gameModeId: gameMode.id,
+        turnDuration: gameMode.turnDuration || 60,
+        difficulty: gameMode.difficulty?.name || null,
+        difficultyId: gameMode.difficulty?.id || null,
+        hasChaosEffects: gameMode.hasChaosEffects || false,
+        survivalMode: gameMode.survivalMode || false,
+        startingLives: gameMode.startingLives || null,
+        playerLives: gameMode.survivalMode ? {} : null,
+        roundsPerPlayer: gameMode.roundsPerGame || undefined
+      };
+      set(ref(db, `rooms/${roomId}/game`), initial).catch(err => console.error('Error init game node:', err));
+    } catch (err) {
+      console.error('Error initializing game config in DB:', err);
+    }
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}&mode=${gameMode.id}`, { replace: true });
     setShowModeSelector(false);
   };

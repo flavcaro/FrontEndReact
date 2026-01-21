@@ -37,17 +37,18 @@ export function useGame(roomId, nickname, players) {
 
     const gameRef = ref(db, `rooms/${roomId}/game`);
     return onValue(gameRef, async snapshot => {
-      const data = snapshot.val();
-      setGameState(data);
+      try {
+        const data = snapshot.val();
+        setGameState(data);
 
-      // Sincronizza showResults per tutti
-      if (data?.showResults) {
-        setShowResults(true);
-      } else {
-        setShowResults(false);
-      }
+        // Sincronizza showResults per tutti
+        if (data?.showResults) {
+          setShowResults(true);
+        } else {
+          setShowResults(false);
+        }
 
-      if (!data?.gameEnded || !data?.finalScores) return;
+        if (!data?.gameEnded || !data?.finalScores) return;
 
       setFinalResults(data.finalScores);
 
@@ -65,6 +66,9 @@ export function useGame(roomId, nickname, players) {
           await updateGameStats(user.uid, myScore.score, isWinner);
         }
       }
+    } catch (error) {
+      console.error('Error in game state listener:', error);
+    }
     });
   }, [roomId]);
 
@@ -78,19 +82,27 @@ export function useGame(roomId, nickname, players) {
     let unsubPlayers;
 
     const unsubOwner = onValue(ownerRef, ownerSnap => {
-      const owner = ownerSnap.val();
-      if (!owner) {
-        endForOwnerLeave();
-        return;
-      }
+      try {
+        const owner = ownerSnap.val();
+        if (!owner) {
+          endForOwnerLeave();
+          return;
+        }
 
-      unsubPlayers = onValue(playersRef, snap => {
-        const list = Object.values(snap.val() || {});
-        const stillHere = list.some(
-          p => p.sessionId === owner.sessionId
-        );
-        if (!stillHere) endForOwnerLeave();
-      });
+        unsubPlayers = onValue(playersRef, snap => {
+          try {
+            const list = Object.values(snap.val() || {});
+            const stillHere = list.some(
+              p => p.sessionId === owner.sessionId
+            );
+            if (!stillHere) endForOwnerLeave();
+          } catch (error) {
+            console.error('Error in owner leave players listener:', error);
+          }
+        });
+      } catch (error) {
+        console.error('Error in owner leave listener:', error);
+      }
     });
 
     async function endForOwnerLeave() {
@@ -211,6 +223,10 @@ export function useGame(roomId, nickname, players) {
       await get(ref(db, `rooms/${roomId}/game/drawCounts`))
     ).val();
 
+    // Leggi playerLives aggiornato dal database
+    const playerLivesSnapshot = await get(ref(db, `rooms/${roomId}/game/playerLives`));
+    const currentPlayerLives = playerLivesSnapshot.val() || {};
+
     const nextRound = (gameState?.round || 0) + 1;
 
     const chaosEffects = gameState?.hasChaosEffects ? generateChaosEffects() : null;
@@ -225,7 +241,8 @@ export function useGame(roomId, nickname, players) {
       round: nextRound,
       drawCounts: updatedCounts,
       allGuessed: false,
-      chaosEffects
+      chaosEffects,
+      playerLives: currentPlayerLives  // Usa il valore aggiornato dal database
     });
 
     // Reset timer alla durata configurata
@@ -283,7 +300,7 @@ export function useGame(roomId, nickname, players) {
     await awardArtistPoints();
 
     // Survival mode penalties
-    await applySurvivalPenalties(roomId, gameState, players, sendSystemMessage, db, set, ref);
+    await applySurvivalPenalties(roomId, gameState, players, sendSystemMessage, db, set, ref, get);
 
     setTimeout(async () => {
       // Reset showResults globale
