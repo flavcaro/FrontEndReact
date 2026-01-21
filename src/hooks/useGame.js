@@ -10,7 +10,8 @@ import {
   endGame,
   advanceToNextTurn,
   awardPlayerPoints,
-  sendSystemMessage
+  sendSystemMessage,
+  generateChaosEffects
 } from "../services/gameService";
 
 export function useGame(roomId, nickname, players) {
@@ -172,9 +173,17 @@ export function useGame(roomId, nickname, players) {
     };
   }, [players.length, gameState, roomId, players]);
 
-  /* ---------------- NEXT TURN ---------------- */
   const nextTurn = useCallback(async () => {
-    const difficultyId = gameState?.difficultyId || "medium";
+    let difficultyId = gameState?.difficultyId || "medium";
+    
+    // Survival mode: increasing difficulty
+    if (gameState?.survivalMode) {
+      const round = (gameState?.round || 0) + 1;
+      if (round <= 3) difficultyId = 'easy';
+      else if (round <= 6) difficultyId = 'medium';
+      else difficultyId = 'hard';
+    }
+    
     const playerOrder =
       gameState?.playerOrder || players.map(p => p.name);
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
@@ -207,6 +216,8 @@ export function useGame(roomId, nickname, players) {
 
     const nextRound = (gameState?.round || 0) + 1;
 
+    const chaosEffects = gameState?.hasChaosEffects ? generateChaosEffects() : null;
+
     await set(ref(db, `rooms/${roomId}/game`), {
       ...gameState,
       active: true,
@@ -216,7 +227,8 @@ export function useGame(roomId, nickname, players) {
       guessedPlayers: [],
       round: nextRound,
       drawCounts: updatedCounts,
-      allGuessed: false
+      allGuessed: false,
+      chaosEffects
     });
 
     // Reset timer alla durata configurata
@@ -273,13 +285,34 @@ export function useGame(roomId, nickname, players) {
 
     await awardArtistPoints();
 
+    // Survival mode penalties
+    if (gameState?.survivalMode && gameState?.playerLives) {
+      const guessedNames = gameState.guessedPlayers.map(g => g.nickname);
+      
+      for (const player of players) {
+        if (player.name === gameState.currentArtist || guessedNames.includes(player.name)) continue;
+        
+        const currentLives = gameState.playerLives[player.name] || 0;
+        if (currentLives > 0) {
+          const newLives = currentLives - 1;
+          await set(ref(db, `rooms/${roomId}/game/playerLives/${player.name}`), newLives);
+          
+          if (newLives === 0) {
+            await sendSystemMessage(roomId, `💀 ${player.name} ha perso tutte le vite ed è eliminato!`);
+          } else {
+            await sendSystemMessage(roomId, `❤️ ${player.name} perde una vita! (${newLives} rimanenti)`);
+          }
+        }
+      }
+    }
+
     setTimeout(async () => {
       // Reset showResults globale
       await set(ref(db, `rooms/${roomId}/game/showResults`), false);
       setShowResults(false);
       await nextTurn();
     }, 5000);
-  }, [roomId, gameState, awardArtistPoints, nextTurn]);
+  }, [roomId, gameState, awardArtistPoints, nextTurn, players]);
 
   /* ---------------- TIMER ---------------- */
   const endTurnAutomatically = useCallback(async () => {

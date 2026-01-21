@@ -48,6 +48,17 @@ html, body {
 @media (max-width: 480px)  { .canvas-wrapper { padding: 8px; } }
 @media (max-width: 375px)  { .canvas-wrapper { padding: 6px; } }
 
+/* =========================
+   CHAOS EFFECTS ANIMATIONS
+========================= */
+@keyframes tremble {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+
 @media (max-height: 600px) and (orientation: landscape) { .canvas-wrapper { padding: 8px; } }
 @media (max-height: 450px) and (orientation: landscape) { .canvas-wrapper { padding: 4px; } }
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) { .canvas-wrapper { padding: 12px; } }

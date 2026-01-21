@@ -153,6 +153,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
                 onMouseUp={showResults ? undefined : handleMouseUp}
                 isArtist={isArtist}
                 nickname={finalNickname}
+                chaosEffects={gameState?.chaosEffects}
               />
 
               {isArtist && (

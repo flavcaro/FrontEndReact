@@ -7,7 +7,8 @@ export default function Canvas({
   onMouseMove, 
   onMouseUp,
   isArtist,
-  nickname
+  nickname,
+  chaosEffects
 }) {
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -40,6 +41,8 @@ export default function Canvas({
     };
   }, []);
 
+  const chaosStyle = chaosEffects ? chaosEffects.reduce((acc, effect) => ({ ...acc, ...effect.style }), {}) : {};
+
   return (
     <div
       className="canvas-wrapper"
@@ -51,7 +54,8 @@ export default function Canvas({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        ...chaosStyle
       }}
     >
       {dimensions.width > 0 && dimensions.height > 0 && (

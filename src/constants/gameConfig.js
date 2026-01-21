@@ -77,6 +77,23 @@ export const GAME_MODES = {
     description: 'Modalità tradizionale con regole standard',
     icon: '🎨',
     turnDuration: 60
+  },
+  CHAOS_TOOLS: {
+    id: 'chaos_tools',
+    name: '🌀 Chaos Tools',
+    description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, zoom imprevisti, linee tremolanti',
+    icon: '🌀',
+    turnDuration: 45,
+    hasChaosEffects: true
+  },
+  SOPRAVVIVENZA: {
+    id: 'sopravvivenza',
+    name: '🏃 Sopravvivenza',
+    description: 'Difficoltà crescente per round. Penalità per non indovinare: perdita vite, eliminazione. Vince l\'ultimo rimasto!',
+    icon: '🏃',
+    turnDuration: 30,
+    survivalMode: true,
+    startingLives: 3
   }
 };
 
