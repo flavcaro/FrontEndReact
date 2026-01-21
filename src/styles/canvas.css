@@ -22,6 +22,9 @@ html, body {
   overflow: hidden;
   padding: 12px; /* padding base */
   aspect-ratio: 1 / 1;
+  /* Previeni comportamenti indesiderati su touch */
+  touch-action: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* =========================
@@ -37,6 +40,11 @@ html, body {
   cursor: crosshair;
   min-width: 200px;
   min-height: 200px;
+  /* Migliora il comportamento touch su mobile */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* =========================

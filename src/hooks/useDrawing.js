@@ -120,7 +120,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     }
   }, [showResults, isArtist, gameActive, allGuessed, saveLine, roomId, nickname]);
 
-  // Global mouse event listeners to handle drawing outside canvas
+  // Global mouse and touch event listeners to handle drawing outside canvas
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       if (isDrawing.current) {
@@ -134,12 +134,22 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       }
     };
 
+    const handleGlobalTouchEnd = () => {
+      if (isDrawing.current) {
+        stopDrawing();
+      }
+    };
+
     window.addEventListener('mouseup', handleGlobalMouseUp);
     document.addEventListener('mouseleave', handleGlobalMouseLeave);
+    window.addEventListener('touchend', handleGlobalTouchEnd);
+    window.addEventListener('touchcancel', handleGlobalTouchEnd);
 
     return () => {
       window.removeEventListener('mouseup', handleGlobalMouseUp);
       document.removeEventListener('mouseleave', handleGlobalMouseLeave);
+      window.removeEventListener('touchend', handleGlobalTouchEnd);
+      window.removeEventListener('touchcancel', handleGlobalTouchEnd);
     };
   }, [isArtist, gameActive, showResults, allGuessed, roomId, nickname, stopDrawing]);
 
@@ -163,9 +173,15 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     setLines([]);
   }, [roomId]);
 
-  // Eventi mouse
+  // Eventi mouse e touch
   const handleMouseDown = (e) => {
     if (!isArtist || !gameActive || showResults || allGuessed) return;
+    
+    // Previeni il comportamento di default per touch events
+    if (e.evt && e.evt.type.includes('touch')) {
+      e.evt.preventDefault();
+    }
+    
     const pos = e.target.getStage().getPointerPosition();
     const stage = e.target.getStage();
     if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {
@@ -189,6 +205,12 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
 
   const handleMouseMove = (e) => {
     if (!isDrawing.current || !isArtist || !currentLine.current || allGuessed) return;
+    
+    // Previeni il comportamento di default per touch events
+    if (e.evt && e.evt.type.includes('touch')) {
+      e.evt.preventDefault();
+    }
+    
     const pos = e.target.getStage().getPointerPosition();
     const stage = e.target.getStage();
     if (!pos || pos.x < 0 || pos.y < 0 || pos.x > stage.width() || pos.y > stage.height()) {

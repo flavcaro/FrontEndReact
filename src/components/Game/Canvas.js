@@ -67,6 +67,9 @@ export default function Canvas({
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
           onMouseLeave={onMouseUp}
+          onTouchStart={onMouseDown}
+          onTouchMove={onMouseMove}
+          onTouchEnd={onMouseUp}
         >
           <Layer>
             {lines.map((line, i) => {
