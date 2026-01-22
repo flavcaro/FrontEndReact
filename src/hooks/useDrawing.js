@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ref, set, push, onValue, remove } from "firebase/database";
 import { db } from "../firebase";
 
-export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b', allGuessed = false, selectedInstrument = 'pencil') {
+export function useDrawing(roomId, nickname, isArtist, gameActive, showResults = false, selectedColor = '#1e293b', allGuessed = false, selectedInstrument = 'pencil', chaosEffects = []) {
   const [lines, setLines] = useState([]);
   const isDrawing = useRef(false);
   const currentLine = useRef(null);
@@ -28,6 +28,17 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`));
     };
   }, [roomId, nickname]);
+
+  // Helper: check active chaos effects (memoized to satisfy hook deps)
+  const hasEffect = useCallback((id) => Array.isArray(chaosEffects) && chaosEffects.some(e => e && e.id === id), [chaosEffects]);
+  const getEffect = useCallback((id) => Array.isArray(chaosEffects) && chaosEffects.find(e => e && e.id === id), [chaosEffects]);
+
+  const randomHexColor = () => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  };
 
   // Listener linee definitive
   useEffect(() => {
@@ -75,10 +86,11 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
         setLines((prev) => {
           // Mantieni le linee salvate
           const saved = prev.filter((l) => !l.temp);
-          
+
           // Mantieni la mia linea temporanea corrente (se sto disegnando)
-          const myTemp = isDrawing.current && currentLine.current ? [currentLine.current] : [];
-          
+          const noPreview = !!getEffect('noPreview');
+          const myTemp = isDrawing.current && currentLine.current && !noPreview ? [currentLine.current] : [];
+
           // Aggiungi le linee temporanee degli altri giocatori
           const otherTemp = [];
           if (data && Object.keys(data).length > 0) {
@@ -93,7 +105,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
               }
             });
           }
-          
+
           return [...saved, ...myTemp, ...otherTemp];
         });
       } catch (error) {
@@ -101,7 +113,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       }
     });
     return unsubscribe;
-  }, [roomId, nickname, gameActive]);
+  }, [roomId, nickname, gameActive, chaosEffects]);
 
   // Salva linea
   const saveLine = useCallback(async (line) => {
@@ -191,15 +203,24 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     lineIdCounter.current += 1;
     const normalizedX = pos.x / stage.width();
     const normalizedY = pos.y / stage.height();
+    // Random color per stroke if effect active
+    const randomColorActive = hasEffect('randomColor');
+    const strokeColor = selectedInstrument === 'eraser' ? null : (randomColorActive ? randomHexColor() : selectedColor);
+
     currentLine.current = {
       id: `${nickname}-${Date.now()}-${lineIdCounter.current}`,
       points: [normalizedX, normalizedY],
       user: nickname,
       temp: true,
-      color: selectedInstrument === 'eraser' ? null : selectedColor,
+      color: strokeColor,
       eraser: selectedInstrument === 'eraser'
     };
-    setLines((prev) => [...prev, currentLine.current]);
+
+    // If noPreview effect is active, don't add local preview (still send temp to others)
+    const noPreview = !!getEffect('noPreview');
+    if (!noPreview) {
+      setLines((prev) => [...prev, currentLine.current]);
+    }
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
   };
 
@@ -227,20 +248,35 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       if (Math.sqrt(dx * dx + dy * dy) < 2) return; // Aumentato da 1 a 2px
     }
     
-    const normalizedX = pos.x / stage.width();
-    const normalizedY = pos.y / stage.height();
+    // Normalized coords
+    let normalizedX = pos.x / stage.width();
+    let normalizedY = pos.y / stage.height();
+
+    // Apply trembling lines effect (jitter points) if active
+    const trembling = getEffect('tremblingLines');
+    if (trembling && trembling.params && trembling.params.amplitude) {
+      const amp = Number(trembling.params.amplitude) || 1; // pixels
+      const jitterX = (Math.random() * 2 - 1) * (amp / stage.width());
+      const jitterY = (Math.random() * 2 - 1) * (amp / stage.height());
+      normalizedX = Math.min(1, Math.max(0, normalizedX + jitterX));
+      normalizedY = Math.min(1, Math.max(0, normalizedY + jitterY));
+    }
+
     currentLine.current.points = [...pts, normalizedX, normalizedY];
-    
+
     // Aggiorna immediatamente la linea locale per feedback visivo fluido
-    setLines((prev) => {
-      const updated = [...prev];
-      const myTempIndex = updated.findIndex((l) => l.temp && l.user === nickname);
-      if (myTempIndex !== -1) {
-        updated[myTempIndex] = { ...currentLine.current };
-      }
-      return updated;
-    });
-    
+    const noPreview = !!getEffect('noPreview');
+    if (!noPreview) {
+      setLines((prev) => {
+        const updated = [...prev];
+        const myTempIndex = updated.findIndex((l) => l.temp && l.user === nickname);
+        if (myTempIndex !== -1) {
+          updated[myTempIndex] = { ...currentLine.current };
+        }
+        return updated;
+      });
+    }
+
     // Invio al server limitato (ora a 30fps)
     if (sendTempLine.current) sendTempLine.current(currentLine.current);
   };

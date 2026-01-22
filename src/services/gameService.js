@@ -1,6 +1,7 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
+import { generateChaosEffects } from "../constants/gameModes/chaosTools";
 
 // Get random word based on difficulty
 const getRandomWord = (difficulty = 'MEDIUM') => {
@@ -44,6 +45,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     drawCounts[player.name] = 0;
   });
   
+  const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
+
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
     currentArtist: firstArtist,
@@ -64,6 +67,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     turnDuration: gameConfig.turnDuration || 60,
     gameModeId: resolvedModeId,
     hasChaosEffects: resolvedHasChaos,
+    chaosEffects: initialChaos,
     survivalMode: resolvedSurvival,
     startingLives: resolvedStartingLives,
     // Persist survival threshold from config so penalties use it
@@ -73,6 +77,17 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
 
   // Increment the first artist's count since they're starting now
   await set(ref(db, `rooms/${roomId}/game/drawCounts/${firstArtist}`), 1);
+
+  // Log initial chaos effects for debugging/history
+  if (initialChaos) {
+    await push(ref(db, `rooms/${roomId}/game/chaosLogs`), {
+      event: 'start_game',
+      round: 1,
+      artist: firstArtist,
+      effects: initialChaos,
+      createdAt: Date.now()
+    });
+  }
 
   // Clear board and chat
   await Promise.all([
@@ -179,7 +194,30 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   const nextArtist = playerOrder[nextIndex];
   const word = getRandomWord(difficultyId);
   
-  return { nextArtist, word };
+  // Generate chaos effects server-side if game mode requires it
+  try {
+    const gameSnap = await get(ref(db, `rooms/${roomId}/game`));
+    const gameState = gameSnap.val() || {};
+    const chaosEffects = gameState?.hasChaosEffects ? generateChaosEffects() : null;
+    // Persist chosen chaos effects so clients receive a stable shared value
+    await set(ref(db, `rooms/${roomId}/game/chaosEffects`), chaosEffects);
+
+    // Log assigned chaos effects for this round
+    if (chaosEffects) {
+      await push(ref(db, `rooms/${roomId}/game/chaosLogs`), {
+        event: 'advance_turn',
+        round: (gameState.round || 0) + 1,
+        artist: nextArtist,
+        effects: chaosEffects,
+        createdAt: Date.now()
+      });
+    }
+
+    return { nextArtist, word, chaosEffects };
+  } catch (err) {
+    console.error('[advanceToNextTurn] error generating/persisting chaosEffects', err);
+    return { nextArtist, word, chaosEffects: null };
+  }
 };
 
 export const awardPlayerPoints = async (roomId, playerId, playerScore, points) => {

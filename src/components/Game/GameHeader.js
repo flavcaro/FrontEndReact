@@ -25,6 +25,10 @@ export default function GameHeader({
   
   const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && isOwner;
 
+  const activeMalus = Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0
+    ? gameState.chaosEffects.map(m => m.name).join(', ')
+    : null;
+
   const handleLeaveRoom = () => {
     if (gameState?.active) {
       const confirmMessage = isOwner 
@@ -73,6 +77,30 @@ export default function GameHeader({
                 {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
               </div>
             </div>
+            {activeMalus && (
+              <div style={{ marginLeft: 20 }}>
+                <div className="room-label">Malus attivo</div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: '#ef4444' }}>{activeMalus}</div>
+              </div>
+            )}
+            {/* Detailed malus info for the current artist (visible to the artist) */}
+            {isArtist && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
+              <div style={{ marginLeft: 20 }}>
+                <div className="room-label">Dettagli Malus</div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                  {gameState.chaosEffects.map((m, idx) => (
+                    <div key={m.id + idx} style={{ padding: '6px 10px', background: '#fff1f2', color: '#991b1b', borderRadius: 8, fontWeight: 600, fontSize: 14 }}>
+                      <div>{m.name}</div>
+                      {m.params && typeof m.params === 'object' && (
+                        <div style={{ fontSize: 12, fontWeight: 500, marginTop: 4 }}>
+                          {Object.entries(m.params).map(([k, v]) => `${k}: ${v}`).join(' • ')}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

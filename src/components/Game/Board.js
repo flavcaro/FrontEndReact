@@ -56,7 +56,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
     showResults,
     selectedColor,
     gameState?.allGuessed,
-    selectedInstrument
+    selectedInstrument,
+    gameState?.chaosEffects
   );
 
   const [popup, setPopup] = useState({ open: false, message: "" });

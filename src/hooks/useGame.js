@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
 import { db, auth } from "../firebase";
-import { TURN_DURATION, generateChaosEffects, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
+import { TURN_DURATION, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
 import { useGameTimer } from "./useGameTimer";
 import { updateGameStats } from "../services/userService";
@@ -198,7 +198,7 @@ export function useGame(roomId, nickname, players) {
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
 
     // Determina chi è il prossimo artista (senza incrementare ancora)
-    const { nextArtist, word } = await advanceToNextTurn(
+    const { nextArtist, word, chaosEffects } = await advanceToNextTurn(
       roomId,
       players,
       gameState?.currentArtist,
@@ -233,8 +233,6 @@ export function useGame(roomId, nickname, players) {
 
     const nextRound = (gameState?.round || 0) + 1;
 
-    const chaosEffects = gameState?.hasChaosEffects ? generateChaosEffects() : null;
-
     await set(ref(db, `rooms/${roomId}/game`), {
       ...gameState,
       active: true,
@@ -245,7 +243,8 @@ export function useGame(roomId, nickname, players) {
       round: nextRound,
       drawCounts: currentCounts,
       allGuessed: false,
-      chaosEffects,
+      // Use chaosEffects provided/generated server-side
+      chaosEffects: chaosEffects || null,
       playerLives: currentPlayerLives  // Usa il valore aggiornato dal database
     });
 
