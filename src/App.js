@@ -11,6 +11,7 @@ import { auth } from "./firebase";
 import Lobby from "./components/Lobby/Lobby";
 import Home from "./components/Home/Home";
 import Board from "./components/Game/Board";
+import PuzzleBoard from "./components/Game/PuzzleBoard";
 import RoomJoin from "./components/Room/RoomJoin";
 import Profile from "./components/Profile/Profile";
 import Loading from "./components/common/Loading";
@@ -142,6 +143,13 @@ function RoomPlay() {
   if (authLoading) return <Loading message="Verificando autenticazione..." />;
   if (!user) return <Loading message="Reindirizzamento..." />;
   if (!isReady || !nickname) return <Loading message="Entrando nella stanza..." />;
+
+  // Determina quale Board renderizzare in base alla modalità
+  const isPuzzleMode = gameConfig?.id === 'puzzleDrawing' || gameConfig?.gameModeId === 'puzzleDrawing';
+
+  if (isPuzzleMode) {
+    return <PuzzleBoard roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
+  }
 
   return <Board roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
 }
