@@ -38,15 +38,18 @@ export default function ChatSidebar({
     const msgLower = msg.toLowerCase();
     const correctWord = gameState?.word?.toLowerCase();
 
+    // Controlla se il giocatore può indovinare e se ha indovinato correttamente
     if (!isArtist && !hasGuessed && msgLower === correctWord) {
-      await onGuessCorrect(nickname);
+      // Passa la parola indovinata (msg) invece del nickname
+      await onGuessCorrect(msg);
       setInputMessage("");
     } else {
+      // Invia il messaggio normale in chat
       await push(ref(db, `rooms/${roomId}/chat`), {
         user: nickname,
         message: msg,
         timestamp: Date.now(),
-          isSystem: false,
+        isSystem: false,
         isCorrect: false
       });
       setInputMessage("");

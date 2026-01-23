@@ -253,57 +253,86 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
           </div>
         </div>
 
-        {/* Rounds Selection */}
-        <div style={{ marginBottom: '24px' }}>
-          <h3 style={{
-            fontSize: '26px',
-            fontWeight: '600',
-            color: '#334155',
-            marginBottom: '12px'
-          }}>
-            🔄 Numero di Round
-          </h3>
-          <div style={{
-            display: 'flex',
-            gap: '8px'
-          }}>
-            {ROUNDS_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setSelectedRounds(option.value)}
-                style={{
-                  flex: 1,
-                  padding: '16px 12px',
-                  border: selectedRounds === option.value 
-                    ? '3px solid #6366f1' 
-                    : '2px solid #e2e8f0',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  background: selectedRounds === option.value 
-                    ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
-                    : 'white',
-                  textAlign: 'center'
-                }}
-              >
-                <div style={{ fontSize: '24px', marginBottom: '6px' }}>
-                  {option.icon}
-                </div>
-                <div style={{
-                  fontWeight: '700',
-                  color: selectedRounds === option.value ? '#6366f1' : '#334155',
-                  fontSize: '26px',
-                  marginBottom: '2px'
-                }}>
-                  {option.label}
-                </div>
-                <div style={{ fontSize: '20px', color: '#64748b' }}>
-                  {option.description}
-                </div>
-              </button>
-            ))}
+        {/* Rounds Selection - Nascosto per Puzzle Drawing */}
+        {selectedMode !== 'puzzleDrawing' && (
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{
+              fontSize: '26px',
+              fontWeight: '600',
+              color: '#334155',
+              marginBottom: '12px'
+            }}>
+              🔄 Numero di Round
+            </h3>
+            <div style={{
+              display: 'flex',
+              gap: '8px'
+            }}>
+              {ROUNDS_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSelectedRounds(option.value)}
+                  style={{
+                    flex: 1,
+                    padding: '16px 12px',
+                    border: selectedRounds === option.value 
+                      ? '3px solid #6366f1' 
+                      : '2px solid #e2e8f0',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    background: selectedRounds === option.value 
+                      ? 'linear-gradient(135deg, #eef2ff, #e0e7ff)' 
+                      : 'white',
+                    textAlign: 'center'
+                  }}
+                >
+                  <div style={{ fontSize: '24px', marginBottom: '6px' }}>
+                    {option.icon}
+                  </div>
+                  <div style={{
+                    fontWeight: '700',
+                    color: selectedRounds === option.value ? '#6366f1' : '#334155',
+                    fontSize: '26px',
+                    marginBottom: '2px'
+                  }}>
+                    {option.label}
+                  </div>
+                  <div style={{ fontSize: '20px', color: '#64748b' }}>
+                    {option.description}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Info per Puzzle Drawing */}
+        {selectedMode === 'puzzleDrawing' && (
+          <div style={{ 
+            marginBottom: '24px',
+            padding: '16px',
+            background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)',
+            borderRadius: '12px',
+            border: '2px solid #6366f1'
+          }}>
+            <div style={{ 
+              fontSize: '20px', 
+              fontWeight: '600', 
+              color: '#6366f1',
+              marginBottom: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              🧩 Round Puzzle Drawing
+            </div>
+            <div style={{ fontSize: '24px', color: '#334155', lineHeight: '1.5' }}>
+              I round continuano finché <strong>tutti i giocatori hanno indovinato almeno una volta</strong>. 
+              Minimo {Object.values(GAME_MODES).find(m => m.id === 'puzzleDrawing')?.minPlayers || 4} giocatori richiesti.
+            </div>
+          </div>
+        )}
 
         {/* Survival Threshold (only for survival mode) */}
         {Object.values(GAME_MODES).find(m => m.id === selectedMode)?.survivalMode && (
@@ -359,17 +388,24 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
             color: '#334155'
           }}>
             <div>
-              <strong>Modalità:</strong> {GAME_MODES[selectedMode.toUpperCase()].name}
+              <strong>Modalità:</strong> {Object.values(GAME_MODES).find(m => m.id === selectedMode)?.name}
             </div>
             <div>
-              <strong>Tempo per turno:</strong> {TURN_TIME_OPTIONS[selectedTime.toUpperCase()].name}
+              <strong>Tempo per turno:</strong> {Object.values(TURN_TIME_OPTIONS).find(t => t.id === selectedTime)?.name}
             </div>
             <div>
-              <strong>Difficoltà:</strong> {DIFFICULTY_LEVELS[selectedDifficulty.toUpperCase()].name}
+              <strong>Difficoltà:</strong> {Object.values(DIFFICULTY_LEVELS).find(d => d.id === selectedDifficulty)?.name}
             </div>
-            <div>
-              <strong>Round:</strong> {selectedRounds} turni totali
-            </div>
+            {selectedMode !== 'puzzleDrawing' && (
+              <div>
+                <strong>Round:</strong> {selectedRounds} turni totali
+              </div>
+            )}
+            {selectedMode === 'puzzleDrawing' && (
+              <div>
+                <strong>Round:</strong> Fino a quando tutti hanno indovinato
+              </div>
+            )}
           </div>
         </div>
 

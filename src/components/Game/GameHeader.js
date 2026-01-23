@@ -11,11 +11,7 @@ export default function GameHeader({
   players,
   isOwner,
   onStartGame,
-  onClearBoard,
-  selectedColor,
-  onChangeColor,
-  selectedInstrument,
-  onChangeInstrument
+  onClearBoard
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -23,7 +19,8 @@ export default function GameHeader({
   const gameMode = gameState?.mode || 'Classica';
   const difficulty = gameState?.difficulty || 'Medio';
   
-  const canStartGame = !gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && isOwner;
+  const playersCount = players?.length || 0;
+  const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && isOwner;
 
   const activeMalus = Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0
     ? gameState.chaosEffects.map(m => m.name).join(', ')
@@ -44,6 +41,7 @@ export default function GameHeader({
   return (
     <header className="board-header">
       <div className="header-main">
+        {/* Info stanza e modalità */}
         <div className="room-info-section">
           <div className="room-basic">
             <div className="room-label">Stanza {isOwner && '👑'}</div>
@@ -72,6 +70,7 @@ export default function GameHeader({
           </div>
         </div>
 
+        {/* Stato artista / malus */}
         <div className="status-section">
           {gameState?.active && (
             <>
@@ -113,11 +112,10 @@ export default function GameHeader({
         </div>
       </div>
 
+      {/* Azioni */}
       <div className="header-actions">
         {gameState?.active && (
-          <div className="timer-display">
-            ⏱️ {timeLeft}s
-          </div>
+          <div className="timer-display">⏱️ {timeLeft}s</div>
         )}
         
         {canStartGame && (
@@ -129,15 +127,15 @@ export default function GameHeader({
           </button>
         )}
 
-        {!gameState?.active && !gameState?.gameEnded && players.length >= MIN_PLAYERS && !isOwner && (
+        {!gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && !isOwner && (
           <div className="waiting-message">
-            👑 In attesa che il creatore avvii...
+            👑 In attesa che il creatore avvii la partita...
           </div>
         )}
 
-        {!gameState?.active && !gameState?.gameEnded && players.length < MIN_PLAYERS && (
+        {!gameState?.active && !gameState?.gameEnded && playersCount < MIN_PLAYERS && (
           <div className="waiting-message">
-            ⏳ Aspettando altri giocatori ({players.length}/{MIN_PLAYERS})
+            ⏳ In attesa di altri giocatori ({playersCount}/{MIN_PLAYERS})
           </div>
         )}
         
