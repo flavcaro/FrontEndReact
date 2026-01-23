@@ -4,6 +4,11 @@ export default function UserHeader({ nickname, isGuest, user, xpPoints, level, g
   const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
   return (
     <header className="home-header">
+      <div className="header-logo">
+        <span className="logo-icon">🎨</span>
+        <span className="logo-text">SketchUp</span>
+      </div>
+      
       <div className="user-info">
         <div className="user-nickname">
           <span className="nickname-icon">{isGuest ? '👤' : '✨'}</span>
