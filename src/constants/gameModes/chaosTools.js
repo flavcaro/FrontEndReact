@@ -8,9 +8,8 @@ export const CHAOS_TOOLS = {
   hasChaosEffects: true
 };
 
-// Genera effetti casuali per Chaos Tools
-export const generateChaosEffects = () => {
-  const possibleEffects = [
+// Lista di effetti disponibili per Chaos Tools (riutilizzabile)
+const possibleEffects = [
     // Visual effects applied via CSS to the canvas container
     { id: 'mirror', style: { transform: 'scaleX(-1)' }, name: 'Specchio', type: 'visual' },
     { id: 'upsideDown', style: { transform: 'scaleY(-1)' }, name: 'Capovolto', type: 'visual' },
@@ -23,54 +22,60 @@ export const generateChaosEffects = () => {
     { id: 'randomColor', name: 'Colori Casuali', type: 'behavior' },
     { id: 'inputLag', name: 'Input Lag', type: 'behavior', params: { min: 80, max: 260 } },
     // Trembling lines: the artist's stroke points will be perturbed while drawing
-    { id: 'tremblingLines', name: 'Linee Tremolanti', type: 'behavior', params: { amplitude: { min: 1, max: 6 }, frequency: { min: 30, max: 160 } } },
+    { id: 'tremblingLines', name: 'Linee Tremolanti', type: 'behavior', params: { amplitude: { min: 6, max: 18 }, frequency: { min: 30, max: 160 } } },
     // No drawing feedback: artist's local preview is hidden (they still draw but see nothing)
     { id: 'noPreview', name: 'Nessun Feedback', type: 'behavior', params: { hideLocalPreview: true } }
-  ];
+];
 
-  // Helper to pick random integer in inclusive range
-  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+// Helper to pick random integer in inclusive range
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // Seleziona 1-3 effetti casuali
-  const numEffects = Math.floor(Math.random() * 3) + 1;
+// Genera effetti casuali per Chaos Tools
+export const generateChaosEffects = () => {
+  // Seleziona 1 effetto casuale (un effetto per turno)
+  const numEffects = 1;
   const shuffled = [...possibleEffects].sort(() => 0.5 - Math.random());
-  let selected = shuffled.slice(0, numEffects).map(effect => {
+  const selected = shuffled.slice(0, numEffects).map(effect => {
     // Clone effect so we can attach resolved params without mutating source
     const e = JSON.parse(JSON.stringify(effect));
 
-    if (e.params) {
-      // Resolve numeric ranges into concrete values
-      Object.keys(e.params).forEach(key => {
-        const val = e.params[key];
-        if (val && typeof val === 'object' && 'min' in val && 'max' in val) {
-          e.params[key] = randInt(val.min, val.max);
-        }
-        // boolean/static params remain unchanged
-      });
+      if (e.params) {
+        // Resolve numeric ranges into concrete values but preserve the original range
+        Object.keys(e.params).forEach(key => {
+          const val = e.params[key];
+          if (val && typeof val === 'object' && 'min' in val && 'max' in val) {
+            // store the original range so drawing logic can choose a fresh random value per point
+            e.params[`_${key}Range`] = { min: val.min, max: val.max };
+            e.params[key] = randInt(val.min, val.max);
+          }
+          // boolean/static params remain unchanged
+        });
     }
 
     return e;
   });
 
-  // Ensure at least one behavior effect is present if any behaviors are available
-  const hasBehavior = selected.some(s => s.type === 'behavior');
-  const availableBehaviors = possibleEffects.filter(p => p.type === 'behavior');
-  if (!hasBehavior && availableBehaviors.length > 0) {
-    // Replace a random selected effect with a random behavior effect
-    const replaceIndex = Math.floor(Math.random() * selected.length);
-    const behaviorChoice = availableBehaviors[Math.floor(Math.random() * availableBehaviors.length)];
-    selected[replaceIndex] = JSON.parse(JSON.stringify(behaviorChoice));
-
-    // Resolve params for the inserted behavior if needed
-    if (selected[replaceIndex].params) {
-      Object.keys(selected[replaceIndex].params).forEach(key => {
-        const val = selected[replaceIndex].params[key];
-        if (val && typeof val === 'object' && 'min' in val && 'max' in val) {
-          selected[replaceIndex].params[key] = randInt(val.min, val.max);
-        }
-      });
-    }
-  }
-
   return selected;
 };
+
+//FUNZIONE DI DEBUG, TOGLIERE UNA VOLTA FINITO IL CODICE
+export const pickChaosEffect = (effectId) => {
+  if (!effectId) return generateChaosEffects();
+
+  const found = possibleEffects.find(e => e.id === effectId);
+  if (!found) return null;
+
+  const e = JSON.parse(JSON.stringify(found));
+  if (e.params) {
+    Object.keys(e.params).forEach(key => {
+      const val = e.params[key];
+      if (val && typeof val === 'object' && 'min' in val && 'max' in val) {
+          e.params[`_${key}Range`] = { min: val.min, max: val.max };
+          e.params[key] = randInt(val.min, val.max);
+      }
+    });
+  }
+
+  return [e];
+};
+
