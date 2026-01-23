@@ -113,7 +113,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       }
     });
     return unsubscribe;
-  }, [roomId, nickname, gameActive, chaosEffects]);
+  }, [roomId, nickname, gameActive, getEffect]);
 
   // Salva linea
   const saveLine = useCallback(async (line) => {
