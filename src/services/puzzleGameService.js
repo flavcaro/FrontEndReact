@@ -57,6 +57,10 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   // Inizializza lo stato del gioco
   console.log('🎯 Parola selezionata per TUTTI i giocatori:', word);
   console.log('⏱️ Durata turno configurata:', gameConfig.turnDuration);
+  console.log('💾 Salvataggio ruoli nel DB:', {
+    currentGuesser: roles.guesser,
+    currentDrawers: roles.drawers
+  });
   
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
