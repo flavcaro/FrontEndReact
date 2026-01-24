@@ -79,6 +79,7 @@ function RoomPlay() {
   const [isReady, setIsReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [configLoaded, setConfigLoaded] = useState(false); // Flag per evitare loop
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -94,7 +95,7 @@ function RoomPlay() {
   }, [navigate, roomId]);
 
   useEffect(() => {
-    if (!user || authLoading) return;
+    if (!user || authLoading || configLoaded) return; // Skip se già caricato!
 
     const query = new URLSearchParams(window.location.search);
     const nick = query.get("nick");
@@ -157,15 +158,18 @@ function RoomPlay() {
             }
           }
         }
+        
+        setConfigLoaded(true); // Marca come caricato!
       } catch (error) {
         console.error('❌ Errore caricamento config:', error);
+        setConfigLoaded(true); // Anche in caso di errore, non riprovare
       }
     };
 
     loadGameConfig();
     setNickname(nick);
     setIsReady(true);
-  }, [navigate, roomId, user, authLoading]);
+  }, [navigate, roomId, user, authLoading, configLoaded]); // Aggiungi configLoaded alle dipendenze
 
   if (authLoading) return <Loading message="Verificando autenticazione..." />;
   if (!user) return <Loading message="Reindirizzamento..." />;
