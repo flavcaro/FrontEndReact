@@ -36,14 +36,23 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   const word = getRandomWord(gameConfig.difficulty?.id);
   const minRounds = calculateMinRounds(players.length);
   
-  // Crea la lista dei giocatori per i ruoli
-  const playersList = players.map(p => ({
-    uid: p.id,
-    name: p.name
-  }));
+  // Crea la lista dei giocatori per i ruoli - ordina per joinedAt per consistenza
+  const playersList = players
+    .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0))
+    .map(p => ({
+      uid: p.id,
+      name: p.name
+    }));
+
+  console.log('👥 Lista giocatori ordinata per ruoli:', playersList);
 
   // Assegna i ruoli per il primo round
   const roles = assignPuzzleRoles(playersList, 0);
+  
+  console.log('🎭 Ruoli assegnati - Round 1:', {
+    guesser: roles.guesser?.name,
+    drawers: roles.drawers?.map(d => `${d.player.name} (sezione ${d.section})`)
+  });
 
   // Inizializza lo stato del gioco
   console.log('🎯 Parola selezionata per TUTTI i giocatori:', word);
@@ -196,15 +205,20 @@ export const advancePuzzleRound = async (roomId) => {
 
   await new Promise(resolve => setTimeout(resolve, 200));
 
-  // Ottieni tutti i giocatori
+  // Ottieni tutti i giocatori e ordinali per consistenza
   const playersSnap = await get(ref(db, `rooms/${roomId}/players`));
   const playersData = playersSnap.val();
-  const playersList = Object.entries(playersData).map(([id, p]) => ({
-    uid: p.userId,
-    name: p.name
-  }));
+  const playersList = Object.entries(playersData)
+    .map(([id, p]) => ({
+      uid: id,
+      name: p.name,
+      joinedAt: p.joinedAt || 0
+    }))
+    .sort((a, b) => a.joinedAt - b.joinedAt);
 
   const nextRound = (gameState.round || 0) + 1;
+  
+  console.log(`🔄 Avanzamento al round ${nextRound} - Lista giocatori:`, playersList.map(p => p.name));
 
   // Verifica se tutti hanno indovinato
   const gameStateForCheck = {
@@ -229,6 +243,11 @@ export const advancePuzzleRound = async (roomId) => {
   // Assegna i nuovi ruoli
   const newRoles = assignPuzzleRoles(playersList, nextRound - 1);
   const newWord = getRandomWord(gameState.difficultyId);
+
+  console.log('🎭 Nuovi ruoli assegnati - Round', nextRound, ':', {
+    guesser: newRoles.guesser?.name,
+    drawers: newRoles.drawers?.map(d => `${d.player.name} (sezione ${d.section})`)
+  });
 
   // Aggiorna lo stato del gioco
   await update(gameRef, {
