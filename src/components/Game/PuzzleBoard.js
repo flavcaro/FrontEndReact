@@ -47,14 +47,18 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   const { messages, messagesEndRef } = useChat(roomId);
 
-  const { strokes, startStroke, addPoint, finishStroke } = usePuzzleDrawing(
+  const { strokes, startStroke, addPoint, finishStroke, clearSection } = usePuzzleDrawing(
     roomId,
     mySection,
     gameState?.active
   );
 
   const [selectedColor, setSelectedColor] = useState("#1e293b");
+  const [selectedInstrument, setSelectedInstrument] = useState("pencil");
   const [brushSize, setBrushSize] = useState(4);
+  
+  // Log per debug
+  console.log('🎨 [PuzzleBoard] selectedInstrument:', selectedInstrument);
   const [showStartPopup, setShowStartPopup] = useState(true);
 
   const handleStartGame = () => {
@@ -97,6 +101,11 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
             players={players}
             isOwner={isOwner}
             onStartGame={handleStartGame}
+            onClearBoard={clearSection}
+            selectedColor={selectedColor}
+            onChangeColor={setSelectedColor}
+            selectedInstrument={selectedInstrument}
+            onChangeInstrument={setSelectedInstrument}
           >
             {/* Info ruolo corrente */}
             {gameState?.active && !showResults && (
@@ -166,6 +175,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                 onAddPoint={addPoint}
                 onFinishStroke={finishStroke}
                 showSectionBorders={true}
+                selectedInstrument={selectedInstrument}
               />
 
               {/* Palette solo per i disegnatori */}
@@ -174,8 +184,8 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                   <Palette
                     selectedColor={selectedColor}
                     onChangeColor={setSelectedColor}
-                    selectedInstrument="pencil"
-                    onChangeInstrument={() => {}}
+                    selectedInstrument={selectedInstrument}
+                    onChangeInstrument={setSelectedInstrument}
                     showColors={true}
                   />
                   

@@ -137,8 +137,14 @@ export const getSectionBounds = (section, canvasWidth, canvasHeight) => {
  */
 export const isPointInSection = (x, y, section, canvasWidth, canvasHeight) => {
   const bounds = getSectionBounds(section, canvasWidth, canvasHeight);
-  return x >= bounds.x && x < bounds.x + bounds.width && 
-         y >= bounds.y && y < bounds.y + bounds.height;
+  
+  // Margine interno di 2px per evitare sovrapposizioni sui bordi
+  const margin = 2;
+  const adjustedX = bounds.x + (section === 0 ? 0 : margin);
+  const adjustedWidth = bounds.width - (section === 0 ? margin : (section === 2 ? 0 : margin * 2));
+  
+  return x >= adjustedX && x <= adjustedX + adjustedWidth && 
+         y >= bounds.y && y <= bounds.y + bounds.height;
 };
 
 /**

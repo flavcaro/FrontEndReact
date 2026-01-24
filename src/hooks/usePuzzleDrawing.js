@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ref, push, onValue, off } from 'firebase/database';
+import { ref, push, onValue, off, remove } from 'firebase/database';
 import { db } from '../firebase';
 
 /**
@@ -45,13 +45,15 @@ export function usePuzzleDrawing(roomId, assignedSection, isActive) {
   }, [roomId, isActive]);
 
   // Inizia un nuovo stroke
-  const startStroke = useCallback((x, y, color, size) => {
+  const startStroke = useCallback((x, y, color, size, isEraser = false) => {
+    console.log('🖊️ [usePuzzleDrawing] startStroke:', { x, y, color, size, isEraser, assignedSection });
     currentStrokeRef.current = {
       points: [{ x, y }],
-      color,
+      color: isEraser ? null : color,
       size,
       section: assignedSection,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      eraser: isEraser
     };
   }, [assignedSection]);
 
@@ -67,22 +69,48 @@ export function usePuzzleDrawing(roomId, assignedSection, isActive) {
     if (!currentStrokeRef.current || !roomId || assignedSection === null) return;
 
     const stroke = currentStrokeRef.current;
+    console.log('💾 [usePuzzleDrawing] Salvando stroke:', stroke);
     
     // Salva nel database
     try {
       const strokeRef = ref(db, `rooms/${roomId}/puzzleStrokes/section${assignedSection}`);
       await push(strokeRef, stroke);
+      console.log('✅ [usePuzzleDrawing] Stroke salvato con successo');
     } catch (error) {
-      console.error('Errore salvando lo stroke:', error);
+      console.error('❌ [usePuzzleDrawing] Errore salvando lo stroke:', error);
     }
 
     currentStrokeRef.current = null;
+  }, [roomId, assignedSection]);
+
+  // Pulisci solo la sezione assegnata
+  const clearSection = useCallback(async () => {
+    console.log('🗑️ [usePuzzleDrawing] clearSection chiamato:', { assignedSection, roomId });
+    if (assignedSection === null || !roomId) {
+      console.log('⚠️ [usePuzzleDrawing] clearSection ignorato: sezione non assegnata');
+      return;
+    }
+
+    try {
+      const sectionRef = ref(db, `rooms/${roomId}/puzzleStrokes/section${assignedSection}`);
+      await remove(sectionRef);
+      console.log('✅ [usePuzzleDrawing] Sezione pulita con successo');
+      
+      // Aggiorna lo stato locale
+      setStrokes(prev => ({
+        ...prev,
+        [assignedSection]: []
+      }));
+    } catch (error) {
+      console.error('❌ [usePuzzleDrawing] Errore pulendo la sezione:', error);
+    }
   }, [roomId, assignedSection]);
 
   return {
     strokes,
     startStroke,
     addPoint,
-    finishStroke
+    finishStroke,
+    clearSection
   };
 }

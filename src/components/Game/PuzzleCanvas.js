@@ -14,13 +14,16 @@ export default function PuzzleCanvas({
   onStartStroke,
   onAddPoint,
   onFinishStroke,
-  showSectionBorders = true
+  showSectionBorders = true,
+  selectedInstrument = 'pencil' // 'pencil' o 'eraser'
 }) {
   const canvasRef = useRef(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [lastPoint, setLastPoint] = useState(null);
   const [ctx, setCtx] = useState(null);
   const sectionBoundsRef = useRef(null);
+  const currentLocalStroke = useRef(null);
+  const [redrawTrigger, setRedrawTrigger] = useState(0);
 
   // Inizializza il canvas
   useEffect(() => {
@@ -89,6 +92,33 @@ export default function PuzzleCanvas({
     }
   }, [showSectionBorders, assignedSection]);
 
+  // Disegna uno stroke
+  const drawStroke = useCallback((context, stroke) => {
+    if (!stroke || !stroke.points || stroke.points.length < 2) return;
+
+    if (stroke.eraser) {
+      context.globalCompositeOperation = 'destination-out';
+      context.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      context.globalCompositeOperation = 'source-over';
+      context.strokeStyle = stroke.color;
+    }
+    
+    context.lineWidth = stroke.size;
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+
+    context.beginPath();
+    context.moveTo(stroke.points[0].x, stroke.points[0].y);
+
+    for (let i = 1; i < stroke.points.length; i++) {
+      context.lineTo(stroke.points[i].x, stroke.points[i].y);
+    }
+
+    context.stroke();
+    context.globalCompositeOperation = 'source-over'; // Ripristina
+  }, []);
+
   // Ridisegna quando arrivano nuovi dati
   useEffect(() => {
     if (!ctx || !canvasRef.current) return;
@@ -112,26 +142,12 @@ export default function PuzzleCanvas({
         }
       });
     }
-  }, [allStrokes, ctx, drawCanvasBackground, assignedSection]);
-
-  // Disegna uno stroke
-  const drawStroke = useCallback((context, stroke) => {
-    if (!stroke || !stroke.points || stroke.points.length < 2) return;
-
-    context.strokeStyle = stroke.color;
-    context.lineWidth = stroke.size;
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-
-    context.beginPath();
-    context.moveTo(stroke.points[0].x, stroke.points[0].y);
-
-    for (let i = 1; i < stroke.points.length; i++) {
-      context.lineTo(stroke.points[i].x, stroke.points[i].y);
+    
+    // Ridisegna lo stroke corrente se presente (per evitare scomparse durante il disegno)
+    if (currentLocalStroke.current) {
+      drawStroke(ctx, currentLocalStroke.current);
     }
-
-    context.stroke();
-  }, []);
+  }, [allStrokes, ctx, drawCanvasBackground, assignedSection, drawStroke, redrawTrigger]);
 
   // Ottieni coordinate relative al canvas
   const getCanvasCoordinates = useCallback((e) => {
@@ -180,11 +196,20 @@ export default function PuzzleCanvas({
     setIsMouseDown(true);
     setLastPoint(point);
     
+    // Crea lo stroke locale
+    const isEraser = selectedInstrument === 'eraser';
+    currentLocalStroke.current = {
+      points: [point],
+      color: isEraser ? null : currentColor,
+      size: brushSize,
+      eraser: isEraser
+    };
+    
     // Notifica l'inizio dello stroke
     if (onStartStroke) {
-      onStartStroke(point.x, point.y, currentColor, brushSize);
+      onStartStroke(point.x, point.y, currentColor, brushSize, isEraser);
     }
-  }, [isDrawing, assignedSection, getCanvasCoordinates, isInAssignedSection, onStartStroke, currentColor, brushSize]);
+  }, [isDrawing, assignedSection, getCanvasCoordinates, isInAssignedSection, onStartStroke, currentColor, brushSize, selectedInstrument]);
 
   // Gestione mouse/touch move
   const handlePointerMove = useCallback((e) => {
@@ -204,7 +229,17 @@ export default function PuzzleCanvas({
     }
 
     // Disegna la linea localmente
-    ctx.strokeStyle = currentColor;
+    const isEraser = selectedInstrument === 'eraser';
+    
+    if (isEraser) {
+      // Modalità gomma: cancella invece di disegnare
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = currentColor;
+    }
+    
     ctx.lineWidth = brushSize;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -213,14 +248,23 @@ export default function PuzzleCanvas({
     ctx.moveTo(lastPoint.x, lastPoint.y);
     ctx.lineTo(currentPoint.x, currentPoint.y);
     ctx.stroke();
+    
+    // Ripristina la modalità normale
+    ctx.globalCompositeOperation = 'source-over';
 
     // Notifica il nuovo punto
     if (onAddPoint) {
       onAddPoint(currentPoint.x, currentPoint.y);
     }
+    
+    // Aggiorna lo stroke locale
+    if (currentLocalStroke.current) {
+      currentLocalStroke.current.points.push(currentPoint);
+      setRedrawTrigger(prev => prev + 1); // Triggera il redraw
+    }
 
     setLastPoint(currentPoint);
-  }, [isMouseDown, ctx, lastPoint, currentColor, brushSize, isDrawing, getCanvasCoordinates, isInAssignedSection, onAddPoint]);
+  }, [isMouseDown, ctx, lastPoint, currentColor, brushSize, isDrawing, getCanvasCoordinates, isInAssignedSection, onAddPoint, selectedInstrument]);
 
   // Gestione mouse/touch up
   const handlePointerUp = useCallback((e) => {
@@ -228,6 +272,7 @@ export default function PuzzleCanvas({
 
     e.preventDefault();
     setIsMouseDown(false);
+    currentLocalStroke.current = null; // Pulisci lo stroke locale
 
     // Notifica il completamento dello stroke
     if (onFinishStroke) {
@@ -241,6 +286,7 @@ export default function PuzzleCanvas({
   const handleMouseLeave = useCallback(() => {
     if (isMouseDown) {
       setIsMouseDown(false);
+      currentLocalStroke.current = null;
       setLastPoint(null);
     }
   }, [isMouseDown]);
