@@ -20,6 +20,9 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// Global flag per room+session per evitare duplicazioni tra rendering multipli
+const addingPlayersMap = new Map();
+
 // Helper function to send system message
 const sendSystemMessage = async (roomId, message) => {
   await push(ref(db, `rooms/${roomId}/chat`), {
@@ -46,16 +49,27 @@ export function usePlayers(roomId, nickname) {
   // Add or update player with disconnect handling
   useEffect(() => {
     const currentSessionId = sessionId.current;
+    const mapKey = `${roomId}_${currentSessionId}`;
     
     const addOrUpdatePlayer = async () => {
-      if (isAddingPlayer.current) return;
+      // Check global map per evitare chiamate duplicate anche tra rendering
+      if (isAddingPlayer.current || addingPlayersMap.get(mapKey)) {
+        console.log('⚠️ [usePlayers] Già in fase di aggiunta (global check), skip');
+        return;
+      }
+      
       isAddingPlayer.current = true;
+      addingPlayersMap.set(mapKey, true);
+
+      console.log('👤 [usePlayers] Aggiunta/Aggiornamento player:', { nickname, sessionId: currentSessionId });
 
       try {
         // Get all existing players
         const playersRef = ref(db, `rooms/${roomId}/players`);
         const snapshot = await get(playersRef);
         const existingPlayers = snapshot.val() || {};
+        
+        console.log('📋 [usePlayers] Players esistenti:', Object.keys(existingPlayers).length);
         
         // Convert to array for nickname checking
         const playersList = Object.entries(existingPlayers).map(([id, player]) => ({
@@ -67,6 +81,12 @@ export function usePlayers(roomId, nickname) {
         const existingSessionEntry = Object.entries(existingPlayers).find(
           ([, player]) => player.sessionId === currentSessionId
         );
+
+        if (existingSessionEntry) {
+          console.log('✅ [usePlayers] Sessione esistente trovata, aggiorno:', existingSessionEntry[0]);
+        } else {
+          console.log('🆕 [usePlayers] Nuova sessione, creo nuovo player');
+        }
 
         if (!existingSessionEntry && playersList.length >= MAX_PLAYERS) {
           setIsRoomFull(true);
@@ -94,7 +114,7 @@ export function usePlayers(roomId, nickname) {
             originalNickname: nickname,
             sessionId: currentSessionId,
             userId: user && !user.isAnonymous ? user.uid : null,
-            joinedAt: Date.now(),
+            joinedAt: playerData.joinedAt || Date.now(), // Mantieni il joinedAt originale!
             score: playerData.score || 0,
             color: playerData.color || getPlayerColor(playersList.length),
             connected: true
@@ -226,6 +246,7 @@ export function usePlayers(roomId, nickname) {
           console.log('Player disconnect handler set up');
         }
 
+        // Non rimuovere dalla map - mantieni per evitare duplicati futuri
       } catch (error) {
         console.error("Error adding/updating player:", error);
       } finally {
