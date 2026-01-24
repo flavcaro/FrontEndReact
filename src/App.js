@@ -7,7 +7,8 @@ import {
   useParams,
 } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
+import { ref, get } from "firebase/database";
 import Lobby from "./components/Lobby/Lobby";
 import Home from "./components/Home/Home";
 import Board from "./components/Game/Board";
@@ -104,38 +105,64 @@ function RoomPlay() {
       return;
     }
 
-    // Try to get game config from localStorage (for room creator)
-    const storedConfigKey = `room_${roomId}_mode`;
-    const storedConfig = localStorage.getItem(storedConfigKey);
-
-    if (storedConfig) {
+    // Leggi la configurazione dal database Firebase
+    const loadGameConfig = async () => {
       try {
-        const config = JSON.parse(storedConfig);
-        console.log("Loaded config from localStorage:", config); // Debug
-        setGameConfig(config);
-      } catch (e) {
-        console.error("Error parsing stored config:", e);
-      }
-    }
+        const gameRef = ref(db, `rooms/${roomId}/game`);
+        const gameSnap = await get(gameRef);
+        const gameData = gameSnap.val();
 
-    // If no stored config, try to infer from URL param `mode`
-    if (!storedConfig) {
-      const modeParam = query.get('mode');
-      if (modeParam) {
-        const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
-        if (modeObj) {
-          const inferred = {
-            ...modeObj,
-            difficulty: DEFAULT_DIFFICULTY,
-            roundsPerGame: DEFAULT_ROUNDS,
-            turnDuration: modeObj.turnDuration || TURN_DURATION
+        if (gameData) {
+          // Ricostruisci la config dal database
+          const configFromDB = {
+            id: gameData.gameModeId || 'classica',
+            name: gameData.mode || 'Classica',
+            difficulty: {
+              id: gameData.difficultyId || 'medium',
+              name: gameData.difficulty || 'Medio'
+            },
+            turnDuration: gameData.turnDuration || TURN_DURATION,
+            roundsPerGame: gameData.roundsPerPlayer || DEFAULT_ROUNDS,
+            survivalMode: gameData.survivalMode || false,
+            hasChaosEffects: gameData.hasChaosEffects || false,
+            survivalThreshold: gameData.survivalThreshold || null
           };
-          console.log('Inferred game config from URL mode param:', inferred);
-          setGameConfig(inferred);
+          console.log('✅ Config caricata da Firebase:', configFromDB);
+          setGameConfig(configFromDB);
+        } else {
+          console.log('⚠️ Nessuna config nel DB, uso fallback');
+          // Fallback: prova localStorage o URL
+          const storedConfigKey = `room_${roomId}_mode`;
+          const storedConfig = localStorage.getItem(storedConfigKey);
+          
+          if (storedConfig) {
+            const config = JSON.parse(storedConfig);
+            console.log("📦 Config da localStorage:", config);
+            setGameConfig(config);
+          } else {
+            // Ultimo tentativo: infer from URL
+            const modeParam = query.get('mode');
+            if (modeParam) {
+              const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
+              if (modeObj) {
+                const inferred = {
+                  ...modeObj,
+                  difficulty: DEFAULT_DIFFICULTY,
+                  roundsPerGame: DEFAULT_ROUNDS,
+                  turnDuration: modeObj.turnDuration || TURN_DURATION
+                };
+                console.log('🔍 Config inferita da URL:', inferred);
+                setGameConfig(inferred);
+              }
+            }
+          }
         }
+      } catch (error) {
+        console.error('❌ Errore caricamento config:', error);
       }
-    }
+    };
 
+    loadGameConfig();
     setNickname(nick);
     setIsReady(true);
   }, [navigate, roomId, user, authLoading]);
