@@ -314,6 +314,9 @@
 
   .board-header {
     padding: 12px 16px;
+    /* Allow header to expand instead of showing internal scrollbar on narrow screens */
+    max-height: none;
+    overflow-y: visible;
   }
 
   .room-info-section {

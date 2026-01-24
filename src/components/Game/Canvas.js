@@ -45,16 +45,40 @@ export default function Canvas({
 
       // Respect both viewport width and height constraints so canvas scales proportionally
       const vw = window.innerWidth || document.documentElement.clientWidth;
-      const vwConstraint = Math.floor(vw * 0.75); // at most 75% of viewport width
+      const vwConstraint = Math.floor(vw * 0.95); // allow up to 95% of viewport width
+      // Prefer using the real center column width to determine available canvas horizontal space
+      let availableHorizontal = clientWidth;
+      const centerEl = document.querySelector('.board-center');
+      if (centerEl) {
+        const centerRect = centerEl.getBoundingClientRect();
+        const gutter = 16; // keep small gutter inside center
+        // subtract center paddings / floating palette area
+        availableHorizontal = Math.max(220, Math.floor(centerRect.width - gutter * 2));
+      } else {
+        // Fallback: compute from board minus sidebars
+        const board = document.querySelector('.board-container');
+        if (board) {
+          const boardRect = board.getBoundingClientRect();
+          const playersEl = document.querySelector('.players-sidebar');
+          const chatEl = document.querySelector('.chat-sidebar');
+          const playersW = playersEl && playersEl.offsetParent !== null ? playersEl.getBoundingClientRect().width : 0;
+          const chatW = chatEl && chatEl.offsetParent !== null ? chatEl.getBoundingClientRect().width : 0;
+          const reserved = Math.max(16, Math.floor((playersW || 0) + (chatW || 0)) + 32);
+          availableHorizontal = Math.max(220, Math.floor(boardRect.width - reserved));
+        }
+      }
       const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.65); // at most 65% vh
 
-      // Compute a sensible minimum size so the canvas doesn't become visually tiny
-      let minSize = Math.max(220, Math.floor(vh * 0.25), Math.floor(vw * 0.25));
-      if (minSize > clientWidth) minSize = clientWidth;
+      // Compute sensible minimums so the canvas doesn't become visually tiny
+      const minWidth = Math.max(220, Math.floor(vw * 0.2));
+      const minHeight = Math.max(180, Math.floor(vh * 0.2));
 
-      // Use square canvas: limited by container width, available height, and vw/vh constraints
-      const size = Math.max(minSize, Math.min(clientWidth, availableHeight, vwConstraint, vhConstraint));
-      setDimensions({ width: size, height: size });
+      // Allow rectangular canvas: width limited by availableHorizontal and vwConstraint,
+      // height limited by availableHeight and vhConstraint
+      const computedWidth = Math.max(minWidth, Math.min(availableHorizontal, clientWidth, vwConstraint));
+      const computedHeight = Math.max(minHeight, Math.min(availableHeight, vhConstraint));
+
+      setDimensions({ width: computedWidth, height: computedHeight });
     };
 
     updateDimensions();
@@ -305,12 +329,22 @@ export default function Canvas({
       style={wrapperStyle}
     >
       {/* Artist feedback badge removed: malus descriptions hidden from players */}
-      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...innerStyle }}>
+      <div
+        style={{
+          width: dimensions.width > 0 ? `${dimensions.width}px` : '100%',
+          height: dimensions.height > 0 ? `${dimensions.height}px` : '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...innerStyle
+        }}
+      >
         {dimensions.width > 0 && dimensions.height > 0 && (
           <Stage
             width={dimensions.width}
             height={dimensions.height}
             className="canvas-stage"
+            style={{ display: 'block', width: `${dimensions.width}px`, height: `${dimensions.height}px` }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}

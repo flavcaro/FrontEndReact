@@ -6,6 +6,9 @@ import { useUserData } from "../../hooks/useUserData";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import { generateRoomCode, validateNickname, extractRoomCode } from "../../utils/roomUtils";
+import { ref, get } from "firebase/database";
+import { db } from "../../firebase";
+import { generateUniqueNickname } from "../../utils/nicknameUtils";
 import { CLASSICA } from "../../constants/gameModes/classica";
 import { SOPRAVVIVENZA } from "../../constants/gameModes/sopravvivenza";
 import { CHAOS_TOOLS } from "../../constants/gameModes/chaosTools";
@@ -62,14 +65,50 @@ export default function Home() {
       alert('Codice stanza non valido');
       return;
     }
-    localStorage.setItem('nickname', nickname);
-    navigate(`/room/${code}`);
+    (async () => {
+      try {
+        // Ensure unique nickname in target room before joining
+        const playersRef = ref(db, `rooms/${code}/players`);
+        const snap = await get(playersRef);
+        const existing = snap.val() || {};
+        const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
+        const unique = generateUniqueNickname(nickname, latestList) || nickname;
+        if (unique !== nickname) {
+          // update local state and storage so client uses unique name
+          setNickname(unique);
+          localStorage.setItem('nickname', unique);
+        } else {
+          localStorage.setItem('nickname', nickname);
+        }
+      } catch (err) {
+        console.warn('Could not verify nickname uniqueness before join', err);
+        localStorage.setItem('nickname', nickname);
+      }
+      navigate(`/room/${code}`);
+    })();
   };
 
   const handleRoomActionsJoin = (roomCode) => {
-    localStorage.setItem('nickname', nickname);
-    navigate(`/room/${roomCode}`);
-    setShowCustomModal(false);
+    (async () => {
+      try {
+        const playersRef = ref(db, `rooms/${roomCode}/players`);
+        const snap = await get(playersRef);
+        const existing = snap.val() || {};
+        const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
+        const unique = generateUniqueNickname(nickname, latestList) || nickname;
+        if (unique !== nickname) {
+          setNickname(unique);
+          localStorage.setItem('nickname', unique);
+        } else {
+          localStorage.setItem('nickname', nickname);
+        }
+      } catch (err) {
+        console.warn('Could not verify nickname uniqueness before join via RoomActions', err);
+        localStorage.setItem('nickname', nickname);
+      }
+      navigate(`/room/${roomCode}`);
+      setShowCustomModal(false);
+    })();
   };
 
   const setModeOption = (modeId, key, value) => {

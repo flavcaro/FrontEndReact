@@ -21,7 +21,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       const now = Date.now();
       if (now - lastSendTime.current < 33) return; // Max 30fps invece di 60fps
       lastSendTime.current = now;
-      
+      console.debug('[sendTempLine]', nickname, 'points=', (line && line.points && line.points.length) || 0, 'ts=', now);
       await set(ref(db, `rooms/${roomId}/lines_temp/${nickname}`), {
         ...line,
         updatedAt: now,
@@ -86,6 +86,7 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
           return;
         }
         const data = snapshot.val();
+        console.debug('[lines_temp update] count=', data ? Object.keys(data).length : 0);
         
         setLines((prev) => {
           // Mantieni le linee salvate
