@@ -1,7 +1,7 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
-import { generateChaosEffects } from "../constants/gameModes/chaosTools";
+import { generateChaosEffects, pickChaosEffect} from "../constants/gameModes/chaosTools";
 
 // Get random word based on difficulty
 const getRandomWord = (difficulty = 'MEDIUM') => {
@@ -45,7 +45,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     drawCounts[player.name] = 0;
   });
   
-  const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
+  //const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
+  const initialChaos = resolvedHasChaos ? pickChaosEffect('inputLag') : null; // DEBUG_EFFECT
 
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,

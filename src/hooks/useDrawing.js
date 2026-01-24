@@ -10,6 +10,10 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
   const lineIdCounter = useRef(0);
 
   const lastSendTime = useRef(0);
+  const tremblingState = useRef({});
+  const inputLagState = useRef({});
+
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
   // Invia linee temp con limitazione di frequenza (max 30fps per ridurre il traffico)
   useEffect(() => {
@@ -126,6 +130,13 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     if (!isDrawing.current || showResults || !isArtist || !gameActive || allGuessed) return;
     isDrawing.current = false;
     if (currentLine.current) {
+      // Clear any pending inputLag scheduled flush for this stroke
+      const lagEntry = inputLagState.current && inputLagState.current[currentLine.current.id];
+      if (lagEntry) {
+        if (lagEntry.timeoutId) clearTimeout(lagEntry.timeoutId);
+        delete inputLagState.current[currentLine.current.id];
+      }
+
       await saveLine(currentLine.current);
       await remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`));
       currentLine.current = null;
@@ -165,12 +176,20 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
     };
   }, [isArtist, gameActive, showResults, allGuessed, roomId, nickname, stopDrawing]);
 
-  // Ensure we clear any in-progress temp drawing when the player loses drawing privileges
+    // Ensure we clear any in-progress temp drawing when the player loses drawing privileges
   useEffect(() => {
     const shouldClear = !isArtist || !gameActive || showResults || allGuessed;
     if (!shouldClear) return;
 
     isDrawing.current = false;
+    // Clear any pending inputLag scheduled flush for the current stroke
+    if (currentLine.current) {
+      const lagEntry = inputLagState.current && inputLagState.current[currentLine.current.id];
+      if (lagEntry) {
+        if (lagEntry.timeoutId) clearTimeout(lagEntry.timeoutId);
+        delete inputLagState.current[currentLine.current.id];
+      }
+    }
     currentLine.current = null;
     setLines((prev) => prev.filter((l) => !(l.temp && l.user === nickname)));
     remove(ref(db, `rooms/${roomId}/lines_temp/${nickname}`)).catch(() => {});
@@ -216,12 +235,71 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
       eraser: selectedInstrument === 'eraser'
     };
 
+    // Initialize trembling state for this stroke if effect active
+    const trembling = getEffect('tremblingLines');
+    if (trembling && trembling.params) {
+      const now = Date.now();
+      // Determine amplitude range and frequency change interval
+      const ampRange = trembling.params._amplitudeRange || (trembling.params.amplitude ? { min: trembling.params.amplitude, max: trembling.params.amplitude } : null);
+      const freqRange = trembling.params._frequencyRange || (trembling.params.frequency ? { min: trembling.params.frequency, max: trembling.params.frequency } : null);
+
+      const pickInRange = (r) => {
+        if (!r) return 1;
+        const min = Number(r.min);
+        const max = Number(r.max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      };
+
+      const initialAmp = pickInRange(ampRange);
+      const freqMs = pickInRange(freqRange);
+
+      tremblingState.current[currentLine.current.id] = {
+        amp: initialAmp,
+        freqMs: Math.max(16, freqMs), // at least ~60Hz updates if used as ms, clamp lower bound
+        lastChange: now,
+        microAmp: Math.max(1, initialAmp * (0.3 + Math.random() * 0.9)),
+        microRate: 0.004 + Math.random() * 0.03, // radians per ms
+        phaseX: Math.random() * Math.PI * 2,
+        phaseY: Math.random() * Math.PI * 2
+      };
+    }
+
+    // Initialize input-lag state for this stroke if active
+    const inputLag = getEffect('inputLag');
+    if (inputLag && inputLag.params) {
+      // support params defined as { min, max } or nested ranges
+      const minDelay = Number(inputLag.params.min ?? inputLag.params._minRange?.min ?? 80);
+      const maxDelay = Number(inputLag.params.max ?? inputLag.params._minRange?.max ?? minDelay + 180);
+      const delayMs = randInt(minDelay, maxDelay);
+
+      // dropChance scales with delay (longer delay -> more likely to drop points)
+      const dropChance = Math.min(0.75, 0.05 + ((delayMs - minDelay) / Math.max(1, (maxDelay - minDelay))) * 0.6);
+
+      inputLagState.current[currentLine.current.id] = {
+          delayMs,
+          // buffer-based packetized flush
+          buffer: [],
+          timeoutId: null,
+          flushScheduled: false,
+          firstApplied: false,
+          dropChance,
+          // allow packet size override via params (optional)
+          packetMin: Number(inputLag.params.packetMin ?? 1),
+          packetMax: Number(inputLag.params.packetMax ?? 4)
+        };
+      // keep a direct reference to the line object so delayed flushes can update it
+      inputLagState.current[currentLine.current.id].lineRef = currentLine.current;
+    }
+
     // If noPreview effect is active, don't add local preview (still send temp to others)
+    // For inputLag we delay/show preview only when the first delayed point is applied
     const noPreview = !!getEffect('noPreview');
-    if (!noPreview) {
+    const hasInputLag = !!getEffect('inputLag');
+    if (!noPreview && !hasInputLag) {
       setLines((prev) => [...prev, currentLine.current]);
     }
-    if (sendTempLine.current) sendTempLine.current(currentLine.current);
+    // If no inputLag, send immediate temp; otherwise sending happens when delayed points apply
+    if (sendTempLine.current && !hasInputLag) sendTempLine.current(currentLine.current);
   };
 
   const handleMouseMove = (e) => {
@@ -254,15 +332,141 @@ export function useDrawing(roomId, nickname, isArtist, gameActive, showResults =
 
     // Apply trembling lines effect (jitter points) if active
     const trembling = getEffect('tremblingLines');
-    if (trembling && trembling.params && trembling.params.amplitude) {
-      const amp = Number(trembling.params.amplitude) || 1; // pixels
+    if (trembling && trembling.params) {
+      const state = tremblingState.current[currentLine.current.id];
+      const now = Date.now();
+
+      // If we have per-stroke state, possibly update amplitude based on frequency
+      let amp = 1;
+      let microAmp = 0.5;
+      let microRate = 0.003;
+      let phaseX = 0;
+      let phaseY = 0;
+
+      if (state) {
+        // update amplitude periodically according to freqMs
+        if (now - state.lastChange >= state.freqMs) {
+          const min = Number(trembling.params._amplitudeRange?.min ?? trembling.params.amplitude ?? 1);
+          const max = Number(trembling.params._amplitudeRange?.max ?? trembling.params.amplitude ?? 1);
+          state.amp = Math.floor(Math.random() * (max - min + 1)) + min;
+          state.lastChange = now;
+          // randomize micro params a bit
+          state.microAmp = Math.max(0.6, state.amp * (0.25 + Math.random() * 1.0));
+          state.microRate = 0.004 + Math.random() * 0.03;
+          state.phaseX = Math.random() * Math.PI * 2;
+          state.phaseY = Math.random() * Math.PI * 2;
+        }
+
+        amp = state.amp || 1;
+        microAmp = state.microAmp || 0.5;
+        microRate = state.microRate || 0.003;
+        phaseX = state.phaseX || 0;
+        phaseY = state.phaseY || 0;
+      } else {
+        // fallback: pick fresh amp per point from preserved range if available
+        if (trembling.params._amplitudeRange) {
+          const min = Number(trembling.params._amplitudeRange.min);
+          const max = Number(trembling.params._amplitudeRange.max);
+          amp = Math.floor(Math.random() * (max - min + 1)) + min;
+        } else if (trembling.params.amplitude) {
+          amp = Number(trembling.params.amplitude) || 1;
+        }
+      }
+
+      // Optionally modulate amplitude by stroke speed (faster => slightly less tremble)
+      let speed = 0;
+      if (pts.length >= 2) {
+        const lastX = pts[pts.length - 2] * stage.width();
+        const lastY = pts[pts.length - 1] * stage.height();
+        const dx = pos.x - lastX;
+        const dy = pos.y - lastY;
+        speed = Math.sqrt(dx * dx + dy * dy);
+      }
+      const speedFactor = Math.max(0.15, 1 - speed / (stage.width() * 0.5));
+      amp = amp * speedFactor;
+
+      // Compose main random jitter and a micro sinusoidal jitter for extra chaos
       const jitterX = (Math.random() * 2 - 1) * (amp / stage.width());
       const jitterY = (Math.random() * 2 - 1) * (amp / stage.height());
-      normalizedX = Math.min(1, Math.max(0, normalizedX + jitterX));
-      normalizedY = Math.min(1, Math.max(0, normalizedY + jitterY));
+      const microX = (microAmp * Math.sin((now + phaseX) * microRate)) / stage.width();
+      const microY = (microAmp * Math.sin((now + phaseY) * (microRate * 1.3))) / stage.height();
+
+      normalizedX = Math.min(1, Math.max(0, normalizedX + jitterX + microX));
+      normalizedY = Math.min(1, Math.max(0, normalizedY + jitterY + microY));
     }
 
-    currentLine.current.points = [...pts, normalizedX, normalizedY];
+    const newPointSet = [...pts, normalizedX, normalizedY];
+
+    // Handle input lag: schedule this point to be applied after delay (may drop/stutter)
+    const inputLag = getEffect('inputLag');
+    if (inputLag && inputLagState.current && inputLagState.current[currentLine.current.id]) {
+      const state = inputLagState.current[currentLine.current.id];
+      const point = { x: normalizedX, y: normalizedY };
+      state.buffer.push(point);
+
+      // Schedule a flush if none scheduled
+      if (!state.flushScheduled) {
+        state.flushScheduled = true;
+          const lineId = currentLine.current && currentLine.current.id;
+          const jitter = Math.floor(Math.random() * 120) - 60; // +/-60ms jitter for larger stutter
+          const to = setTimeout(function flush() {
+            // if the stroke was finished/cleared, abort
+            if (!lineId || !inputLagState.current || !inputLagState.current[lineId]) return;
+            const state = inputLagState.current[lineId];
+            state.flushScheduled = false;
+
+          // determine packet size
+          const packetMin = Math.max(1, state.packetMin || 1);
+          const packetMax = Math.max(packetMin, state.packetMax || 1);
+          const available = state.buffer.length;
+          const packetSize = Math.min(available, randInt(packetMin, Math.min(packetMax, Math.max(1, Math.floor(available)) )));
+
+          // apply up to packetSize points (with possible drops)
+          let applied = 0;
+          for (let i = 0; i < packetSize; i++) {
+            const p = state.buffer.shift();
+            if (!p) break;
+            if (Math.random() < state.dropChance) {
+              continue; // drop this point to create stutter
+            }
+
+            if (!state.firstApplied) {
+              // add initial preview now on the stored lineRef
+              const lineRef = state.lineRef;
+              if (!lineRef) continue;
+              lineRef.points = [...lineRef.points];
+              setLines((prev) => [...prev, lineRef]);
+              state.firstApplied = true;
+            }
+
+            const lineRef = state.lineRef;
+            if (!lineRef) continue;
+            lineRef.points = [...lineRef.points, p.x, p.y];
+            applied += 1;
+          }
+
+          if (applied > 0 && sendTempLine.current) {
+            const lr = state.lineRef || null;
+            if (lr) sendTempLine.current(lr);
+          }
+
+          // if buffer still has points, schedule another flush soon (bursty behavior)
+          if (state.buffer.length > 0) {
+            state.flushScheduled = true;
+            const nextJitter = Math.floor(Math.random() * 80) - 40;
+            state.timeoutId = setTimeout(flush, Math.max(6, Math.floor(state.delayMs * 0.6) + nextJitter));
+          } else {
+            state.timeoutId = null;
+          }
+        }, Math.max(0, state.delayMs + jitter));
+        state.timeoutId = to;
+      }
+
+      // Do not update immediate preview; buffered flush will add points and preview
+    } else {
+      // No input lag: update immediately for smooth preview
+      currentLine.current.points = newPointSet;
+    }
 
     // Aggiorna immediatamente la linea locale per feedback visivo fluido
     const noPreview = !!getEffect('noPreview');
