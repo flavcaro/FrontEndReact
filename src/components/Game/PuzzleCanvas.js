@@ -22,30 +22,10 @@ export default function PuzzleCanvas({
   const [ctx, setCtx] = useState(null);
   const sectionBoundsRef = useRef(null);
 
-  // Inizializza il canvas
-  useEffect(() => {
-    if (!canvasRef.current) return;
+  // ----------------------
+  // FUNZIONI DI DISEGNO
+  // ----------------------
 
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    
-    // Imposta le dimensioni del canvas
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-
-    // Calcola i bounds della sezione
-    if (assignedSection !== null && assignedSection !== undefined) {
-      sectionBoundsRef.current = getSectionBounds(assignedSection, canvas.width, canvas.height);
-    }
-
-    setCtx(context);
-
-    // Disegna lo sfondo e i bordi delle sezioni
-    drawCanvasBackground(context, canvas.width, canvas.height);
-  }, [assignedSection]);
-
-  // Disegna lo sfondo e i bordi delle sezioni
   const drawCanvasBackground = useCallback((context, width, height) => {
     if (!context) return;
 
@@ -56,7 +36,7 @@ export default function PuzzleCanvas({
     // Disegna i bordi delle sezioni
     if (showSectionBorders) {
       const sectionWidth = width / 3;
-      
+
       context.strokeStyle = '#e2e8f0';
       context.lineWidth = 2;
       context.setLineDash([5, 5]);
@@ -75,13 +55,12 @@ export default function PuzzleCanvas({
 
       context.setLineDash([]);
 
-      // Evidenzia la sezione assegnata al giocatore
+      // Evidenzia la sezione assegnata
       if (assignedSection !== null && assignedSection !== undefined) {
         const bounds = getSectionBounds(assignedSection, width, height);
         context.fillStyle = 'rgba(59, 130, 246, 0.05)';
         context.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        
-        // Bordo più evidente per la sezione assegnata
+
         context.strokeStyle = '#3b82f6';
         context.lineWidth = 3;
         context.strokeRect(bounds.x + 2, bounds.y + 2, bounds.width - 4, bounds.height - 4);
@@ -89,32 +68,6 @@ export default function PuzzleCanvas({
     }
   }, [showSectionBorders, assignedSection]);
 
-  // Ridisegna quando arrivano nuovi dati
-  useEffect(() => {
-    if (!ctx || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-
-    // Ridisegna lo sfondo
-    drawCanvasBackground(ctx, canvas.width, canvas.height);
-
-    // Disegna gli stroke in base al ruolo
-    if (allStrokes) {
-      Object.entries(allStrokes).forEach(([section, strokes]) => {
-        // Se è un disegnatore, mostra solo la sua sezione
-        // Se è l'indovinatore (assignedSection === null), mostra tutto
-        const shouldShowSection = assignedSection === null || assignedSection === parseInt(section);
-        
-        if (shouldShowSection && Array.isArray(strokes)) {
-          strokes.forEach(stroke => {
-            drawStroke(ctx, stroke);
-          });
-        }
-      });
-    }
-  }, [allStrokes, ctx, drawCanvasBackground, assignedSection]);
-
-  // Disegna uno stroke
   const drawStroke = useCallback((context, stroke) => {
     if (!stroke || !stroke.points || stroke.points.length < 2) return;
 
@@ -133,10 +86,8 @@ export default function PuzzleCanvas({
     context.stroke();
   }, []);
 
-  // Ottieni coordinate relative al canvas
   const getCanvasCoordinates = useCallback((e) => {
     if (!canvasRef.current) return null;
-
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
 
@@ -150,60 +101,86 @@ export default function PuzzleCanvas({
       clientY = e.clientY;
     }
 
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    return { x, y };
+    return { x: clientX - rect.left, y: clientY - rect.top };
   }, []);
 
-  // Verifica se il punto è nella sezione assegnata
   const isInAssignedSection = useCallback((x, y) => {
     if (assignedSection === null || assignedSection === undefined) return false;
     if (!canvasRef.current) return false;
-
     const canvas = canvasRef.current;
     return isPointInSection(x, y, assignedSection, canvas.width, canvas.height);
   }, [assignedSection]);
 
-  // Gestione mouse/touch down
+  // ----------------------
+  // USEEFFECT PER INIZIALIZZAZIONE
+  // ----------------------
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    sectionBoundsRef.current = (assignedSection !== null && assignedSection !== undefined) 
+      ? getSectionBounds(assignedSection, canvas.width, canvas.height) 
+      : null;
+
+    setCtx(context);
+    drawCanvasBackground(context, canvas.width, canvas.height);
+  }, [assignedSection, drawCanvasBackground]);
+
+  // Ridisegna quando cambiano gli stroke
+  useEffect(() => {
+    if (!ctx || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+
+    drawCanvasBackground(ctx, canvas.width, canvas.height);
+
+    if (allStrokes) {
+      Object.entries(allStrokes).forEach(([section, strokes]) => {
+        const shouldShowSection = assignedSection === null || assignedSection === parseInt(section);
+        if (shouldShowSection && Array.isArray(strokes)) {
+          strokes.forEach(stroke => drawStroke(ctx, stroke));
+        }
+      });
+    }
+  }, [allStrokes, ctx, drawCanvasBackground, drawStroke, assignedSection]);
+
+  // ----------------------
+  // HANDLER EVENTI POINTER
+  // ----------------------
+
   const handlePointerDown = useCallback((e) => {
     if (!isDrawing || assignedSection === null || assignedSection === undefined) return;
 
     e.preventDefault();
     const point = getCanvasCoordinates(e);
-    
-    if (!point || !isInAssignedSection(point.x, point.y)) {
-      // Punto fuori dalla sezione assegnata
-      return;
-    }
+
+    if (!point || !isInAssignedSection(point.x, point.y)) return;
 
     setIsMouseDown(true);
     setLastPoint(point);
-    
-    // Notifica l'inizio dello stroke
-    if (onStartStroke) {
-      onStartStroke(point.x, point.y, currentColor, brushSize);
-    }
+
+    if (onStartStroke) onStartStroke(point.x, point.y, currentColor, brushSize);
   }, [isDrawing, assignedSection, getCanvasCoordinates, isInAssignedSection, onStartStroke, currentColor, brushSize]);
 
-  // Gestione mouse/touch move
   const handlePointerMove = useCallback((e) => {
     if (!isMouseDown || !ctx || !lastPoint || !isDrawing) return;
 
     e.preventDefault();
     const currentPoint = getCanvasCoordinates(e);
-    
     if (!currentPoint) return;
 
-    // Verifica che il punto sia nella sezione assegnata
     if (!isInAssignedSection(currentPoint.x, currentPoint.y)) {
-      // Se esce dalla sezione, ferma il disegno
       setIsMouseDown(false);
       setLastPoint(null);
       return;
     }
 
-    // Disegna la linea localmente
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = brushSize;
     ctx.lineCap = 'round';
@@ -214,36 +191,30 @@ export default function PuzzleCanvas({
     ctx.lineTo(currentPoint.x, currentPoint.y);
     ctx.stroke();
 
-    // Notifica il nuovo punto
-    if (onAddPoint) {
-      onAddPoint(currentPoint.x, currentPoint.y);
-    }
-
+    if (onAddPoint) onAddPoint(currentPoint.x, currentPoint.y);
     setLastPoint(currentPoint);
   }, [isMouseDown, ctx, lastPoint, currentColor, brushSize, isDrawing, getCanvasCoordinates, isInAssignedSection, onAddPoint]);
 
-  // Gestione mouse/touch up
   const handlePointerUp = useCallback((e) => {
     if (!isMouseDown) return;
 
     e.preventDefault();
     setIsMouseDown(false);
 
-    // Notifica il completamento dello stroke
-    if (onFinishStroke) {
-      onFinishStroke();
-    }
-
+    if (onFinishStroke) onFinishStroke();
     setLastPoint(null);
   }, [isMouseDown, onFinishStroke]);
 
-  // Gestione mouse leave
   const handleMouseLeave = useCallback(() => {
     if (isMouseDown) {
       setIsMouseDown(false);
       setLastPoint(null);
     }
   }, [isMouseDown]);
+
+  // ----------------------
+  // RENDER
+  // ----------------------
 
   return (
     <div style={{ 

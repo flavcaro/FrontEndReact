@@ -7,8 +7,7 @@ import { updateGameStats } from "../services/userService";
 import {
   startPuzzleGame,
   handlePuzzleGuess,
-  advancePuzzleRound,
-  endPuzzleGame
+  advancePuzzleRound
 } from "../services/puzzleGameService";
 
 /**
