@@ -55,7 +55,7 @@ export default function AuthForm({
         )}
 
         <div className="lobby-actions">
-          <Button onClick={onAuth} variant="primary" icon={isSignUp ? "✨" : "🔑"}>
+          <Button onClick={() => { console.log('AuthForm: primary clicked', { email, isSignUp }); onAuth && onAuth(); }} variant="primary" icon={isSignUp ? "✨" : "🔑"}>
             {isSignUp ? "Registrati" : "Accedi"}
           </Button>
 

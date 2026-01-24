@@ -8,7 +8,8 @@ export default function Button({
   size = 'normal',
   disabled = false,
   icon = null,
-  className = ''
+  className = '',
+  type = 'button'
 }) {
   const baseClass = 'lobby-btn';
   const variantClass = variant;
@@ -16,6 +17,7 @@ export default function Button({
   
   return (
     <button 
+      type={type}
       className={`${baseClass} ${variantClass} ${sizeClass} ${className}`.trim()}
       onClick={onClick}
       disabled={disabled}

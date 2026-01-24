@@ -17,7 +17,7 @@ import CustomCreateForm from "./CustomCreateForm";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { nickname, setNickname, user, isGuest } = useUserData();
+  const { nickname, setNickname, xpPoints, level, user, isGuest } = useUserData();
   const [joinCode, setJoinCode] = useState("");
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [nickError, setNickError] = useState("");
@@ -118,91 +118,98 @@ export default function Home() {
         <div className="logo">🎨 SketchUp</div>
         {user && (
           <div className="header-right">
+            <div className="user-stats-header">
+              <span className="level-badge">🏆 Lv.{level}</span>
+              <span className="xp-badge">⭐ {xpPoints} XP</span>
+            </div>
             <span className="user-name">{user.email}</span>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         )}
       </header>
 
-      {/* HERO SECTION */}
-      <section className="hero-section">
-        <div className="hero-layout">
-          <div className="hero-text-side">
-            <div className="hero-illustration">
-              <div className="main-emoji">🎨</div>
-              <div className="floating-elements">
-                <div className="float-1">🖌️</div>
-                <div className="float-2">✏️</div>
-                <div className="float-3">🎯</div>
-                <div className="float-4">🏆</div>
+      {/* HERO SECTION removed - replaced by combined top row */}
+
+      {/* COMBINED TOP ROW: HERO | MODES | JOIN+NICKNAME */}
+      <section className="home-top-row">
+        <div className="home-row-grid">
+          <div className="hero-column">
+            <div className="hero-text-side">
+              <div className="hero-illustration">
+                <div className="main-emoji">🎨</div>
+                <div className="floating-elements">
+                  <div className="float-1">🖌️</div>
+                  <div className="float-2">✏️</div>
+                  <div className="float-3">🎯</div>
+                  <div className="float-4">🏆</div>
+                </div>
               </div>
-            </div>
-            <div className="hero-content">
-              <h1>Il gioco di disegno dove indovini le parole</h1>
-              <p>Un giocatore disegna, gli altri indovinano. Divertente e creativo!</p>
-            </div>
-            <div className="hero-create-inline">
-              <Button onClick={() => setShowCustomModal(true)} className="create-btn inline-create-btn">
-                🎨 Crea stanza personalizzata
-              </Button>
+              <div className="hero-content">
+                <h1>Il gioco di disegno dove indovini le parole</h1>
+                <p>Un giocatore disegna, gli altri indovinano. Divertente e creativo!</p>
+              </div>
+              <div className="hero-create-inline">
+                <Button onClick={() => setShowCustomModal(true)} className="create-btn inline-create-btn">
+                  🎨 Crea stanza personalizzata
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="hero-actions-side">
+          <div className="modes-column">
             <div className="quick-create-section">
               <h2 className="quick-create-title">🎮 Scegli la tua modalità</h2>
-              <p className="quick-create-subtitle">Clicca su una modalità per creare una stanza!</p>
+              <h2 className="quick-create-subtitle">Clicca su una modalità per creare una stanza!</h2>
               <div className="quick-buttons-grid">
-                {[CLASSICA, SOPRAVVIVENZA, CHAOS_TOOLS].map((mode) => (
-                  <div key={mode.id} className="quick-button-card" onClick={() => handleQuickCreateRoom(mode)}>
-                    <div className="quick-button-icon">{mode.icon}</div>
-                    <div className="quick-button-content">
-                      <h3>{mode.name}</h3>
-                      <p>{mode.turnDuration || 60} secondi • 3 round</p>
+                {[CLASSICA, SOPRAVVIVENZA, CHAOS_TOOLS, PUZZLE_DRAWING].map((mode) => {
+                  const rawDiff = (modeOptions && modeOptions[mode.id] && modeOptions[mode.id].difficulty) || 'medium';
+                  const diffLabel = rawDiff === 'easy' ? 'Facile' : rawDiff === 'hard' ? 'Difficile' : 'Media';
+                  return (
+                    <div key={mode.id} className="quick-button-card" onClick={() => handleQuickCreateRoom(mode)}>
+                      <div className="quick-button-icon">{mode.icon}</div>
+                      <div className="quick-button-content">
+                        <h3>{mode.name}</h3>
+                        <p>{mode.turnDuration || 60} secondi • 3 round</p>
+                        <div className="mode-difficulty">Difficoltà: {diffLabel}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* JOIN SECTION */}
-      <section className="join-section">
-        <div className="join-container">
-          <div className="join-card">
-            <h3>Unisciti a una stanza esistente</h3>
-            <p className="join-subtitle">Hai ricevuto un codice? Inseriscilo qui per giocare con i tuoi amici!</p>
-            <div className="join-inputs">
-              <Input
-                placeholder="Inserisci codice stanza"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value)}
-              />
-              <Button variant="secondary" size="small" onClick={handleJoinRoom}>🔗 Unisciti</Button>
+          <div className="join-column">
+            <div className="join-card compact-join">
+              <h3>Unisciti a una stanza esistente</h3>
+              <p className="join-subtitle">Hai ricevuto un codice? Inseriscilo qui per giocare con i tuoi amici!</p>
+              <div className="join-inputs">
+                <Input
+                  placeholder="Inserisci codice stanza"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                />
+                <Button variant="secondary" size="small" onClick={handleJoinRoom}>🔗 Unisciti</Button>
+              </div>
+            </div>
+
+            <div className="nickname-card compact-nick">
+              <div className="nickname-header">Il tuo nickname</div>
+              <div className="nickname-inputs">
+                <Input
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  maxLength={15}
+                  placeholder="Come vuoi chiamarti?"
+                />
+                <Button variant="tertiary" size="small" onClick={() => { localStorage.setItem('nickname', nickname); setNickError(''); }}>
+                  💾 Salva
+                </Button>
+              </div>
+              {isGuest && <div className="guest-badge">Giocando come ospite</div>}
+              {nickError && <div className="nickname-error">{nickError}</div>}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* NICKNAME SECTION */}
-      <section className="nickname-section">
-        <div className="nickname-card">
-          <div className="nickname-header">Il tuo nickname</div>
-            <div className="nickname-inputs">
-            <Input
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              maxLength={15}
-              placeholder="Come vuoi chiamarti?"
-            />
-              <Button variant="tertiary" size="small" onClick={() => { localStorage.setItem('nickname', nickname); setNickError(''); }}>
-              💾 Salva
-            </Button>
-          </div>
-          {isGuest && <div className="guest-badge">Giocando come ospite</div>}
-          {nickError && <div className="nickname-error">{nickError}</div>}
         </div>
       </section>
 

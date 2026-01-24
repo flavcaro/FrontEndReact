@@ -9,7 +9,7 @@
   position: relative;
   overflow: hidden;
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 18px;
+  font-size: 24px; /* larger base font for improved readability */
 }
 
 /* ===========================================
@@ -25,17 +25,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 32px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 28px 40px; /* larger header */
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 36px; /* larger logo */
+  font-weight: 800;
   color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .header-right {
@@ -45,18 +45,35 @@
 }
 
 .user-name {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.96);
+  margin-left: 12px;
+}
+
+.user-stats-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.level-badge, .xp-badge {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 .logout-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.3s ease;
 }
 
@@ -70,15 +87,10 @@
    =========================================== */
 
 .hero-section {
-  height: 70vh;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  padding: 80px 32px 40px;
-  text-align: center;
+  /* kept for backward compatibility when present elsewhere */
+  height: auto;
+  display: block;
+  padding: 0;
 }
 
 .hero-illustration {
@@ -134,24 +146,25 @@
 }
 
 .hero-content {
-  max-width: 600px;
+  max-width: 900px;
   margin-bottom: 60px;
+  width: 100%;
 }
 
 .hero-content h1 {
-  font-size: 48px;
+  font-size: 56px; /* larger hero title */
   font-weight: 800;
   color: white;
-  margin-bottom: 16px;
-  line-height: 1.1;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 18px;
+  line-height: 1.05;
+  text-shadow: 0 6px 28px rgba(0, 0, 0, 0.32);
 }
 
 .hero-content p {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* Bottone inline sotto il testo del hero */
@@ -160,12 +173,12 @@
 }
 
 .inline-create-btn {
-  font-size: 16px !important;
-  padding: 12px 22px !important;
-  border-radius: 40px !important;
+  font-size: 20px !important;
+  padding: 14px 28px !important;
+  border-radius: 44px !important;
   background: rgba(255, 255, 255, 0.95) !important;
   color: #1f2937 !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.14) !important;
 }
 
 .inline-create-btn:hover {
@@ -176,13 +189,41 @@
    HERO LAYOUT A DUE COLONNE
    =========================================== */
 
-.hero-layout {
+.home-top-row {
+  padding: 60px 40px 40px;
+  margin-top: 24px; /* small offset from header */
+  display: flex;
+  align-items: center; /* center vertically */
+  justify-content: center;
+  min-height: calc(100vh - 140px); /* keep centered in viewport */
+}
+
+.home-row-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
-  max-width: 1200px;
+  grid-template-columns: 1.8fr 1.4fr 1fr; /* reduce central dominance */
+  gap: 36px;
+  align-items: start;
+  max-width: 1600px;
   margin: 0 auto;
+}
+
+.hero-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modes-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.join-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: stretch;
 }
 
 /* LATO SINISTRO - LOGO + TESTO DESCRITTIVO */
@@ -192,6 +233,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  max-width: 1100px;
+  width: 100%;
 }
 
 .hero-logo {
@@ -203,7 +246,8 @@
 }
 
 .hero-content {
-  max-width: 500px;
+  max-width: 1100px;
+  width: 100%;
 }
 
 .hero-actions-side {
@@ -214,26 +258,41 @@
 
 /* SEZIONE CREAZIONE RAPIDA */
 .quick-create-section {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
+  border-radius: 28px;
+  padding: 44px; /* larger */
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.15);
+  max-width: 1000px; /* moderate central block */
   width: 100%;
 }
 
-.quick-create-title {
+.central-create-btn {
+  display: block;
+  width: 100%;
+  padding: 18px 24px;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
+  border-radius: 14px;
+  background: linear-gradient(135deg,#ff7ab6,#7c3aed);
+  color: white;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 30px rgba(124,58,237,0.18);
+  text-align: center;
+}
+.central-create-btn:hover{ transform: translateY(-2px); }
+
+.quick-create-title {
+  font-size: 30px;
+  font-weight: 800;
   color: #1f2937;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .quick-create-subtitle {
-  font-size: 14px;
+  font-size: 16px;
   color: #6b7280;
   margin-bottom: 24px;
   text-align: center;
@@ -268,9 +327,9 @@
 }
 
 .quick-button-icon {
-  font-size: 32px;
-  width: 50px;
-  height: 50px;
+  font-size: 36px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,44 +339,44 @@
 }
 
 .quick-button-content h3 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 800;
   color: #1f2937;
-  margin: 0 0 4px 0;
+  margin: 0 0 8px 0;
 }
 
 .quick-button-content p {
-  font-size: 12px;
+  font-size: 14px;
   color: #6b7280;
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
+}
+
+.mode-difficulty {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 700;
 }
 
 /* ===========================================
    JOIN SECTION SEPARATA
    =========================================== */
 
-.join-section {
-  padding: 60px 32px 40px;
-  position: relative;
-}
-
-.join-container {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-
 .join-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  padding: 34px; /* larger */
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
   position: relative;
   overflow: hidden;
 }
+
+.join-card.compact-join { padding: 18px; }
+
+.nickname-card.compact-nick { padding: 16px; border-radius: 16px; }
 
 .join-card::before {
   content: '';
@@ -331,10 +390,10 @@
 }
 
 .join-container h3 {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 900;
   color: #1f2937;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -347,7 +406,7 @@
 }
 
 .join-subtitle {
-  font-size: 16px;
+  font-size: 18px;
   color: #6b7280;
   margin-bottom: 32px;
   font-weight: 400;
@@ -358,7 +417,7 @@
   gap: 16px;
   align-items: flex-end;
   justify-content: center;
-  max-width: 400px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
@@ -370,24 +429,17 @@
    NICKNAME DISCRETO IN BASSO
    =========================================== */
 
-.nickname-section {
-  padding: 20px 32px 60px;
-  position: relative;
-}
-
 .nickname-card {
-  max-width: 500px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 28px; /* larger */
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  align-items: center;
+  gap: 12px;
+  align-items: stretch;
   position: relative;
 }
 
@@ -406,8 +458,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #1f2937;
   margin-bottom: 8px;
 }
@@ -422,7 +474,7 @@
   gap: 12px;
   align-items: flex-end;
   width: 100%;
-  max-width: 300px;
+  max-width: 360px;
 }
 
 .nickname-inputs .input-container {
@@ -728,11 +780,8 @@
    =========================================== */
 
 @media (max-width: 768px) {
-  .hero-section {
-    height: 60vh;
-    min-height: 500px;
-    padding: 60px 20px 30px;
-  }
+  .home-top-row { padding: 28px 16px; margin-top: 48px; min-height: calc(100vh - 120px); }
+  .home-row-grid { grid-template-columns: 1fr; gap: 18px; }
 
   .main-emoji {
     font-size: 80px;
@@ -766,7 +815,7 @@
   }
 
   .quick-create-section {
-    padding: 24px 20px;
+    padding: 20px;
     max-width: 100%;
   }
 
@@ -798,7 +847,7 @@
   }
 
   .join-section {
-    padding: 40px 20px 20px;
+    padding: 20px 16px 12px;
   }
 
   .join-card {
@@ -922,20 +971,20 @@
 /* Make join / nickname inputs and labels more compact and proportioned for the home layout */
 .join-card .lobby-label,
 .nickname-card .lobby-label {
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
 .join-card .lobby-input,
 .nickname-card .lobby-input {
-  padding: 10px 12px;
-  font-size: 16px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 18px;
+  border-radius: 12px;
 }
 
-.join-inputs { gap: 12px; }
-.join-inputs .lobby-input { min-width: 260px; }
-.join-inputs .lobby-btn { width: auto; min-width: 140px; }
+.join-inputs { gap: 14px; }
+.join-inputs .lobby-input { min-width: 320px; }
+.join-inputs .lobby-btn { width: auto; min-width: 180px; }
 
-.nickname-card { padding: 18px; }
-.nickname-header { font-size: 16px; }
+.nickname-card { padding: 28px; }
+.nickname-header { font-size: 20px; }

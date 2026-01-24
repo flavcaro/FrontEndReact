@@ -7,6 +7,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Increase base readability and apply a gentle desktop scale. */
+html, body, #root { height: 100%; }
+@media (min-width: 769px) {
+  body {
+    font-size: 18px; /* base font for legacy px rules to scale reasonably */
+    zoom: 1.18; /* supported in Chromium-based browsers; boosts overall UI size */
+  }
+}
+@media (max-width: 768px) {
+  body {
+    zoom: 1; /* keep mobile unscaled to avoid overflow */
+    font-size: 16px;
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
