@@ -19,6 +19,8 @@ import { useChat } from "../../hooks/useChat";
  * Il canvas è diviso in 3 sezioni, ogni giocatore disegna nella propria sezione
  */
 export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
+  console.log('🧩🧩🧩 PUZZLE BOARD CARICATO!', { roomId, nickname, gameConfig });
+  
   const navigate = useNavigate();
 
   const { players, finalNickname, isOwner } = usePlayers(roomId, nickname);
