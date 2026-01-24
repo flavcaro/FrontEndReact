@@ -145,31 +145,20 @@ export const isPointInSection = (x, y, section, canvasWidth, canvasHeight) => {
  * Calcola il punteggio per un'indovinata nel Puzzle Drawing
  * @param {number} timeLeft - Tempo rimanente in secondi
  * @param {number} turnDuration - Durata totale del turno
- * @returns {Object} - { guesserPoints, artistPoints, teamBonus }
+ * @returns {Object} - { guesserPoints, artistPoints }
  */
 export const calculatePuzzleScore = (timeLeft, turnDuration) => {
-  const timeRatio = timeLeft / turnDuration;
+  // Per l'indovinatore: usa la stessa logica della modalità classica
+  // 100 punti base + bonus tempo (max 200 punti bonus)
+  const basePoints = 100;
+  const timeBonus = Math.floor((timeLeft / turnDuration) * basePoints * 2);
+  const guesserPoints = basePoints + timeBonus;
   
-  // Punti base per l'indovinatore
-  let guesserPoints = PUZZLE_DRAWING.pointsPerGuess;
-  
-  // Bonus tempo (fino al 50% in più se indovina velocemente)
-  if (timeRatio > 0.5) {
-    guesserPoints += Math.floor(PUZZLE_DRAWING.pointsPerGuess * 0.5);
-  } else if (timeRatio > 0.25) {
-    guesserPoints += Math.floor(PUZZLE_DRAWING.pointsPerGuess * 0.25);
-  }
-  
-  // Punti per ogni artista
-  const artistPoints = PUZZLE_DRAWING.artistPoints;
-  
-  // Team bonus se indovinano velocemente (più del 50% del tempo rimasto)
-  const teamBonus = timeRatio > 0.5 ? PUZZLE_DRAWING.teamBonusPoints : 0;
+  // Per i disegnatori: 50 punti base + 1 punto per ogni secondo rimasto
+  const artistPoints = 50 + timeLeft;
   
   return {
     guesserPoints,
-    artistPoints,
-    teamBonus,
-    timeRatio
+    artistPoints
   };
 };

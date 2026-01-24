@@ -86,11 +86,10 @@ export function usePuzzleGame(roomId, nickname, players) {
   }, [roomId, gameState]);
 
   useGameTimer(
-    gameState?.active && !gameState?.gameEnded && !gameState?.guessedInCurrentRound,
-    gameState?.turnStartedAt,
-    gameState?.turnDuration || PUZZLE_DRAWING.turnDuration,
-    setTimeLeft,
-    handleTimerEnd
+    gameState,
+    showResults,
+    handleTimerEnd,
+    setTimeLeft
   );
 
   /* ---------------- START GAME ---------------- */

@@ -46,13 +46,16 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   const roles = assignPuzzleRoles(playersList, 0);
 
   // Inizializza lo stato del gioco
+  console.log('🎯 Parola selezionata per TUTTI i giocatori:', word);
+  console.log('⏱️ Durata turno configurata:', gameConfig.turnDuration);
+  
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
     gameModeId: 'puzzleDrawing',
     mode: PUZZLE_DRAWING.name,
     difficulty: gameConfig.difficulty?.name || 'Medio',
     difficultyId: gameConfig.difficulty?.id || 'medium',
-    turnDuration: PUZZLE_DRAWING.turnDuration,
+    turnDuration: gameConfig.turnDuration || PUZZLE_DRAWING.turnDuration,
     
     // Stato del round corrente
     round: 1,
@@ -123,22 +126,24 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
   const playersSnap = await get(playersRef);
   const playersData = playersSnap.val();
 
-  // Trova il giocatore e aggiorna il punteggio
-  const guesserData = Object.entries(playersData).find(([id, p]) => p.userId === guesserId);
+  // Trova il giocatore indovinatore e aggiorna il punteggio
+  const guesserData = Object.entries(playersData).find(([id, p]) => p.name === guesserName);
   if (guesserData) {
     const [playerId, playerInfo] = guesserData;
     const currentScore = playerInfo.score || 0;
     await set(ref(db, `rooms/${roomId}/players/${playerId}/score`), currentScore + scores.guesserPoints);
   }
 
-  // Assegna punti ai disegnatori
+  // Assegna punti a TUTTI i disegnatori
   for (const drawer of gameState.currentDrawers) {
-    const drawerData = Object.entries(playersData).find(([id, p]) => p.userId === drawer.player.uid);
+    const drawerData = Object.entries(playersData).find(([id, p]) => p.name === drawer.player.name);
     if (drawerData) {
       const [playerId, playerInfo] = drawerData;
       const currentScore = playerInfo.score || 0;
-      const totalPoints = scores.artistPoints + scores.teamBonus;
-      await set(ref(db, `rooms/${roomId}/players/${playerId}/score`), currentScore + totalPoints);
+      await set(ref(db, `rooms/${roomId}/players/${playerId}/score`), currentScore + scores.artistPoints);
+      console.log(`✅ Assegnati ${scores.artistPoints} punti a ${drawer.player.name}`);
+    } else {
+      console.error(`❌ Disegnatore ${drawer.player.name} non trovato nei players`);
     }
   }
 
@@ -161,7 +166,7 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
   const drawersNames = gameState.currentDrawers.map(d => d.player.name).join(', ');
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎨 Disegnatori (${drawersNames}): +${scores.artistPoints} punti${scores.teamBonus > 0 ? ` + ${scores.teamBonus} bonus velocità!` : ''}`,
+    message: `🎨 Disegnatori (${drawersNames}): +${scores.artistPoints} punti ciascuno!`,
     timestamp: Date.now(),
     isSystem: true
   });
