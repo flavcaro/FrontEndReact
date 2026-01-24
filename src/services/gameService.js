@@ -4,7 +4,7 @@ import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
 import { generateChaosEffects} from "../constants/gameModes/chaosTools"; 
 
 //DEBUG PER CHAOS TOOLS DI EDOARDO, NON TOCCARE
-import { pickChaosEffect} from "../constants/gameModes/chaosTools"; 
+//import { pickChaosEffect} from "../constants/gameModes/chaosTools"; 
 
 
 // Get random word based on difficulty
@@ -50,10 +50,10 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   });
   
   //COMMENTARE PER DEBUG, SCOMMENTARE PER VERSIONE FINALE
-  //const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
+  const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
   
   //DEBUG PER CHAOS TOOLS DI EDOARDO, NON TOCCARE
-  const initialChaos = resolvedHasChaos ? pickChaosEffect('skew') : null; // DEBUG_EFFECT
+  //const initialChaos = resolvedHasChaos ? pickChaosEffect('skew') : null; // DEBUG_EFFECT
 
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,
