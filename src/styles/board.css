@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   min-width: 0;
-  height: auto; /* allow header + main to size naturally */
+  height: 100%; /* fill available container (board-container) so layout fits viewport */
   overflow: hidden;
   background: #f8fafc;
   width: 100%;
@@ -56,7 +56,7 @@
   box-shadow: 0 12px 40px rgba(79,70,229,0.06), 0 2px 10px rgba(2,6,23,0.05);
   flex-shrink: 0;
   max-height: 220px;
-  overflow: hidden; /* clip overflow to avoid page scroll */
+  overflow: visible; /* allow popovers to escape and avoid inner scrollbars */
   border-radius: 0 0 12px 12px;
 }
 
@@ -68,8 +68,14 @@
   position: relative;
 }
 
+.malus-inline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .malus-summary {
-  background: linear-gradient(90deg, #fb7185, #ef4444);
+  background: linear-gradient(90deg, var(--danger-light), var(--danger));
   color: white;
   border: none;
   padding: 6px 10px;
@@ -81,7 +87,8 @@
 
 .malus-popover {
   position: absolute;
-  right: 0;
+  left: 50%;
+  right: auto;
   top: calc(100% + 8px);
   width: 360px;
   max-height: 300px;
@@ -92,7 +99,7 @@
   padding: 8px;
   overflow: hidden;
   opacity: 0;
-  transform: translateY(-6px) scale(0.98);
+  transform: translate(-50%, -6px) scale(0.98);
   pointer-events: none;
   transition: opacity 180ms ease, transform 180ms ease;
   z-index: 1200;
@@ -100,7 +107,7 @@
 
 .malus-popover.open {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translate(-50%, 0) scale(1);
   pointer-events: auto;
 }
 
@@ -135,10 +142,10 @@
   align-items: center;
   gap: 24px;
   flex-wrap: wrap;
-  /* allow header internal scrolling when content exceeds max-height */
-  max-height: 180px;
-  overflow-y: auto;
-  padding-right: 8px; /* room for scrollbar */
+  /* avoid internal vertical scroll; allow content to wrap horizontally */
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 8px;
 }
 
 .room-info-section {
@@ -192,7 +199,7 @@
   font-size: 18px;
   font-weight: 800;
   color: white;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
   padding: 10px 16px;
   border-radius: 999px;
   border: 1px solid rgba(2,6,23,0.06);
@@ -204,7 +211,7 @@
 }
 
 .difficulty-badge.secondary {
-  background: linear-gradient(90deg, #f59e0b, #f97316);
+  background: linear-gradient(90deg, var(--warning), var(--warning-dark));
   box-shadow: 0 10px 30px rgba(249,115,22,0.16);
 }
 
@@ -244,7 +251,7 @@
 .word-display {
   font-size: 36px;
   font-weight: 900;
-  color: #10b981;
+  color: var(--success);
   background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(16,185,129,0.03));
   padding: 8px 14px;
   border-radius: 12px;
@@ -378,21 +385,19 @@
 ========================= */
 
 @media (max-width: 1200px) {
-  .board-container {
-    flex-direction: column;
-  }
-
   .board-center {
-    height: auto;
-    min-height: 60vh;
-  }
-
-  .header-main {
+    flex: 1;
+    display: flex;
     flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
+    align-items: center;
+    min-width: 0;
+    height: auto; /* allow header + main to size naturally */
+    overflow: hidden;
+    /* Use brand gradient here so center area matches Home */
+    background: var(--brand-gradient);
+    width: 100%;
+    max-height: 100vh; /* Prevent overflow beyond viewport */
   }
-
   .status-section {
     align-items: flex-start;
   }

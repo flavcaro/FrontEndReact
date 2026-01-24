@@ -171,6 +171,9 @@ export default function Home() {
               <span className="xp-badge">⭐ {xpPoints} XP</span>
             </div>
             <span className="user-name">{user.email}</span>
+            {!isGuest && (
+              <button className="header-profile-btn" onClick={() => navigate('/profile')}>👤 Profilo</button>
+            )}
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         )}

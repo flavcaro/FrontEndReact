@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export default function UserHeader({ nickname, isGuest, user, xpPoints, level, gamesPlayed, gamesWon, totalScore, bestScore, onSignOut, navigate }) {
+export default function UserHeader({ nickname, isGuest, user, xpPoints, level, gamesPlayed, gamesWon, totalScore, bestScore, onSignOut }) {
+  const navigate = useNavigate();
   const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
   return (
     <header className="home-header">
@@ -30,7 +32,7 @@ export default function UserHeader({ nickname, isGuest, user, xpPoints, level, g
       </div>
       
       <div className="header-actions">
-        {!isGuest && navigate && (
+        {!isGuest && (
           <button className="btn-profile" onClick={() => navigate('/profile')}>
             👤 Profilo
           </button>

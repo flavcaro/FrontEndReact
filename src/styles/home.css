@@ -5,7 +5,7 @@
 
 .home {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: var(--brand-gradient);
   position: relative;
   overflow: hidden;
   font-family: 'Inter', system-ui, sans-serif;

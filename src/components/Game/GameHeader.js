@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS, GAME_MODES } from '../../constants/gameConfig';
+import { PUZZLE_DRAWING } from '../../constants/gameModes/puzzleDrawing';
 
 export default function GameHeader({ 
   roomId, 
@@ -27,7 +28,33 @@ export default function GameHeader({
 
   const modeId = gameState?.gameModeId || gameState?.modeId || gameConfig?.id || gameConfig?.gameModeId;
   const modeNameFromId = getModeNameFromId(modeId);
-  const gameMode = modeNameFromId || (typeof gameState?.mode === 'string' ? gameState.mode : null) || gameConfig?.name || 'Classica';
+  let gameMode = modeNameFromId || (typeof gameState?.mode === 'string' ? gameState.mode : null) || gameConfig?.name || 'Classica';
+
+  // Robust puzzle detection: check known ids, names, and nested objects
+  const isPuzzleMode = () => {
+    try {
+      if (!gameState && !gameConfig) return false;
+      const candidates = [
+        gameConfig?.id,
+        gameConfig?.gameModeId,
+        gameConfig?.name,
+        gameState?.gameModeId,
+        gameState?.modeId,
+        gameState?.mode,
+        modeNameFromId
+      ];
+      for (const c of candidates) {
+        if (!c) continue;
+        const s = typeof c === 'string' ? c.toLowerCase() : (typeof c === 'object' && c?.id ? String(c.id).toLowerCase() : JSON.stringify(c).toLowerCase());
+        if (s.includes('puzzle') || s.includes('puzzledrawing') || s.includes('puzzle_drawing') || s.includes('puzzledraw')) return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  if (isPuzzleMode()) gameMode = PUZZLE_DRAWING.name;
 
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
   const roundsPerPlayer = gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
@@ -38,7 +65,9 @@ export default function GameHeader({
   // active malus list is shown via the popover; no inline summary variable needed
 
   const [malusOpen, setMalusOpen] = useState(false);
+  const [malusManualOpen, setMalusManualOpen] = useState(false);
   const malusRef = useRef(null);
+  const malusAutoTimeoutRef = useRef(null);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -47,6 +76,28 @@ export default function GameHeader({
     document.addEventListener('click', onDocClick);
     return () => document.removeEventListener('click', onDocClick);
   }, []);
+
+  // Auto-show malus details briefly to the artist when a round starts
+  useEffect(() => {
+    if (gameState?.active && isArtist && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0) {
+      // clear any previous timeout
+      if (malusAutoTimeoutRef.current) clearTimeout(malusAutoTimeoutRef.current);
+      setMalusOpen(true);
+      // auto-hide after 3.5s
+      malusAutoTimeoutRef.current = setTimeout(() => {
+        setMalusOpen(false);
+        setMalusManualOpen(false);
+        malusAutoTimeoutRef.current = null;
+      }, 3500);
+    }
+
+    return () => {
+      if (malusAutoTimeoutRef.current) {
+        clearTimeout(malusAutoTimeoutRef.current);
+        malusAutoTimeoutRef.current = null;
+      }
+    };
+  }, [gameState?.active, isArtist, gameState?.chaosEffects]);
 
   const handleLeaveRoom = () => {
     if (gameState?.active) {
@@ -93,28 +144,65 @@ export default function GameHeader({
               </div>
             )}
             {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
-              <div className="malus-inline">
+              <div
+                className="malus-inline"
+                ref={malusRef}
+                onMouseEnter={() => {
+                  // cancel any pending auto-hide and show popover on hover
+                  if (malusAutoTimeoutRef.current) {
+                    clearTimeout(malusAutoTimeoutRef.current);
+                    malusAutoTimeoutRef.current = null;
+                  }
+                  setMalusOpen(true);
+                }}
+                onMouseLeave={() => {
+                  // restore to manual-open state when the mouse leaves
+                  setMalusOpen(malusManualOpen);
+                }}
+              >
                 <div className="malus-label">🎭</div>
                 <div className="malus-info-inline">
                   <button
                     type="button"
                     className="malus-summary"
-                    onClick={() => setMalusOpen(v => !v)}
+                    onClick={() => {
+                      setMalusManualOpen((prev) => {
+                        const nv = !prev;
+                        setMalusOpen(nv);
+                        return nv;
+                      });
+                    }}
                     aria-expanded={malusOpen}
                   >
                     {gameState.chaosEffects.length} attivi
                   </button>
                   <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
                     <div className="malus-popover-inner">
-                      {gameState.chaosEffects.map((m, idx) => (
-                        <div key={m.id || idx} className="malus-popover-item">
-                          <div className="effect-name">{m.name}</div>
-                          {m.params && typeof m.params === 'object' && (
-                            <div className="effect-params">{Object.entries(m.params).map(([k, v]) => `${k}: ${v}`).join(' • ')}</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                        {gameState.chaosEffects.map((m, idx) => {
+                          const renderParams = () => {
+                            if (!m.params || typeof m.params !== 'object') return null;
+                            return Object.entries(m.params).map(([k, v]) => {
+                              const pretty = (val) => {
+                                if (val === null || val === undefined) return String(val);
+                                if (typeof val === 'object') {
+                                  try { return JSON.stringify(val); } catch (e) { return String(val); }
+                                }
+                                return String(val);
+                              };
+                              return `${k}: ${pretty(v)}`;
+                            }).join(' • ');
+                          };
+
+                          return (
+                            <div key={m.id || idx} className="malus-popover-item">
+                              <div className="effect-name">{m.name}</div>
+                              {m.params && typeof m.params === 'object' && (
+                                <div className="effect-params">{renderParams()}</div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                   </div>
                 </div>
               </div>
@@ -137,24 +225,7 @@ export default function GameHeader({
 
 
 
-              {isArtist && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
-                <div className="malus-details-section">
-                  <div className="malus-label">Dettagli Malus</div>
-                  <div className="malus-effects">
-                    {gameState.chaosEffects.map((m, idx) => (
-                      <div key={m.id + idx} className="malus-effect">
-                        <div className="effect-name">{m.name}</div>
-                        {m.params && typeof m.params === 'object' && (
-                          <div className="effect-params">
-                            {Object.entries(m.params).map(([k, v]) => `${k}: ${v}`).join(' • ')}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-                  {/* Malus summary moved next to round info to avoid header overflow */}
+              {/* Malus summary moved next to round info to avoid header overflow */}
             </>
           )}
         </div>

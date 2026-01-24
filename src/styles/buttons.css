@@ -16,9 +16,9 @@
 }
 
 .lobby-btn.primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--brand-gradient);
   color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(var(--brand-rgb), 0.4);
 }
 
 .lobby-btn.primary:hover {

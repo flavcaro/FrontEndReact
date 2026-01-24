@@ -2,7 +2,7 @@
 .players-sidebar {
   width: 300px;
   /* Use a subtle tint derived from Home primary so sidebars read as part of the brand */
-  background: rgba(102,126,234,0.10);
+  background: var(--sidebar-tint);
   /* ensure content cards (player rows) remain white for readability */
   border-right: 1px solid rgba(15,23,42,0.06);
   display: flex;
