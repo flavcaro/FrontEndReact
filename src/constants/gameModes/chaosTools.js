@@ -2,7 +2,7 @@
 export const CHAOS_TOOLS = {
   id: 'chaos_tools',
   name: '🌀 Chaos Tools',
-  description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, zoom imprevisti, linee tremolanti',
+  description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, linee tremolanti',
   icon: '🌀',
   turnDuration: 45,
   hasChaosEffects: true
@@ -14,9 +14,33 @@ const possibleEffects = [
     { id: 'mirror', style: { transform: 'scaleX(-1)' }, name: 'Specchio', type: 'visual' },
     { id: 'upsideDown', style: { transform: 'scaleY(-1)' }, name: 'Capovolto', type: 'visual' },
     { id: 'rotate', style: { transform: 'rotate(15deg)' }, name: 'Ruotato', type: 'visual' },
-    { id: 'zoom', style: { transform: 'scale(1.2)' }, name: 'Zoom', type: 'visual' },
-    { id: 'trembleVisual', style: { animation: 'tremble 0.12s infinite' }, name: 'Tremolio (visivo)', type: 'visual' },
-    { id: 'skew', style: { transform: 'skew(10deg, 5deg)' }, name: 'Deformato', type: 'visual' },
+    {
+      id: 'trembleVisual',
+      name: 'Tremolio (visivo)',
+      type: 'visual',
+      params: {
+        amplitudeRange: { min: 0, max: 2 },         
+        durationRange: { min: 800, max: 1600 }, 
+        zoomRange: { min: 105, max: 140 },          
+        switchIntervalRange: { min: 1500, max: 4000 } 
+      }
+    },
+    {
+      id: 'skew',
+      name: 'Deformato',
+      type: 'visual',
+      // parameterized warp effect: Canvas will create SVG displacement filters
+      params: {
+        // Make skew strong by default; Canvas will create a static SVG displacement filter
+        // scaleRange: px displacement magnitude
+        scaleRange: { min: 30, max: 120 },
+        // baseFreqRange is an integer that Canvas converts to a floating baseFrequency
+        baseFreqRange: { min: 8, max: 80 },
+        seedRange: { min: 1, max: 3000 },
+        // switchInterval kept for backwards-compat but Canvas will create static deformation
+        switchIntervalRange: { min: 100000, max: 200000 }
+      }
+    },
 
     // Behavior effects (handled in drawing logic)
     { id: 'randomColor', name: 'Colori Casuali', type: 'behavior' },
