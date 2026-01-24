@@ -13,7 +13,7 @@ export default function Lobby() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [showAuthForm, setShowAuthForm] = useState(false);
-  const { authError, setAuthError, handleEmailAuth, handleGuestAuth } = useAuth();
+  const { authError, setAuthError, handleEmailAuth, handleGuestAuth, handleGoogleAuth } = useAuth();
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -33,6 +33,11 @@ export default function Lobby() {
 
   const handleGuestLogin = async () => {
     const success = await handleGuestAuth();
+    if (success) navigate("/home", { replace: true });
+  };
+
+  const handleGoogleLogin = async () => {
+    const success = await handleGoogleAuth();
     if (success) navigate("/home", { replace: true });
   };
 
@@ -73,6 +78,7 @@ export default function Lobby() {
         setIsSignUp={setIsSignUp}
         authError={authError}
         onAuth={handleAuth}
+        onGoogleAuth={handleGoogleLogin}
         onBack={handleBack}
       />
     );
