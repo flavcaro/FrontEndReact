@@ -99,25 +99,33 @@ export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
             {/* Info ruolo corrente */}
             {gameState?.active && !showResults && (
               <div style={{
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                background: isDrawer 
+                  ? 'linear-gradient(135deg, #10b981, #059669)' 
+                  : 'linear-gradient(135deg, #f59e0b, #d97706)',
                 color: 'white',
                 padding: '12px 24px',
                 borderRadius: '12px',
-                fontSize: '16px',
-                fontWeight: '600',
+                fontSize: '18px',
+                fontWeight: '700',
                 textAlign: 'center',
                 marginTop: '8px',
-                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                border: '3px solid white'
               }}>
                 {isDrawer && (
                   <>
-                    🎨 Stai disegnando nella sezione:{' '}
-                    <strong>{['Sinistra', 'Centro', 'Destra'][mySection]}</strong>
+                    🎨 TU DISEGNI - Sezione:{' '}
+                    <strong>{['SINISTRA', 'CENTRO', 'DESTRA'][mySection]}</strong>
                   </>
                 )}
                 {isGuesser && (
                   <>
-                    🤔 Sei l'indovinatore! Osserva il puzzle e indovina la parola
+                    🤔 TU INDOVINI! Osserva il puzzle e scrivi nella chat
+                  </>
+                )}
+                {!isDrawer && !isGuesser && (
+                  <>
+                    ⏳ In attesa...
                   </>
                 )}
               </div>
