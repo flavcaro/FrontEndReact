@@ -23,6 +23,12 @@ export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
 
   const { players, finalNickname, isOwner } = usePlayers(roomId, nickname);
 
+  console.log('🎮 [PuzzleBoard] Nicknames:', { 
+    original: nickname, 
+    final: finalNickname,
+    different: nickname !== finalNickname 
+  });
+
   const {
     gameState,
     timeLeft,
