@@ -98,7 +98,7 @@ export default function CustomCreateForm({
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <Button onClick={onCancel} variant="tertiary">✕ Annulla</Button>
-          <Button onClick={onCreate} variant="primary">🎉 Crea stanza</Button>
+          <Button onClick={onCreate} variant="primary">Crea stanza</Button>
         </div>
       </div>
     </div>

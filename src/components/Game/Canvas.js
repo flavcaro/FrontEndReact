@@ -69,6 +69,10 @@ export default function Canvas({
       }
       const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.65); // at most 65% vh
 
+      // Ensure canvas height never exceeds its wrapper visible height (avoids creating page scroll)
+      const containerRect = container.getBoundingClientRect();
+      const containerAvailableHeight = Math.max(160, Math.floor(containerRect.height - 16));
+
       // Compute sensible minimums so the canvas doesn't become visually tiny
       const minWidth = Math.max(220, Math.floor(vw * 0.2));
       const minHeight = Math.max(180, Math.floor(vh * 0.2));
@@ -76,7 +80,8 @@ export default function Canvas({
       // Allow rectangular canvas: width limited by availableHorizontal and vwConstraint,
       // height limited by availableHeight and vhConstraint
       const computedWidth = Math.max(minWidth, Math.min(availableHorizontal, clientWidth, vwConstraint));
-      const computedHeight = Math.max(minHeight, Math.min(availableHeight, vhConstraint));
+      let computedHeight = Math.max(minHeight, Math.min(availableHeight, vhConstraint));
+      computedHeight = Math.min(computedHeight, containerAvailableHeight);
 
       setDimensions({ width: computedWidth, height: computedHeight });
     };
@@ -330,6 +335,7 @@ export default function Canvas({
     >
       {/* Artist feedback badge removed: malus descriptions hidden from players */}
       <div
+        className="canvas-stage-inner"
         style={{
           width: dimensions.width > 0 ? `${dimensions.width}px` : '100%',
           height: dimensions.height > 0 ? `${dimensions.height}px` : '100%',

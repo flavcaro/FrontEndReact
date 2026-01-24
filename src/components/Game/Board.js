@@ -132,6 +132,17 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // When the board is pinned (fixed to viewport) prevent body scroll
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    if (isPinned) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = prev || '';
+    }
+    return () => { document.body.style.overflow = prev || ''; };
+  }, [isPinned]);
+
   return (
     <>
       <SimplePopup

@@ -66,6 +66,16 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
     startGame(gameConfig);
   };
 
+  // PuzzleBoard doesn't forcibly change body scroll here; parent layout
+  // (Board/overall app) controls body overflow to avoid layout conflicts.
+  
+  // Prevent body scroll while PuzzleBoard is active (fills viewport)
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev || ''; };
+  }, []);
+
   return (
     <>
       {showStartPopup && !gameState?.active && (
@@ -83,7 +93,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
       <div
         className="board-container"
-        style={{ display: "flex", height: "100dvh", overflow: "hidden" }}
+        style={{ position: 'fixed', inset: 0, display: 'flex', overflow: 'hidden', alignItems: 'stretch', width: '100%' }}
       >
         <PlayersSidebar
           players={players}
@@ -94,7 +104,9 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
         <div className="board-center">
           <GameHeader
+            roomId={roomId}
             gameState={gameState}
+            gameConfig={gameConfig}
             timeLeft={timeLeft}
             isArtist={isDrawer}
             nickname={finalNickname}

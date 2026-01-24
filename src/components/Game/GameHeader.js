@@ -54,7 +54,8 @@ export default function GameHeader({
     }
   };
 
-  if (isPuzzleMode()) gameMode = PUZZLE_DRAWING.name;
+  const puzzleDetected = isPuzzleMode();
+  if (puzzleDetected) gameMode = PUZZLE_DRAWING.name;
 
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
   const roundsPerPlayer = gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
@@ -124,7 +125,7 @@ export default function GameHeader({
           <div className="game-info">
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
-              <div className="mode-badge">🎨 {gameMode}</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
             </div>
 
             <div className="difficulty-info">
