@@ -53,7 +53,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   const initialChaos = resolvedHasChaos ? generateChaosEffects() : null;
   
   //DEBUG PER CHAOS TOOLS DI EDOARDO, NON TOCCARE
-  //const initialChaos = resolvedHasChaos ? pickChaosEffect('inputLag') : null; // DEBUG_EFFECT
+  //const initialChaos = resolvedHasChaos ? pickChaosEffect('skew') : null; // DEBUG_EFFECT
 
   await set(ref(db, `rooms/${roomId}/game`), {
     active: true,

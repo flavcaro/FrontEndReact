@@ -69,7 +69,10 @@ export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
         />
       )}
 
-      <div className="board-container">
+      <div
+        className="board-container"
+        style={{ display: "flex", height: "100dvh", overflow: "hidden" }}
+      >
         <PlayersSidebar
           players={players}
           gameState={gameState}
@@ -136,7 +139,7 @@ export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
           </GameHeader>
 
           <main className="board-main">
-            <div className="game-content">
+            <div className="game-content" style={{ maxWidth: '1100px' }}>
               <PuzzleCanvas
                 currentColor={selectedColor}
                 brushSize={brushSize}
