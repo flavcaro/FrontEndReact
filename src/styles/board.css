@@ -48,22 +48,97 @@
 
 .board-header {
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 20px 28px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* Playful translucent surface with subtle brand glow */
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,250,255,0.92) 100%);
+  backdrop-filter: blur(8px) saturate(1.05);
+  border-bottom: 2px solid rgba(79,70,229,0.08);
+  padding: 16px 22px;
+  box-shadow: 0 12px 40px rgba(79,70,229,0.06), 0 2px 10px rgba(2,6,23,0.05);
   flex-shrink: 0;
   max-height: 220px;
+  overflow: hidden; /* clip overflow to avoid page scroll */
+  border-radius: 0 0 12px 12px;
+}
+
+/* Malus compact summary + popover */
+.malus-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.malus-summary {
+  background: linear-gradient(90deg, #fb7185, #ef4444);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(239,68,68,0.12);
+}
+
+.malus-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 360px;
+  max-height: 300px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.2);
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 8px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 1200;
+}
+
+.malus-popover.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.malus-popover-inner {
   overflow-y: auto;
+  max-height: 260px;
+  padding-right: 6px;
+}
+
+.malus-popover-item {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(248,249,250,0.98);
+  border: 1px solid rgba(15,23,42,0.03);
+  margin-bottom: 8px;
+}
+
+.malus-popover-item .effect-name {
+  font-weight: 800;
+  color: #7f1d1d;
+}
+
+.malus-popover-item .effect-params {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 4px;
 }
 
 .header-main {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  align-items: center;
+  gap: 24px;
   flex-wrap: wrap;
+  /* allow header internal scrolling when content exceeds max-height */
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 8px; /* room for scrollbar */
 }
 
 .room-info-section {
@@ -104,6 +179,7 @@
   gap: 16px;
   align-items: flex-start;
   flex-wrap: wrap;
+  position: relative; /* allow popover positioning inside game-info */
 }
 
 .game-mode-info, .difficulty-info, .round-info {
@@ -113,28 +189,34 @@
 }
 
 .mode-badge, .difficulty-badge {
-  font-size: 20px;
-  font-weight: 700;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(2,6,23,0.06);
+  box-shadow: 0 10px 30px rgba(102,126,234,0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 0 2px 6px rgba(2,6,23,0.18);
 }
 
-.difficulty-badge {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.2);
+.difficulty-badge.secondary {
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+  box-shadow: 0 10px 30px rgba(249,115,22,0.16);
 }
 
 .round-display {
-  font-size: 22px;
-  font-weight: 700;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 6px 10px;
-  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,0.04);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
 }
 
 .status-section {
@@ -154,70 +236,87 @@
 }
 
 .status-label {
-  font-size: 20px;
-  font-weight: 700;
-  color: #374151;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .word-display {
-  font-size: 28px;
-  font-weight: 800;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  letter-spacing: 2px;
+  font-size: 36px;
+  font-weight: 900;
+  color: #10b981;
+  background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(16,185,129,0.03));
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(16,185,129,0.12);
+  letter-spacing: 3px;
+  text-shadow: 0 6px 18px rgba(16,185,129,0.12);
 }
 
-.malus-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
 }
 
-.malus-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ef4444;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.malus-popover {
+  position: absolute;
+  left: 0; /* align under the round/mode area */
+  top: calc(100% + 8px);
+  width: 360px;
+  max-height: 300px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.2);
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 8px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 1200;
 }
 
-.malus-details {
-  font-size: 16px;
-  font-weight: 600;
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
 
 .malus-details-section {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  /* let malus scroll internally without forcing page scroll; reserve space for actions */
+  max-width: calc(100% - 260px);
+  overflow-x: auto; /* internal horizontal scroll when many malus */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  -ms-overflow-style: none; /* IE/Edge hide scrollbar */
+  scrollbar-width: thin; /* Firefox */
 }
 
 .malus-effects {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: nowrap; /* keep items in a single row */
 }
 
 .malus-effect {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 10px;
-  background: #fff1f2;
-  color: #991b1b;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 12px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+  color: #7f1d1d;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(239, 68, 68, 0.12);
+  box-shadow: 0 6px 18px rgba(79,70,229,0.04);
+  white-space: nowrap;
 }
+
+/* Thin, subtle scrollbar for malus area */
+.malus-details-section::-webkit-scrollbar { height: 8px; }
+.malus-details-section::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.08); border-radius: 999px; }
+.malus-details-section::-webkit-scrollbar-track { background: transparent; }
 
 .effect-name {
   font-size: 13px;
@@ -251,31 +350,28 @@
 /* CLEAR */
 
 .btn-clear {
-  background: #ef4444;
+  background: linear-gradient(90deg, #fb7185, #ef4444);
   color: white;
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 30px rgba(239,68,68,0.14);
 }
 
-.btn-clear:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
+.btn-clear:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(239,68,68,0.18); }
 
-.btn-clear:active {
-  transform: translateY(0);
-}
+.btn-clear:active { transform: translateY(0); }
 
 /* START */
 
 .btn-start {
-  background: #22c55e;
+  background: linear-gradient(90deg, #667eea, #764ba2);
   color: white;
+  border-radius: 999px;
+  padding: 10px 16px;
+  box-shadow: 0 12px 36px rgba(102,126,234,0.18);
 }
 
-.btn-start:hover {
-  background: #16a34a;
-  transform: translateY(-1px);
-}
+.btn-start:hover { transform: translateY(-2px); box-shadow: 0 18px 48px rgba(102,126,234,0.22); }
 
 /* =========================
    RESPONSIVE

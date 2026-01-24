@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS, GAME_MODES } from '../../constants/gameConfig';
 
@@ -30,13 +30,23 @@ export default function GameHeader({
   const gameMode = modeNameFromId || (typeof gameState?.mode === 'string' ? gameState.mode : null) || gameConfig?.name || 'Classica';
 
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
+  const roundsPerPlayer = gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
   
   const playersCount = players?.length || 0;
   const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && isOwner;
 
-  const activeMalus = Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0
-    ? gameState.chaosEffects.map(m => m.name).join(', ')
-    : null;
+  // active malus list is shown via the popover; no inline summary variable needed
+
+  const [malusOpen, setMalusOpen] = useState(false);
+  const malusRef = useRef(null);
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (malusRef.current && !malusRef.current.contains(e.target)) setMalusOpen(false);
+    };
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
 
   const handleLeaveRoom = () => {
     if (gameState?.active) {
@@ -66,18 +76,48 @@ export default function GameHeader({
               <div className="mode-badge">🎨 {gameMode}</div>
             </div>
 
-            {gameState?.active && (
-              <>
-                <div className="difficulty-info">
-                  <div className="room-label">Difficoltà</div>
-                  <div className="difficulty-badge">🎯 {difficulty}</div>
-                </div>
+            <div className="difficulty-info">
+              <div className="room-label">Difficoltà</div>
+              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+            </div>
 
-                <div className="round-info">
-                  <div className="room-label">Round</div>
-                  <div className="round-display">{currentRound}/{totalRounds}</div>
+            <div className="round-info">
+              <div className="room-label">Rounds a testa</div>
+              <div className="round-display">{roundsPerPlayer}</div>
+            </div>
+
+            {gameState?.active && (
+              <div className="round-info">
+                <div className="room-label">Round</div>
+                <div className="round-display">{currentRound}/{totalRounds}</div>
+              </div>
+            )}
+            {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
+              <div className="malus-inline">
+                <div className="malus-label">🎭</div>
+                <div className="malus-info-inline">
+                  <button
+                    type="button"
+                    className="malus-summary"
+                    onClick={() => setMalusOpen(v => !v)}
+                    aria-expanded={malusOpen}
+                  >
+                    {gameState.chaosEffects.length} attivi
+                  </button>
+                  <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
+                    <div className="malus-popover-inner">
+                      {gameState.chaosEffects.map((m, idx) => (
+                        <div key={m.id || idx} className="malus-popover-item">
+                          <div className="effect-name">{m.name}</div>
+                          {m.params && typeof m.params === 'object' && (
+                            <div className="effect-params">{Object.entries(m.params).map(([k, v]) => `${k}: ${v}`).join(' • ')}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -95,12 +135,7 @@ export default function GameHeader({
                 </div>
               </div>
 
-              {activeMalus && (
-                <div className="malus-info">
-                  <div className="malus-label">🎭 Malus attivo</div>
-                  <div className="malus-details">{activeMalus}</div>
-                </div>
-              )}
+
 
               {isArtist && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
                 <div className="malus-details-section">
@@ -119,6 +154,7 @@ export default function GameHeader({
                   </div>
                 </div>
               )}
+                  {/* Malus summary moved next to round info to avoid header overflow */}
             </>
           )}
         </div>
