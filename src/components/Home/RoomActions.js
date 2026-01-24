@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../common/Button';
 import { extractRoomCode } from '../../utils/roomUtils';
 
-export default function RoomActions({ onCreateRoom, onJoinRoom }) {
+export default function RoomActions({ onCreateRoom, onJoinRoom, showCreate = true }) {
   const [showJoinInput, setShowJoinInput] = useState(false);
   const [roomInput, setRoomInput] = useState('');
   const [inputError, setInputError] = useState('');
@@ -35,9 +35,11 @@ export default function RoomActions({ onCreateRoom, onJoinRoom }) {
 
   return (
     <div className="game-actions">
-      <Button onClick={onCreateRoom} variant="primary" icon="➕">
-        Crea Nuova Stanza
-      </Button>
+      {showCreate && (
+        <Button onClick={onCreateRoom} variant="primary" icon="➕">
+          Crea Nuova Stanza
+        </Button>
+      )}
 
       <div className="divider">
         <span>oppure</span>

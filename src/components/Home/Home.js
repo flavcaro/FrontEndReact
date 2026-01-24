@@ -132,7 +132,6 @@ export default function Home() {
               <span className="xp-badge">⭐ {xpPoints} XP</span>
             </div>
             <span className="user-name">{user.email}</span>
-            <Button variant="secondary" size="small" className="header-profile-btn" onClick={() => navigate('/profile')}>👤 Profilo</Button>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         )}
@@ -260,7 +259,9 @@ export default function Home() {
               <RoomActions
                 onCreateRoom={() => handleQuickCreateRoom(CLASSICA)}
                 onJoinRoom={handleRoomActionsJoin}
+                showCreate={false}
               />
+              {/* We hide the default "Crea Nuova Stanza" button here because the custom form already has a create action */}
             </div>
           </div>
         </div>

@@ -114,6 +114,15 @@
   color: #475569;
   cursor: pointer;
   transition: all 0.2s;
+  overflow-x: auto;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+/* Room name should wrap if long or contain emojis */
+.share-box .room-name {
+  word-break: break-word;
+  white-space: normal;
 }
 
 .share-box input:focus {

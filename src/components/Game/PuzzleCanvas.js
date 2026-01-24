@@ -122,8 +122,24 @@ export default function PuzzleCanvas({
     const context = canvas.getContext('2d');
 
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+    const clientWidth = Math.floor(rect.width || 800);
+
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const header = document.querySelector('.board-header');
+    const headerH = header && header.offsetParent !== null ? header.getBoundingClientRect().height : 0;
+    const availableHeight = Math.max(240, Math.floor(vh - headerH - 12));
+
+    const vw = window.innerWidth || document.documentElement.clientWidth;
+    const vwConstraint = Math.floor(vw * 0.75);
+    const vhConstraint = Math.floor(vh * 0.65);
+
+    let minCanvas = Math.max(320, Math.floor(vh * 0.25), Math.floor(vw * 0.25));
+    if (minCanvas > clientWidth) minCanvas = clientWidth;
+
+    const s = Math.max(minCanvas, Math.min(clientWidth, availableHeight, vwConstraint, vhConstraint));
+
+    canvas.width = s;
+    canvas.height = s;
 
     sectionBoundsRef.current = (assignedSection !== null && assignedSection !== undefined) 
       ? getSectionBounds(assignedSection, canvas.width, canvas.height) 

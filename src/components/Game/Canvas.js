@@ -43,8 +43,17 @@ export default function Canvas({
 
       const availableHeight = Math.max(160, Math.floor(vh - subtract));
 
-      // Use square canvas: limited by available width and availableHeight
-      const size = Math.max(160, Math.min(clientWidth, availableHeight));
+      // Respect both viewport width and height constraints so canvas scales proportionally
+      const vw = window.innerWidth || document.documentElement.clientWidth;
+      const vwConstraint = Math.floor(vw * 0.75); // at most 75% of viewport width
+      const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.65); // at most 65% vh
+
+      // Compute a sensible minimum size so the canvas doesn't become visually tiny
+      let minSize = Math.max(220, Math.floor(vh * 0.25), Math.floor(vw * 0.25));
+      if (minSize > clientWidth) minSize = clientWidth;
+
+      // Use square canvas: limited by container width, available height, and vw/vh constraints
+      const size = Math.max(minSize, Math.min(clientWidth, availableHeight, vwConstraint, vhConstraint));
       setDimensions({ width: size, height: size });
     };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MIN_PLAYERS } from '../../constants/gameConfig';
+import { MIN_PLAYERS, GAME_MODES } from '../../constants/gameConfig';
 
 export default function GameHeader({ 
   roomId, 
@@ -17,7 +17,18 @@ export default function GameHeader({
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
   const totalRounds = gameState?.totalRounds || 0;
-  const gameMode = gameState?.mode || gameConfig?.name || 'Classica';
+
+  // Resolve a friendly mode name prioritizing explicit ids in state/config
+  const getModeNameFromId = (id) => {
+    if (!id) return null;
+    const gm = Object.values(GAME_MODES).find(m => m.id === id);
+    return gm ? gm.name : null;
+  };
+
+  const modeId = gameState?.gameModeId || gameState?.modeId || gameConfig?.id || gameConfig?.gameModeId;
+  const modeNameFromId = getModeNameFromId(modeId);
+  const gameMode = modeNameFromId || (typeof gameState?.mode === 'string' ? gameState.mode : null) || gameConfig?.name || 'Classica';
+
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
   
   const playersCount = players?.length || 0;

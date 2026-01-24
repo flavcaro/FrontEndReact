@@ -9,11 +9,12 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
     const stored = localStorage.getItem(`room_${roomId}_mode`);
     if (stored) {
       const cfg = JSON.parse(stored);
-      if (cfg && cfg.name) {
-        // Remove emoji and non-alphanumeric punctuation so we can display a clean room name
+        if (cfg && cfg.name) {
+        // Remove emoji and non-alphanumeric punctuation so we display a clean room name
         const nameOnly = cfg.name.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
         const cleaned = nameOnly.replace(/[^\p{L}\p{N}\s\-_.]/gu, '').trim();
-        if (cleaned) roomName = cleaned;
+        // Use cleaned name (no emojis). If empty, leave roomName empty so no emoji-only label shows.
+        roomName = cleaned || '';
       }
     }
   } catch (err) {
@@ -66,7 +67,11 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
 
       <div className="share-box">
         <label>🔗 Invita amici {players.length >= MAX_PLAYERS && <span style={{ color: '#dc2626' }}>(Stanza piena)</span>}</label>
-        {roomName && <div style={{ fontSize: 14, color: '#475569', marginBottom: 8 }}>Nome stanza: <strong>{roomName}</strong></div>}
+        {roomName && (
+          <div className="room-name" style={{ fontSize: 14, color: '#475569', marginBottom: 8 }}>
+            Nome stanza: <strong>{roomName}</strong>
+          </div>
+        )}
         <input
           value={shareUrl}
           readOnly
@@ -74,7 +79,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
             e.target.select();
             navigator.clipboard.writeText(shareUrl);
           }}
-          title="Clicca per copiare"
+          title={shareUrl}
         />
       </div>
     </aside>
