@@ -293,8 +293,8 @@ export default function PuzzleCanvas({
         </div>
       )}
 
-      {/* Messaggio per l'indovinatore */}
-      {assignedSection === null && (
+      {/* Messaggio per l'indovinatore - solo se non ci sono ancora disegni */}
+      {assignedSection === null && (!allStrokes || Object.keys(allStrokes).length === 0 || Object.values(allStrokes).every(s => !s || s.length === 0)) && (
         <div style={{
           position: 'absolute',
           top: '50%',
