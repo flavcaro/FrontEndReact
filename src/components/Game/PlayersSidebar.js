@@ -2,7 +2,23 @@ import React from 'react';
 import { MAX_PLAYERS } from '../../constants/gameConfig';
 
 export default function PlayersSidebar({ players, gameState, nickname, roomId }) {
-  const shareUrl = `${window.location.origin}/room/${roomId}`;
+  // Try to include the room name in the share URL if available in localStorage
+  let shareUrl = `${window.location.origin}/room/${roomId}`;
+  let roomName = '';
+  try {
+    const stored = localStorage.getItem(`room_${roomId}_mode`);
+    if (stored) {
+      const cfg = JSON.parse(stored);
+      if (cfg && cfg.name) {
+        // Remove emoji and non-alphanumeric punctuation so we can display a clean room name
+        const nameOnly = cfg.name.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
+        const cleaned = nameOnly.replace(/[^\p{L}\p{N}\s\-_.]/gu, '').trim();
+        if (cleaned) roomName = cleaned;
+      }
+    }
+  } catch (err) {
+    // ignore parse errors and fallback to basic URL
+  }
 
   return (
     <aside className="players-sidebar">
@@ -50,6 +66,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
 
       <div className="share-box">
         <label>🔗 Invita amici {players.length >= MAX_PLAYERS && <span style={{ color: '#dc2626' }}>(Stanza piena)</span>}</label>
+        {roomName && <div style={{ fontSize: 14, color: '#475569', marginBottom: 8 }}>Nome stanza: <strong>{roomName}</strong></div>}
         <input
           value={shareUrl}
           readOnly

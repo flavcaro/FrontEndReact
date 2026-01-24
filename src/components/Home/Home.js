@@ -41,7 +41,17 @@ export default function Home() {
     }
     const roomId = generateRoomCode();
     localStorage.setItem('nickname', nickname);
-    const cfg = { id: gameMode.id, name: gameMode.name, turnDuration: gameMode.turnDuration || 60, rounds: 3, difficulty: 'medium' };
+    // Persist a richer mode config so RoomPlay can detect survival/chaos before the game starts
+    const cfg = {
+      id: gameMode.id,
+      name: gameMode.name,
+      turnDuration: gameMode.turnDuration || 60,
+      rounds: 3,
+      difficulty: { id: 'medium', name: 'Media' },
+      survivalMode: gameMode.survivalMode || false,
+      startingLives: gameMode.startingLives || null,
+      hasChaosEffects: gameMode.hasChaosEffects || false
+    };
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`);
   };
@@ -86,7 +96,10 @@ export default function Home() {
       name: gameMode.name,
       turnDuration: opts.turnDuration,
       rounds: opts.rounds,
-      difficulty: opts.difficulty || 'medium'
+      difficulty: { id: opts.difficulty || 'medium', name: opts.difficulty === 'easy' ? 'Facile' : opts.difficulty === 'hard' ? 'Difficile' : 'Media' },
+      survivalMode: gameMode.survivalMode || false,
+      startingLives: gameMode.startingLives || null,
+      hasChaosEffects: gameMode.hasChaosEffects || false
     };
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`);

@@ -41,6 +41,7 @@ export function usePlayers(roomId, nickname) {
   const sessionId = useRef(getSessionId());
   const playerNicknameRef = useRef(null);
   const disconnectSetup = useRef(false); // Track if disconnect is setup
+  const ownerRef = useRef(null);
 
   // Add or update player with disconnect handling
   useEffect(() => {
@@ -102,7 +103,19 @@ export function usePlayers(roomId, nickname) {
           setFinalNickname(playerData.name);
         } else {
           // New session - create new player with unique name if needed
-          const uniqueName = generateUniqueNickname(nickname, playersList);
+          // Re-check names right before writing to avoid race conditions where
+          // two clients join with the same nickname at the same time.
+          let uniqueName = generateUniqueNickname(nickname, playersList);
+          const user = auth.currentUser;
+          try {
+            // refresh players list from server
+            const latestSnap = await get(playersRef);
+            const latestPlayersObj = latestSnap.val() || {};
+            const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
+            uniqueName = generateUniqueNickname(nickname, latestPlayersList);
+          } catch (err) {
+            console.warn('Could not refresh players before creating new player:', err);
+          }
           
           if (!uniqueName) {
             console.error("Failed to generate unique nickname");
@@ -116,11 +129,44 @@ export function usePlayers(roomId, nickname) {
 
           playerNickname = uniqueName;
 
-          const newRef = push(playersRef);
-          playerKey = newRef.key;
-          playerReference = newRef;
+          // Attempt to create the player; if name collision happens due to concurrent writes,
+          // retry a few times with updated list.
+          const MAX_RETRIES = 3;
+          let created = false;
+          let attempts = 0;
+          while (!created && attempts < MAX_RETRIES) {
+            attempts++;
+            const newRef = push(playersRef);
+            playerKey = newRef.key;
+            playerReference = newRef;
+            try {
+              // Ensure we write the chosen uniqueName
+              await set(playerReference, {
+                name: uniqueName,
+                originalNickname: nickname,
+                sessionId: currentSessionId,
+                userId: user && !user.isAnonymous ? user.uid : null,
+                joinedAt: Date.now(),
+                score: 0,
+                color: getPlayerColor(playersList.length),
+                connected: true
+              });
+              created = true;
+            } catch (err) {
+              console.warn('Failed to create player entry, retrying', err);
+              // refresh uniqueName and retry
+              const latestSnap = await get(playersRef);
+              const latestPlayersObj = latestSnap.val() || {};
+              const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
+              uniqueName = generateUniqueNickname(nickname, latestPlayersList);
+            }
+          }
+          if (!created) {
+            console.error('Unable to create player after retries');
+            isAddingPlayer.current = false;
+            return;
+          }
           
-          const user = auth.currentUser;
           await set(playerReference, {
             name: uniqueName,
             originalNickname: nickname,
@@ -251,12 +297,17 @@ export function usePlayers(roomId, nickname) {
         const data = snapshot.val() || {};
         
         // Convert to array - Keep ALL connected players
-        const allPlayers = Object.entries(data)
+        const rawPlayers = Object.entries(data)
           .map(([id, player]) => ({
             id,
             ...player
           }))
           .filter(player => player.connected !== false);
+
+        // If we have owner info, mark the owner on the player objects
+        const ownerSnapshot = ownerRef.current;
+        const ownerPlayerId = ownerSnapshot ? ownerSnapshot.playerId : null;
+        const allPlayers = rawPlayers.map(p => ({ ...p, isOwner: p.id === ownerPlayerId }));
 
         // Sort by score (highest first)
         const sortedPlayers = allPlayers.sort((a, b) => (b.score || 0) - (a.score || 0));
@@ -273,10 +324,12 @@ export function usePlayers(roomId, nickname) {
 
   // Listen to owner
   useEffect(() => {
-    const ownerRef = ref(db, `rooms/${roomId}/owner`);
-    const unsubscribe = onValue(ownerRef, (snapshot) => {
+    const ownerDbRef = ref(db, `rooms/${roomId}/owner`);
+    const unsubscribe = onValue(ownerDbRef, (snapshot) => {
       try {
         const ownerData = snapshot.val();
+        // store the owner snapshot in a ref so players listener can mark isOwner
+        ownerRef.current = ownerData || null;
         if (ownerData && playerId) {
           setIsOwner(ownerData.playerId === playerId);
         } else {

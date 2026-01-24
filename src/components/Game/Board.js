@@ -124,7 +124,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
       <div
         className="board-container"
-        style={{ display: "flex", height: "100dvh", overflow: "hidden" }}
+        style={{ display: "flex", height: "100vh", overflow: "hidden" }}
       >
         <PlayersSidebar
           players={players}
@@ -137,6 +137,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           <GameHeader
             roomId={roomId}
             gameState={gameState}
+            gameConfig={gameConfig}
             isArtist={isArtist}
             hasGuessed={hasGuessed}
             timeLeft={timeLeft}

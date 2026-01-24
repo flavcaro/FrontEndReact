@@ -5,6 +5,7 @@ import { MIN_PLAYERS } from '../../constants/gameConfig';
 export default function GameHeader({ 
   roomId, 
   gameState, 
+  gameConfig,
   isArtist, 
   hasGuessed, 
   timeLeft, 
@@ -16,8 +17,8 @@ export default function GameHeader({
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
   const totalRounds = gameState?.totalRounds || 0;
-  const gameMode = gameState?.mode || 'Classica';
-  const difficulty = gameState?.difficulty || 'Medio';
+  const gameMode = gameState?.mode || gameConfig?.name || 'Classica';
+  const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
   
   const playersCount = players?.length || 0;
   const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && isOwner;

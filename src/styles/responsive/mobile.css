@@ -47,13 +47,13 @@
     max-height: 100% !important;
   }
 
-  /* Chat - Middle (30% height) */
+  /* Chat - Middle (reduced height to favor canvas on phones) */
   .chat-sidebar {
     position: relative !important;
     width: 100% !important;
-    height: 30vh !important;
-    max-height: 30vh !important;
-    min-height: 180px !important;
+    height: 22vh !important;
+    max-height: 22vh !important;
+    min-height: 140px !important;
     order: 2;
     border-left: none !important;
     border-top: 2px solid #e2e8f0 !important;
@@ -64,13 +64,13 @@
     padding: 10px 12px !important;
   }
 
-  /* Players - Bottom horizontal strip */
+  /* Players - Bottom horizontal strip (reduced height on phones) */
   .players-sidebar {
     position: relative !important;
     width: 100% !important;
-    height: 110px !important; /* Fixed height */
-    max-height: 110px !important;
-    min-height: 110px !important;
+    height: 80px !important; /* Reduced fixed height */
+    max-height: 80px !important;
+    min-height: 80px !important;
     order: 3;
     border-right: none !important;
     border-top: 2px solid #e2e8f0 !important;
@@ -140,9 +140,9 @@
   }
 
   .players-sidebar {
-    height: 100px !important;
-    max-height: 100px !important;
-    min-height: 100px !important;
+    height: 80px !important;
+    max-height: 80px !important;
+    min-height: 80px !important;
   }
 
   .players-list {
@@ -161,8 +161,8 @@
   }
 
   .chat-sidebar {
-    height: 28vh !important;
-    min-height: 170px !important;
+    height: 22vh !important;
+    min-height: 140px !important;
   }
 }
 

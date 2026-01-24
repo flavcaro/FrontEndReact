@@ -37,7 +37,7 @@ export default function CustomCreateForm({
           <button className={`mode-btn ${selectedModeId === 'classica' ? 'active' : ''}`} onClick={() => setSelectedModeId('classica')}>Classica</button>
           <button className={`mode-btn ${selectedModeId === 'sopravvivenza' ? 'active' : ''}`} onClick={() => setSelectedModeId('sopravvivenza')}>Sopravvivenza</button>
           <button className={`mode-btn ${selectedModeId === 'chaos_tools' ? 'active' : ''}`} onClick={() => setSelectedModeId('chaos_tools')}>Chaos</button>
-          <button className={`mode-btn ${selectedModeId === 'puzzle_drawing' ? 'active' : ''}`} onClick={() => setSelectedModeId('puzzle_drawing')}>Puzzle</button>
+          <button className={`mode-btn ${selectedModeId === 'puzzleDrawing' ? 'active' : ''}`} onClick={() => setSelectedModeId('puzzle_drawing')}>Puzzle</button>
         </div>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>

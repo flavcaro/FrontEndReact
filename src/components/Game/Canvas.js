@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Stage, Layer, Line } from "react-konva";
 
 export default function Canvas({ 
-  lines, 
+  lines = [], 
   onMouseDown, 
   onMouseMove, 
   onMouseUp,
@@ -15,11 +15,32 @@ export default function Canvas({
 
   useEffect(() => {
     const updateDimensions = () => {
-      if (containerRef.current) {
-        const { clientWidth, clientHeight } = containerRef.current;
-        const size = Math.min(clientWidth, clientHeight);
-        setDimensions({ width: size, height: size });
-      }
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const clientWidth = container.clientWidth;
+
+      // Calculate available vertical space in the viewport.
+      // Subtract header/chat/players heights when layout stacks them (portrait / narrow screens).
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const header = document.querySelector('.board-header');
+      const chat = document.querySelector('.chat-sidebar');
+      const players = document.querySelector('.players-sidebar');
+
+      const headerH = header && header.offsetParent !== null ? header.getBoundingClientRect().height : 0;
+      const chatH = chat && chat.offsetParent !== null ? chat.getBoundingClientRect().height : 0;
+      const playersH = players && players.offsetParent !== null ? players.getBoundingClientRect().height : 0;
+
+      const isPortrait = window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+
+      // If portrait or narrow, chat and players are stacked vertically and should be subtracted.
+      const subtract = isPortrait || window.innerWidth <= 1024 ? (headerH + chatH + playersH + 12) : (headerH + 12);
+
+      const availableHeight = Math.max(160, Math.floor(vh - subtract));
+
+      // Use square canvas: limited by available width and availableHeight
+      const size = Math.max(160, Math.min(clientWidth, availableHeight));
+      setDimensions({ width: size, height: size });
     };
 
     updateDimensions();
@@ -120,21 +141,23 @@ export default function Canvas({
           >
             <Layer>
               {lines.map((line, i) => {
-                let strokeColor = line.color || "#1e293b";
-                if (isArtist && line.temp && line.user !== nickname) {
+                let strokeColor = line && line.color ? line.color : "#1e293b";
+                if (isArtist && line && line.temp && line.user !== nickname) {
                   strokeColor = "#cbd5e1";
                 }
 
+                const pts = Array.isArray(line && line.points) ? line.points : [];
+
                 return (
                   <Line
-                    key={line.id || i}
-                    points={line.points.map((p, idx) => (idx % 2 === 0 ? p * dimensions.width : p * dimensions.height))}
+                    key={(line && line.id) || i}
+                    points={pts.map((p, idx) => (idx % 2 === 0 ? p * dimensions.width : p * dimensions.height))}
                     stroke={strokeColor}
-                    strokeWidth={line.eraser ? 20 : 3}
+                    strokeWidth={line && line.eraser ? 20 : 3}
                     tension={0.5}
                     lineCap="round"
                     lineJoin="round"
-                    globalCompositeOperation={line.eraser ? 'destination-out' : 'source-over'}
+                    globalCompositeOperation={line && line.eraser ? 'destination-out' : 'source-over'}
                   />
                 );
               })}

@@ -13,18 +13,26 @@ html, body {
    CANVAS WRAPPER
 ========================= */
 .canvas-wrapper {
-  flex: 1; /* prende tutto lo spazio disponibile tra sidebar */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f8fafc;
-  box-sizing: border-box;
-  overflow: hidden;
-  padding: 12px; /* padding base */
-  aspect-ratio: 1 / 1;
-  /* Previeni comportamenti indesiderati su touch */
-  touch-action: none;
-  -webkit-overflow-scrolling: touch;
+   /* Occupare lo spazio centrale tra le sidebar ma senza creare grandi margini
+       verticali — il wrapper ora cresce orizzontalmente e può usare più altezza. */
+   flex: 1 1 auto; /* permetti al centro di espandersi */
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   background: #f8fafc;
+   box-sizing: border-box;
+   overflow: hidden;
+   padding: 8px; /* padding ridotto */
+     width: 100%;
+     max-width: calc(100% - 560px); /* lascia spazio per sidebar (es. 280 + 280) */
+     /* Non usare viewport direttamente qui: limitare all'altezza disponibile
+        nel contenitore padre per evitare overflow in basso. */
+     max-height: 100%;
+   min-height: 0;
+   margin: 0 auto;
+   /* Previeni comportamenti indesiderati su touch */
+   touch-action: none;
+   -webkit-overflow-scrolling: touch;
 }
 
 /* =========================
@@ -38,8 +46,10 @@ html, body {
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   cursor: crosshair;
-  min-width: 200px;
-  min-height: 200px;
+   max-width: 100%;
+   max-height: 100%;
+   min-width: 160px;
+   min-height: 160px;
   /* Migliora il comportamento touch su mobile */
   touch-action: none;
   -webkit-touch-callout: none;
@@ -75,3 +85,33 @@ html, body {
 @media (min-width: 2560px) { .canvas-wrapper { padding: 16px; } }
 @media (min-width: 3440px) { .canvas-wrapper { padding: 12px; } }
 @media (min-width: 2560px) and (min-height: 1440px) { .canvas-wrapper { padding: 12px; } }
+
+/* Mobile: make canvas bigger and use most of the vertical space between header and chat/players sections */
+@media (max-width: 768px) and (orientation: portrait) {
+   .canvas-wrapper {
+      padding: 6px;
+      width: calc(100vw - 24px);
+      max-width: none;
+      /* Reserve space for top/bottom stacked sidebars/header/chat (approx) */
+      max-height: calc(100vh - 200px);
+   }
+   .canvas-stage {
+      border-radius: 12px;
+   }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+   .canvas-wrapper {
+      padding: 4px;
+      width: calc(100vw - 16px);
+      max-height: calc(100vh - 160px);
+   }
+}
+
+@media (max-width: 375px) and (orientation: portrait) {
+   .canvas-wrapper {
+      padding: 2px;
+      width: calc(100vw - 12px);
+      max-height: calc(100vh - 140px);
+   }
+}
