@@ -78,4 +78,3 @@ export const pickChaosEffect = (effectId) => {
 
   return [e];
 };
-
