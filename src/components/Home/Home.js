@@ -112,8 +112,17 @@ export default function Home() {
     navigate("/");
   };
 
+  React.useEffect(() => {
+    // Prevent body scroll while on the Home screen
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev || '';
+    };
+  }, []);
+
   return (
-    <div className="home">
+    <div className="home" style={{ overflowY: 'hidden', height: '100vh' }}>
       <header className="home-header">
         <div className="logo">🎨 SketchUp</div>
         {user && (
@@ -123,6 +132,7 @@ export default function Home() {
               <span className="xp-badge">⭐ {xpPoints} XP</span>
             </div>
             <span className="user-name">{user.email}</span>
+            <Button variant="secondary" size="small" className="header-profile-btn" onClick={() => navigate('/profile')}>👤 Profilo</Button>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         )}

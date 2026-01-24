@@ -26,15 +26,20 @@ export default function Canvas({
       const header = document.querySelector('.board-header');
       const chat = document.querySelector('.chat-sidebar');
       const players = document.querySelector('.players-sidebar');
+      const lives = document.querySelector('.lives-display');
 
       const headerH = header && header.offsetParent !== null ? header.getBoundingClientRect().height : 0;
       const chatH = chat && chat.offsetParent !== null ? chat.getBoundingClientRect().height : 0;
       const playersH = players && players.offsetParent !== null ? players.getBoundingClientRect().height : 0;
+      const livesH = lives && lives.offsetParent !== null ? lives.getBoundingClientRect().height : 0;
 
       const isPortrait = window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
 
       // If portrait or narrow, chat and players are stacked vertically and should be subtracted.
-      const subtract = isPortrait || window.innerWidth <= 1024 ? (headerH + chatH + playersH + 12) : (headerH + 12);
+      // Also always subtract any visible lives-display (top area inside center column).
+      const subtract = isPortrait || window.innerWidth <= 1024
+        ? (headerH + chatH + playersH + livesH + 12)
+        : (headerH + livesH + 12);
 
       const availableHeight = Math.max(160, Math.floor(vh - subtract));
 

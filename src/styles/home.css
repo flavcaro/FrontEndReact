@@ -44,6 +44,26 @@
   align-items: center;
 }
 
+/* Profile button in header */
+.header-profile-btn {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.header-profile-btn:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+
+/* Make profile button content not expand to fill available space */
+.lobby-btn.header-profile-btn .btn-text { flex: 0 0 auto; }
+
+/* Slightly smaller icon inside the header button */
+.lobby-btn.header-profile-btn .btn-icon { font-size: 16px; margin-right: 6px; }
+
 .user-name {
   font-size: 20px;
   color: rgba(255, 255, 255, 0.96);
@@ -207,6 +227,45 @@
   margin: 0 auto;
 }
 
+/* Responsive stepping: at medium widths show two columns and place join-card full width below */
+@media (max-width: 1200px) {
+  .home-row-grid { grid-template-columns: 1.4fr 1fr; gap: 28px; }
+  .hero-column { order: 1; }
+  .modes-column { order: 2; }
+  .join-column { order: 3; grid-column: 1 / -1; }
+  .home-top-row { padding: 40px 28px 28px; }
+  .hero-content h1 { font-size: 48px; }
+}
+
+/* Smaller tablets: two columns but tighter, rounds to single column below */
+@media (max-width: 1024px) {
+  .home-row-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .hero-column { padding-right: 8px; }
+  .modes-column { padding-left: 8px; }
+  .join-column { grid-column: 1 / -1; }
+  .quick-button-card { padding: 14px; }
+  .join-card, .nickname-card { padding: 18px; }
+}
+
+/* Mobile: single column stacked, reduce paddings and font sizes */
+@media (max-width: 768px) {
+  .home-row-grid { grid-template-columns: 1fr; gap: 16px; }
+  .hero-column, .modes-column, .join-column { width: 100%; }
+  .home-top-row { padding: 24px 12px 18px; min-height: auto; }
+  .hero-content h1 { font-size: 28px; }
+  .hero-content p { font-size: 15px; }
+  .quick-button-card { padding: 12px; }
+  .join-card, .nickname-card { padding: 12px; }
+  .quick-button-icon { width: 56px; height: 56px; font-size: 28px; }
+}
+
+/* Very small phones: stack and make controls full width */
+@media (max-width: 420px) {
+  .home-row-grid { gap: 12px; }
+  .inline-create-btn { font-size: 16px !important; padding: 10px 20px !important; }
+  .join-inputs .lobby-input { min-width: 0; width: 100%; }
+}
+
 .hero-column {
   display: flex;
   flex-direction: column;
@@ -236,6 +295,38 @@
   max-width: 1100px;
   width: 100%;
 }
+/* Accent color for Join card: make the join button match primary brand */
+.join-card h3 { color: #0f172a; }
+.join-card .join-subtitle { color: #475569; }
+.join-card .lobby-btn.secondary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 6px 18px rgba(102,126,234,0.24);
+  border: none;
+}
+.join-card .lobby-btn.secondary:hover { transform: translateY(-2px); }
+
+/* Nickname card accent */
+.nickname-card { background: rgba(255,255,255,0.98); }
+.nickname-card .nickname-header {
+  display: inline-block;
+  background: rgba(99,102,241,0.08);
+  color: #6366f1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+/* Make the save button in nickname box visually consistent with join button but smaller */
+.nickname-card .lobby-btn.tertiary {
+  background: linear-gradient(90deg, #eef2ff, #f8fafc);
+  color: #374151;
+  border: 1px solid rgba(99,102,241,0.12);
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+/* Header profile button adjustments kept earlier near top of file. */
 
 .hero-logo {
   font-size: 36px;
@@ -307,6 +398,103 @@
   margin-bottom: 24px;
 }
 
+/* ==========================
+   GAME-LIKE VISUAL EFFECTS
+   - animated hero gradient
+   - floating emojis
+   - card lift + glow
+   - subtle drifting background shapes (confetti-like)
+   ========================== */
+
+.hero-content h1 {
+  background: linear-gradient(90deg,#ffd166,#06d6a0,#118ab2,#7c3aed);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 6s ease-in-out infinite;
+  letter-spacing: -0.6px;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatY {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(6deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+.float-1, .float-2, .float-3, .float-4 {
+  animation: floatY 4.5s ease-in-out infinite;
+}
+
+.inline-create-btn, .central-create-btn {
+  position: relative;
+  box-shadow: 0 8px 32px rgba(124,58,237,0.22), 0 0 40px rgba(255,255,255,0.06) inset;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.inline-create-btn::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 48px;
+  background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.12), transparent 15%);
+  opacity: 0;
+  transition: opacity .3s;
+  z-index: -1;
+}
+.inline-create-btn:hover::after { opacity: 1; }
+
+.quick-button-card {
+  transition: transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .28s;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.quick-button-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(12, 12, 20, 0.18);
+}
+
+/* Subtle confetti motion for background shapes */
+.bg-shape {
+  opacity: 0.12;
+  filter: blur(18px);
+  transform-origin: center;
+  animation: bgDrift 10s linear infinite alternate;
+}
+
+.bg-shape.shape-1 { background: radial-gradient(circle at 30% 30%, #ffd166, transparent 40%); width: 260px; height: 260px; left: -80px; top: 40%; border-radius: 50%; }
+.bg-shape.shape-2 { background: radial-gradient(circle at 70% 30%, #06d6a0, transparent 40%); width: 220px; height: 220px; right: -60px; top: 20%; border-radius: 50%; }
+.bg-shape.shape-3 { background: radial-gradient(circle at 50% 50%, #7c3aed, transparent 40%); width: 300px; height: 300px; right: -120px; bottom: -80px; border-radius: 50%; }
+
+@keyframes bgDrift {
+  0% { transform: translateY(0) scale(1); opacity: 0.12; }
+  50% { transform: translateY(-24px) scale(1.04); opacity: 0.14; }
+  100% { transform: translateY(0) scale(1); opacity: 0.12; }
+}
+
+/* Glow pulse for important buttons */
+@keyframes glowPulse {
+  0% { box-shadow: 0 6px 18px rgba(124,58,237,0.18); transform: translateY(0); }
+  50% { box-shadow: 0 14px 42px rgba(124,58,237,0.28); transform: translateY(-3px); }
+  100% { box-shadow: 0 6px 18px rgba(124,58,237,0.18); transform: translateY(0); }
+}
+
+.central-create-btn { animation: glowPulse 4s ease-in-out infinite; }
+
+/* Small pulse on join button to draw attention */
+.join-card .lobby-btn.secondary { animation: glowPulse 6s ease-in-out infinite; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero-content h1, .float-1, .float-2, .float-3, .float-4, .bg-shape, .central-create-btn, .inline-create-btn, .quick-button-card, .join-card .lobby-btn.secondary { animation: none !important; transition: none !important; }
+}
 .quick-button-card {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
@@ -324,6 +512,15 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background: white;
+}
+
+/* Icon pop on hover */
+.quick-button-card .quick-button-icon {
+  transition: transform 260ms cubic-bezier(.2,.9,.3,1), box-shadow 260ms;
+}
+.quick-button-card:hover .quick-button-icon {
+  transform: scale(1.08) rotate(-6deg);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.18);
 }
 
 .quick-button-icon {
@@ -372,6 +569,13 @@
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
   position: relative;
   overflow: hidden;
+}
+
+/* subtle lift on join/nickname cards */
+.join-card:hover,
+.nickname-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(16,24,40,0.18);
 }
 
 .join-card.compact-join { padding: 18px; }
@@ -472,13 +676,39 @@
 .nickname-inputs {
   display: flex;
   gap: 12px;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between; /* push the save button to the right end */
   width: 100%;
   max-width: 360px;
 }
 
-.nickname-inputs .input-container {
-  flex: 1;
+/* Inline save button: slightly larger and placed to the right */
+.nickname-inputs .lobby-btn {
+  width: auto; /* don't stretch full width */
+  padding: 10px 14px;
+  font-size: 18px; /* slightly larger for visibility */
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.nickname-inputs .lobby-btn.tertiary {
+  background: transparent;
+  color: #374151;
+  border: 1px solid #e6eefc;
+  box-shadow: none;
+}
+
+.nickname-inputs .lobby-btn.tertiary:hover {
+  background: #f8fafc;
+}
+
+/* Ensure input expands and leaves room for button on small screens */
+.nickname-inputs .input-container { flex: 1 1 auto; min-width: 0; margin-right: 8px; }
+
+@media (max-width: 520px) {
+  .nickname-inputs { flex-direction: column; align-items: stretch; gap: 8px; }
+  .nickname-inputs .input-container { margin-right: 0; }
+  .nickname-inputs .lobby-btn { width: 100%; }
 }
 
 .guest-badge {
@@ -530,9 +760,12 @@
   background: #fff;
   border-radius: 16px;
   max-width: 720px;
-  width: 100%;
+  width: calc(100% - 40px); /* fit within overlay padding on narrow screens */
+  margin: 0 20px;
   max-height: 90vh;
   overflow: auto;
+  overflow-x: hidden; /* prevent horizontal scrollbar inside modal */
+  box-sizing: border-box;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   padding: 0;
 }
@@ -549,6 +782,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap; /* allow header items to wrap instead of overflowing */
 }
 
 .modal-header h2 {
@@ -588,6 +822,59 @@
 
 .modal-body {
   padding: 20px 24px 28px 24px;
+  overflow-x: hidden;
+}
+
+/* Responsive adjustments for custom-create form inside modal */
+.custom-create .options-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap; /* allow duration and rounds to stack on small widths */
+}
+
+.custom-create .rounds-box {
+  /* Prefer a flexible box that targets ~160px but can shrink when space is limited */
+  flex: 0 1 160px;
+  width: auto;
+  min-width: 0;
+}
+
+/* Ensure the inner button row can wrap onto multiple lines instead of overflowing */
+.custom-create .rounds-box > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.custom-create .options-row .option-btn {
+  white-space: nowrap;
+  flex: 0 1 auto; /* allow each option button to shrink if needed */
+}
+
+@media (max-width: 520px) {
+  .custom-create .rounds-box { width: 100%; }
+  .custom-create .options-row > div { width: 100%; }
+}
+
+/* Prevent text from being clipped: allow wrapping and proper box-sizing inside modal */
+.modal-content *,
+.modal-content *::before,
+.modal-content *::after {
+  box-sizing: border-box;
+}
+
+.modal-content h2,
+.modal-content p,
+.modal-mode-content h3,
+.modal-mode-content p,
+.modal-body {
+  word-break: break-word;
+  white-space: normal;
+}
+
+.modal-illustration {
+  flex-shrink: 0;
 }
 
 .modal-modes-grid {
@@ -742,6 +1029,8 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   animation: drift 20s ease-in-out infinite;
+  mix-blend-mode: screen;
+  filter: blur(6px) saturate(120%);
 }
 
 .shape-1 {
@@ -773,6 +1062,36 @@
   25% { transform: translateY(-20px) translateX(20px); }
   50% { transform: translateY(-10px) translateX(-10px); }
   75% { transform: translateY(10px) translateX(15px); }
+}
+
+/* hero title gradient + slow shift */
+.hero-content h1 {
+  /* Softer gradient: white -> pale blue -> lavender (no yellow) */
+  background: linear-gradient(90deg, #ffffff 0%, #cfe8ff 45%, #e9d5ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 150% 150%;
+  animation: heroShift 12s ease-in-out infinite;
+}
+
+@keyframes heroShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* reduce motion on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .quick-button-card .quick-button-icon,
+  .quick-button-card:hover .quick-button-icon,
+  .join-card:hover,
+  .nickname-card:hover,
+  .hero-content h1 {
+    transition: none !important;
+    transform: none !important;
+  }
+  .bg-shape { filter: blur(4px); }
 }
 
 /* ===========================================

@@ -17,6 +17,15 @@ import { useDrawing } from "../../hooks/useDrawing";
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
 
+  // Track whether we should pin the board to the viewport.
+  const [isPinned, setIsPinned] = useState(() => {
+    try {
+      return window.innerWidth >= 900;
+    } catch (e) {
+      return true;
+    }
+  });
+
   const { players, finalNickname, isOwner } =
     usePlayers(roomId, nickname);
 
@@ -114,6 +123,15 @@ export default function Board({ roomId, nickname, gameConfig }) {
   /* =========================
      RENDER
   ========================= */
+  useEffect(() => {
+    const onResize = () => {
+      setIsPinned(window.innerWidth >= 900);
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   return (
     <>
       <SimplePopup
@@ -124,7 +142,14 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
       <div
         className="board-container"
-        style={{ display: "flex", height: "100vh", overflow: "hidden" }}
+        style={{
+          position: isPinned ? 'fixed' : 'static',
+          inset: isPinned ? 0 : 'auto',
+          display: 'flex',
+          overflow: 'hidden',
+          alignItems: 'stretch',
+          width: '100%'
+        }}
       >
         <PlayersSidebar
           players={players}
@@ -133,7 +158,10 @@ export default function Board({ roomId, nickname, gameConfig }) {
           roomId={roomId}
         />
 
-        <div className="board-center">
+        <div
+          className="board-center"
+          style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 }}
+        >
           <GameHeader
             roomId={roomId}
             gameState={gameState}
@@ -189,7 +217,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
             </div>
           )}
 
-          <main className="board-main">
+          <main className="board-main" style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             <div className="game-content">
               <Canvas
                 lines={lines}

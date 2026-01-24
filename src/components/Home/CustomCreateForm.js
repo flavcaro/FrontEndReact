@@ -40,8 +40,8 @@ export default function CustomCreateForm({
           <button className={`mode-btn ${selectedModeId === 'puzzleDrawing' ? 'active' : ''}`} onClick={() => setSelectedModeId('puzzle_drawing')}>Puzzle</button>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
-          <div style={{ flex: 1 }}>
+        <div className="options-row" style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <label className="lobby-label">Durata turno</label>
             <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
               {[60,45,30].map((d) => (
@@ -58,7 +58,7 @@ export default function CustomCreateForm({
             </div>
           </div>
 
-          <div style={{ width: 160 }}>
+          <div className="rounds-box" style={{ width: 160 }}>
             <label className="lobby-label">Rounds</label>
             <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
               {[3,6,9].map((r) => (
