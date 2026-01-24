@@ -18,7 +18,7 @@ import { useChat } from "../../hooks/useChat";
  * Board per la modalità Puzzle Drawing
  * Il canvas è diviso in 3 sezioni, ogni giocatore disegna nella propria sezione
  */
-export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
+const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   console.log('🧩🧩🧩 PUZZLE BOARD CARICATO!', { roomId, nickname, gameConfig });
   
   const navigate = useNavigate();
@@ -233,4 +233,13 @@ export default function PuzzleBoard({ roomId, nickname, gameConfig }) {
       </div>
     </>
   );
-}
+};
+
+// Usa React.memo per evitare re-render inutili
+export default React.memo(PuzzleBoard, (prevProps, nextProps) => {
+  return (
+    prevProps.roomId === nextProps.roomId &&
+    prevProps.nickname === nextProps.nickname &&
+    prevProps.gameConfig?.id === nextProps.gameConfig?.id
+  );
+});

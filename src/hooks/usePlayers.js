@@ -20,6 +20,9 @@ const getSessionId = () => {
   return sessionId;
 };
 
+// Global flag per room+session per evitare duplicazioni tra rendering multipli
+const addingPlayersMap = new Map();
+
 // Helper function to send system message
 const sendSystemMessage = async (roomId, message) => {
   await push(ref(db, `rooms/${roomId}/chat`), {
@@ -45,13 +48,17 @@ export function usePlayers(roomId, nickname) {
   // Add or update player with disconnect handling
   useEffect(() => {
     const currentSessionId = sessionId.current;
+    const mapKey = `${roomId}_${currentSessionId}`;
     
     const addOrUpdatePlayer = async () => {
-      if (isAddingPlayer.current) {
-        console.log('⚠️ [usePlayers] Già in fase di aggiunta, skip');
+      // Check global map per evitare chiamate duplicate anche tra rendering
+      if (isAddingPlayer.current || addingPlayersMap.get(mapKey)) {
+        console.log('⚠️ [usePlayers] Già in fase di aggiunta (global check), skip');
         return;
       }
+      
       isAddingPlayer.current = true;
+      addingPlayersMap.set(mapKey, true);
 
       console.log('👤 [usePlayers] Aggiunta/Aggiornamento player:', { nickname, sessionId: currentSessionId });
 
@@ -193,6 +200,7 @@ export function usePlayers(roomId, nickname) {
           console.log('Player disconnect handler set up');
         }
 
+        // Non rimuovere dalla map - mantieni per evitare duplicati futuri
       } catch (error) {
         console.error("Error adding/updating player:", error);
       } finally {
