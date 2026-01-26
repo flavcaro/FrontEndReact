@@ -115,7 +115,19 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
       const q = query(refNode, orderByChild(orderBy), limitToLast(limit));
       const unsub = onValue(q, (snap) => {
         const val = snap.val() || {};
-        const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
+        const list = Object.entries(val).map(([uid, u]) => {
+          if (label === 'users') {
+            // Use public summary when available, otherwise fall back to user's root fields
+            const pub = (u && u.public) || u || {};
+            // normalize fields expected by UI
+            const displayName = pub.displayName || pub.nickname || pub.email || null;
+            const totalScoreVal = (pub.totalScore !== undefined) ? pub.totalScore : (u && u.totalScore) || 0;
+            const levelVal = (pub.level !== undefined) ? pub.level : (u && u.level) || 1;
+            const gamesPlayedVal = (pub.gamesPlayed !== undefined) ? pub.gamesPlayed : (u && u.gamesPlayed) || 0;
+            return ({ uid, displayName, email: pub.email || u.email || null, totalScore: totalScoreVal, level: levelVal, gamesPlayed: gamesPlayedVal });
+          }
+          return ({ uid, ...u });
+        });
         list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
         console.log(`[subscribeLeaderboard] source=${label} count=${list.length}`);
         onUpdate(list);

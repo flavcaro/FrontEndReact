@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import PlayersSidebar from "./PlayersSidebar";
 import ChatSidebar from "./ChatSidebar";
@@ -20,7 +19,7 @@ import { useChat } from "../../hooks/useChat";
 const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   console.log('🧩🧩🧩 PUZZLE BOARD CARICATO!', { roomId, nickname, gameConfig });
   
-  const navigate = useNavigate();
+  
 
   const { players, finalNickname, isOwner } = usePlayers(roomId, nickname);
 

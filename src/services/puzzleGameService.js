@@ -1,6 +1,6 @@
 import { ref, set, push, remove, get, update } from "firebase/database";
 import { db } from "../firebase";
-import { WORDS_BY_DIFFICULTY } from "../constants/gameConfig";
+// WORDS_BY_DIFFICULTY removed; we rely on remote API for random words
 import { getRandomWord as getRandomWordFromAPI } from "./wordService";
 import { 
   assignPuzzleRoles, 
@@ -9,14 +9,6 @@ import {
   calculatePuzzleScore,
   PUZZLE_DRAWING 
 } from "../constants/gameModes/puzzleDrawing";
-
-/**
- * Ottiene una parola casuale per il puzzle (fallback locale)
- */
-const getRandomWord = (difficulty = 'MEDIUM') => {
-  const wordList = WORDS_BY_DIFFICULTY[difficulty.toUpperCase()] || WORDS_BY_DIFFICULTY.MEDIUM;
-  return wordList[Math.floor(Math.random() * wordList.length)];
-};
 
 /**
  * Ottiene una parola casuale dall'API

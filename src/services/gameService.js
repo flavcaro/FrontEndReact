@@ -1,18 +1,12 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
-import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
+import { GAME_MODES } from "../constants/gameConfig";
 import { generateChaosEffects} from "../constants/gameModes/chaosTools";
-import { getRandomWord as getRandomWordFromAPI, getRandomWordSync } from "./wordService";
+import { getRandomWord as getRandomWordFromAPI } from "./wordService";
 
 //DEBUG PER CHAOS TOOLS DI EDOARDO, NON TOCCARE
 //import { pickChaosEffect} from "../constants/gameModes/chaosTools"; 
 
-
-// Get random word based on difficulty (sincrona per backward compatibility)
-const getRandomWord = (difficulty = 'MEDIUM') => {
-  const wordList = WORDS_BY_DIFFICULTY[difficulty.toUpperCase()] || WORDS_BY_DIFFICULTY.MEDIUM;
-  return wordList[Math.floor(Math.random() * wordList.length)];
-};
 
 // Get random word from API (asincrona)
 const getRandomWordAsync = async (difficulty = 'MEDIUM') => {
