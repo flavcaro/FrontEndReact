@@ -73,19 +73,6 @@ export default function GameHeader({
   const minPlayersRequired = getMinPlayersForMode();
   const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && isOwner;
 
-  // Debug log
-  console.log('🎮 [GameHeader] Debug:', {
-    puzzleDetected,
-    minPlayersRequired,
-    playersCount,
-    isOwner,
-    gameStateActive: gameState?.active,
-    gameStateEnded: gameState?.gameEnded,
-    canStartGame,
-    gameConfig,
-    modeId
-  });
-
   // active malus list is shown via the popover; no inline summary variable needed
 
   const [malusOpen, setMalusOpen] = useState(false);

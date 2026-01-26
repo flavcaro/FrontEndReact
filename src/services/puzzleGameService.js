@@ -1,6 +1,7 @@
 import { ref, set, push, remove, get, update } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS_BY_DIFFICULTY } from "../constants/gameConfig";
+import { getRandomWord as getRandomWordFromAPI } from "./wordService";
 import { 
   assignPuzzleRoles, 
   calculateMinRounds, 
@@ -10,11 +11,18 @@ import {
 } from "../constants/gameModes/puzzleDrawing";
 
 /**
- * Ottiene una parola casuale per il puzzle
+ * Ottiene una parola casuale per il puzzle (fallback locale)
  */
 const getRandomWord = (difficulty = 'MEDIUM') => {
   const wordList = WORDS_BY_DIFFICULTY[difficulty.toUpperCase()] || WORDS_BY_DIFFICULTY.MEDIUM;
   return wordList[Math.floor(Math.random() * wordList.length)];
+};
+
+/**
+ * Ottiene una parola casuale dall'API
+ */
+const getRandomWordAsync = async (difficulty = 'MEDIUM') => {
+  return await getRandomWordFromAPI(difficulty);
 };
 
 /**
@@ -33,7 +41,7 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   );
   await Promise.all(resetPromises);
 
-  const word = getRandomWord(gameConfig.difficulty?.id);
+  const word = await getRandomWordAsync(gameConfig.difficulty?.id);
   const minRounds = calculateMinRounds(players.length);
   
   // Crea la lista dei giocatori per i ruoli - ordina per joinedAt per consistenza
@@ -246,7 +254,7 @@ export const advancePuzzleRound = async (roomId) => {
 
   // Assegna i nuovi ruoli
   const newRoles = assignPuzzleRoles(playersList, nextRound - 1);
-  const newWord = getRandomWord(gameState.difficultyId);
+  const newWord = await getRandomWordAsync(gameState.difficultyId);
 
   console.log('🎭 Nuovi ruoli assegnati - Round', nextRound, ':', {
     guesser: newRoles.guesser?.name,

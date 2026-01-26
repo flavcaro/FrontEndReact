@@ -1,0 +1,39 @@
+{
+  "dictionary": {
+    "easy": [
+      "gatto", "cane", "casa", "sole", "luna", "mare", "fiore", "albero",
+      "palla", "libro", "sedia", "tavolo", "auto", "mano", "piede", "occhio",
+      "naso", "bocca", "cuore", "stella", "nuvola", "pioggia", "neve", "vento",
+      "mela", "pane", "acqua", "latte", "uovo", "pesce", "frutta", "letto",
+      "porta", "scala", "ponte", "lago", "fiume", "monte", "bosco", "prato",
+      "cibo", "colore", "gioco", "musica", "voce", "luce", "notte", "giorno",
+      "amico", "famiglia", "scuola", "strada", "cielo", "terra", "fuoco", "aria",
+      "bacio", "sorriso", "gioia", "amore", "pace", "festa", "regalo", "sogno"
+    ],
+    "medium": [
+      "telefono", "computer", "bicicletta", "aereo", "nave", "treno", "montagna",
+      "cappello", "ombrello", "orologio", "chitarra", "pianoforte", "pallone",
+      "scarpa", "penna", "zaino", "finestra", "giardino", "spiaggia",
+      "foresta", "deserto", "vulcano", "cascata", "arcobaleno", "farfalla",
+      "viaggio", "castello", "mercato", "teatro", "museo", "biblioteca", "ospedale",
+      "ristorante", "albergo", "negozio", "cucina", "bagno", "camera", "balcone",
+      "traffico", "semaforo", "incrocio", "rotonda", "autostrada", "galleria",
+      "stazione", "aeroporto", "porto", "molo", "faro", "banchina", "ancora",
+      "tempesta", "tuono", "fulmine", "nebbia", "brezza", "tornado", "ciclone",
+      "pianeta", "cometa", "galassia", "satellite", "orbita", "meteora", "eclissi"
+    ],
+    "hard": [
+      "microscopio", "telescopio", "dinosauro", "archeologo", "architetto",
+      "ingegnere", "medaglia", "trofeo", "campionato", "astronomia", "geometria",
+      "equilibrio", "simmetria", "democrazia", "rivoluzione", "esperimento",
+      "caleidoscopio", "pterodattilo", "ippopotamo", "rinoceronte", "coccodrillo",
+      "effimero", "prolisso", "reciproco", "paradosso", "metafora", "allegoria",
+      "enigma", "dilemma", "fenomeno", "sintomo", "diagnosi", "prognosi",
+      "algoritmo", "protocollo", "referendum", "costituzione", "giurisdizione",
+      "prerequisito", "paradigma", "ipotesi", "sinonimo", "antonimo", "omonimo",
+      "biodiversità", "ecosistema", "fotosintesi", "cromosoma", "genetica",
+      "evoluzione", "mutazione", "selezione", "adattamento", "sopravvivenza",
+      "cosmopolita", "filantropo", "misantropo", "nichilista", "esistenzialista"
+    ]
+  }
+}
