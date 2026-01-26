@@ -27,9 +27,9 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
     const rounds = selectedRounds;
 
     const payload = {
-      // Base mode properties (preserve mode.id)
+       // Spread delle proprietà della modalità
       ...mode,
-      // Explicitly set turn/time properties to avoid clobbering mode.id
+       // Proprietà esplicite per tempo/turno
       turnDuration: timeOption?.turnDuration || mode.turnDuration,
       turnTimeId: timeOption?.id || null,
       turnTimeName: timeOption?.name || null,
@@ -37,7 +37,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
       roundsPerGame: rounds
     };
 
-    // If survival mode selected, include threshold config
+// Configurazione sopravvivenza (condizionale)
     if (mode?.survivalMode) {
       payload.survivalThreshold = {
         thresholdType: survivalThresholdType,
