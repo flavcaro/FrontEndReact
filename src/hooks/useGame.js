@@ -198,7 +198,7 @@ export function useGame(roomId, nickname, players) {
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
 
     // Determina chi è il prossimo artista (senza incrementare ancora)
-    const { nextArtist, word, chaosEffects } = await advanceToNextTurn(
+    const { nextArtist, word, chaosEffects, updatedUsedWords } = await advanceToNextTurn(
       roomId,
       players,
       gameState?.currentArtist,
@@ -238,6 +238,7 @@ export function useGame(roomId, nickname, players) {
       active: true,
       currentArtist: nextArtist,
       word,
+      usedWords: updatedUsedWords, // Aggiorna la lista delle parole usate
       turnStartedAt: Date.now(),
       guessedPlayers: [],
       round: nextRound,

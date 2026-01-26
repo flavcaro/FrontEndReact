@@ -58,6 +58,7 @@ export default function Home() {
       name: gameMode.name,
       turnDuration: gameMode.turnDuration || 60,
       rounds: 3,
+      roundsPerGame: 3,
       difficulty: { id: 'medium', name: 'Media' },
       survivalMode: gameMode.survivalMode || false,
       startingLives: gameMode.startingLives || null,
@@ -143,6 +144,7 @@ export default function Home() {
       name: gameMode.name,
       turnDuration: opts.turnDuration,
       rounds: opts.rounds,
+      roundsPerGame: opts.rounds,
       difficulty: { id: opts.difficulty || 'medium', name: opts.difficulty === 'easy' ? 'Facile' : opts.difficulty === 'hard' ? 'Difficile' : 'Media' },
       survivalMode: gameMode.survivalMode || false,
       startingLives: gameMode.startingLives || null,
@@ -259,7 +261,10 @@ export default function Home() {
                       <div className="quick-button-icon">{mode.icon}</div>
                       <div className="quick-button-content">
                         <h3>{mode.name}</h3>
-                        <p>{mode.turnDuration || 60} secondi • 3 round</p>
+                        <p>
+                          {mode.turnDuration || 60} secondi
+                          {mode.id !== 'puzzleDrawing' && ' • 3 round'}
+                        </p>
                         <div className="mode-difficulty">Difficoltà: {diffLabel}</div>
                       </div>
                     </div>
