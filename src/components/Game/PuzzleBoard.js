@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import SimplePopup from "./SimplePopup";
 import PlayersSidebar from "./PlayersSidebar";
 import ChatSidebar from "./ChatSidebar";
 import GameHeader from "./GameHeader";
@@ -59,10 +58,8 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   
   // Log per debug
   console.log('🎨 [PuzzleBoard] selectedInstrument:', selectedInstrument);
-  const [showStartPopup, setShowStartPopup] = useState(true);
 
   const handleStartGame = () => {
-    setShowStartPopup(false);
     startGame(gameConfig);
   };
 
@@ -78,19 +75,6 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   return (
     <>
-      {showStartPopup && !gameState?.active && (
-        <SimplePopup
-          emoji="🧩"
-          title="Puzzle Drawing"
-          message="Il canvas sarà diviso in 3 sezioni. Collaborate per creare un disegno!"
-          onConfirm={isOwner ? handleStartGame : null}
-          onCancel={() => navigate("/")}
-          confirmText={isOwner ? "Inizia Partita" : "In attesa del creatore..."}
-          cancelText="Esci"
-          showCancel={true}
-        />
-      )}
-
       <div
         className="board-container"
         style={{ position: 'fixed', inset: 0, display: 'flex', overflow: 'hidden', alignItems: 'stretch', width: '100%' }}

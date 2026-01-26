@@ -61,7 +61,30 @@ export default function GameHeader({
   const roundsPerPlayer = gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
   
   const playersCount = players?.length || 0;
-  const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && isOwner;
+  
+  // Determina il minimo di giocatori richiesti in base alla modalità
+  const getMinPlayersForMode = () => {
+    if (puzzleDetected) {
+      return PUZZLE_DRAWING.minPlayers; // 4 giocatori per Puzzle Drawing
+    }
+    return MIN_PLAYERS; // 2 giocatori per le altre modalità
+  };
+  
+  const minPlayersRequired = getMinPlayersForMode();
+  const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && isOwner;
+
+  // Debug log
+  console.log('🎮 [GameHeader] Debug:', {
+    puzzleDetected,
+    minPlayersRequired,
+    playersCount,
+    isOwner,
+    gameStateActive: gameState?.active,
+    gameStateEnded: gameState?.gameEnded,
+    canStartGame,
+    gameConfig,
+    modeId
+  });
 
   // active malus list is shown via the popover; no inline summary variable needed
 
@@ -247,15 +270,15 @@ export default function GameHeader({
           </button>
         )}
 
-        {!gameState?.active && !gameState?.gameEnded && playersCount >= MIN_PLAYERS && !isOwner && (
+        {!gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && !isOwner && (
           <div className="waiting-message">
             👑 In attesa che il creatore avvii la partita...
           </div>
         )}
 
-        {!gameState?.active && !gameState?.gameEnded && playersCount < MIN_PLAYERS && (
+        {!gameState?.active && !gameState?.gameEnded && playersCount < minPlayersRequired && (
           <div className="waiting-message">
-            ⏳ In attesa di altri giocatori ({playersCount}/{MIN_PLAYERS})
+            ⏳ In attesa di altri giocatori ({playersCount}/{minPlayersRequired})
           </div>
         )}
         

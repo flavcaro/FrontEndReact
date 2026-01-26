@@ -349,10 +349,25 @@ export function usePlayers(roomId, nickname) {
     const unsubscribe = onValue(ownerDbRef, (snapshot) => {
       try {
         const ownerData = snapshot.val();
+        const currentSessionId = sessionId.current;
+        
+        console.log('👑 [usePlayers] Owner check:', {
+          ownerData,
+          playerId,
+          currentSessionId,
+          ownerSessionId: ownerData?.sessionId,
+          ownerPlayerId: ownerData?.playerId,
+          matchByPlayerId: ownerData?.playerId === playerId,
+          matchBySessionId: ownerData?.sessionId === currentSessionId
+        });
+        
         // store the owner snapshot in a ref so players listener can mark isOwner
         ownerRef.current = ownerData || null;
-        if (ownerData && playerId) {
-          setIsOwner(ownerData.playerId === playerId);
+        if (ownerData) {
+          // Check both playerId and sessionId for more reliable owner detection
+          const isOwnerByPlayerId = playerId && ownerData.playerId === playerId;
+          const isOwnerBySessionId = ownerData.sessionId === currentSessionId;
+          setIsOwner(isOwnerByPlayerId || isOwnerBySessionId);
         } else {
           setIsOwner(false);
         }

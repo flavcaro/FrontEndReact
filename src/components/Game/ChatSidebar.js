@@ -40,8 +40,8 @@ export default function ChatSidebar({
 
     // Controlla se il giocatore può indovinare e se ha indovinato correttamente
     if (!isArtist && !hasGuessed && msgLower === correctWord) {
-      // Notify guess handler with the player's nickname (not the guessed word)
-      await onGuessCorrect(nickname);
+      // Notify guess handler with the guessed word (not the nickname)
+      await onGuessCorrect(msg);
       setInputMessage("");
     } else {
       // Invia il messaggio normale in chat

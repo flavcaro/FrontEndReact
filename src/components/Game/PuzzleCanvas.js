@@ -31,9 +31,17 @@ export default function PuzzleCanvas({
     const rect = canvas.getBoundingClientRect();
     const source = e.touches?.[0] ?? e;
 
+    // Calcola le coordinate del mouse relative al canvas visualizzato
+    const clientX = source.clientX - rect.left;
+    const clientY = source.clientY - rect.top;
+
+    // Scala le coordinate in base al rapporto tra dimensioni interne e dimensioni CSS
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-      x: source.clientX - rect.left,
-      y: source.clientY - rect.top
+      x: clientX * scaleX,
+      y: clientY * scaleY
     };
   }, []);
 
@@ -215,7 +223,7 @@ export default function PuzzleCanvas({
   ----------------------------- */
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       <canvas
         ref={canvasRef}
         onMouseDown={handleDown}
@@ -225,7 +233,7 @@ export default function PuzzleCanvas({
         onTouchStart={handleDown}
         onTouchMove={handleMove}
         onTouchEnd={handleUp}
-        style={{ width: '100%', height: '100%', touchAction: 'none' }}
+        style={{ width: '100%', height: '100%', touchAction: 'none', display: 'block' }}
       />
     </div>
   );

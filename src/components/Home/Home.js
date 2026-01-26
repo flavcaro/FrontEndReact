@@ -75,14 +75,14 @@ export default function Home() {
     }
     (async () => {
       try {
-        // Ensure unique nickname in target room before joining
+       // Verifica unicità nickname nella stanza target
         const playersRef = ref(db, `rooms/${code}/players`);
         const snap = await get(playersRef);
         const existing = snap.val() || {};
         const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
         const unique = generateUniqueNickname(nickname, latestList) || nickname;
         if (unique !== nickname) {
-          // update local state and storage so client uses unique name
+        // Genera nickname univoco se necessario
           setNickname(unique);
           localStorage.setItem('nickname', unique);
         } else {
