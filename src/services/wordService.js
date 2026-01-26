@@ -39,9 +39,10 @@ const fetchWordsFromFirebase = async (difficulty) => {
 /**
  * Ottiene una parola casuale, prima prova da Firebase, poi usa il fallback locale
  * @param {string} difficulty - 'EASY', 'MEDIUM', 'HARD'
+ * @param {string[]} usedWords - Array di parole già usate nella partita corrente
  * @returns {Promise<string>}
  */
-export const getRandomWord = async (difficulty = 'MEDIUM') => {
+export const getRandomWord = async (difficulty = 'MEDIUM', usedWords = []) => {
   const difficultyKey = difficulty.toUpperCase();
   const now = Date.now();
   
@@ -63,10 +64,19 @@ export const getRandomWord = async (difficulty = 'MEDIUM') => {
   }
   
   // Usa parole da Firebase se disponibili, altrimenti usa il fallback locale
-  const wordList = wordCache[difficultyKey] || WORDS_BY_DIFFICULTY[difficultyKey] || WORDS_BY_DIFFICULTY.MEDIUM;
+  let wordList = wordCache[difficultyKey] || WORDS_BY_DIFFICULTY[difficultyKey] || WORDS_BY_DIFFICULTY.MEDIUM;
   
-  const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
-  console.log(`🎲 Selected word: "${randomWord}" (from ${wordCache[difficultyKey] ? 'Firebase' : 'LOCAL'})`);
+  // Filtra le parole già usate
+  const availableWords = wordList.filter(word => !usedWords.includes(word.toLowerCase()));
+  
+  // Se non ci sono più parole disponibili, resetta e usa tutte le parole
+  if (availableWords.length === 0) {
+    console.warn('⚠️ Tutte le parole sono state usate, resetto la lista');
+    availableWords.push(...wordList);
+  }
+  
+  const randomWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+  console.log(`🎲 Selected word: "${randomWord}" (from ${wordCache[difficultyKey] ? 'Firebase' : 'LOCAL'}, ${availableWords.length} available)`);
   
   return randomWord;
 };

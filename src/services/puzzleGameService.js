@@ -21,8 +21,8 @@ const getRandomWord = (difficulty = 'MEDIUM') => {
 /**
  * Ottiene una parola casuale dall'API
  */
-const getRandomWordAsync = async (difficulty = 'MEDIUM') => {
-  return await getRandomWordFromAPI(difficulty);
+const getRandomWordAsync = async (difficulty = 'MEDIUM', usedWords = []) => {
+  return await getRandomWordFromAPI(difficulty, usedWords);
 };
 
 /**
@@ -41,7 +41,7 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   );
   await Promise.all(resetPromises);
 
-  const word = await getRandomWordAsync(gameConfig.difficulty?.id);
+  const word = await getRandomWordAsync(gameConfig.difficulty?.id, []);
   const minRounds = calculateMinRounds(players.length);
   
   // Crea la lista dei giocatori per i ruoli - ordina per joinedAt per consistenza
@@ -82,6 +82,7 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     round: 1,
     totalRounds: minRounds,
     word,
+    usedWords: [word.toLowerCase()], // Traccia le parole usate
     turnStartedAt: Date.now(),
     
     // Ruoli attuali
@@ -254,7 +255,11 @@ export const advancePuzzleRound = async (roomId) => {
 
   // Assegna i nuovi ruoli
   const newRoles = assignPuzzleRoles(playersList, nextRound - 1);
-  const newWord = await getRandomWordAsync(gameState.difficultyId);
+  
+  // Ottieni una nuova parola non ancora usata
+  const usedWords = gameState.usedWords || [];
+  const newWord = await getRandomWordAsync(gameState.difficultyId, usedWords);
+  const updatedUsedWords = [...usedWords, newWord.toLowerCase()];
 
   console.log('🎭 Nuovi ruoli assegnati - Round', nextRound, ':', {
     guesser: newRoles.guesser?.name,
@@ -266,6 +271,7 @@ export const advancePuzzleRound = async (roomId) => {
     active: true,
     round: nextRound,
     word: newWord,
+    usedWords: updatedUsedWords, // Aggiorna la lista delle parole usate
     turnStartedAt: Date.now(),
     currentGuesser: newRoles.guesser,
     currentDrawers: newRoles.drawers,

@@ -40,8 +40,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   const resolvedSurvival = selectedMode?.survivalMode || gameConfig?.survivalMode || false;
   const resolvedStartingLives = selectedMode?.startingLives || gameConfig?.startingLives || 3;
 
-  // Usa l'API per ottenere la parola
-  const word = await getRandomWordAsync(gameConfig.difficulty?.id);
+  // Usa l'API per ottenere la parola (inizializza lista parole usate)
+  const word = await getRandomWordAsync(gameConfig.difficulty?.id, []);
   
   // Rounds per player (not total rounds)
   const roundsPerPlayer = gameConfig.roundsPerGame || 6;
@@ -66,6 +66,7 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
     active: true,
     currentArtist: firstArtist,
     word,
+    usedWords: [word.toLowerCase()], // Traccia le parole usate
     turnStartedAt: Date.now(),
     guessedPlayers: [],
     round: 1,
@@ -207,12 +208,18 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   const currentIndex = playerOrder.findIndex(name => name === currentArtist);
   const nextIndex = (currentIndex + 1) % playerOrder.length;
   const nextArtist = playerOrder[nextIndex];
-  const word = await getRandomWordAsync(difficultyId);
+  
+  // Get used words list and pick a new unique word
+  const gameSnap = await get(ref(db, `rooms/${roomId}/game`));
+  const gameState = gameSnap.val() || {};
+  const usedWords = gameState.usedWords || [];
+  const word = await getRandomWordAsync(difficultyId, usedWords);
+  
+  // Add new word to used words list
+  const updatedUsedWords = [...usedWords, word.toLowerCase()];
   
   // Generate chaos effects server-side if game mode requires it
   try {
-    const gameSnap = await get(ref(db, `rooms/${roomId}/game`));
-    const gameState = gameSnap.val() || {};
     const chaosEffects = gameState?.hasChaosEffects ? generateChaosEffects() : null;
     // Persist chosen chaos effects so clients receive a stable shared value
     await set(ref(db, `rooms/${roomId}/game/chaosEffects`), chaosEffects);
@@ -228,10 +235,10 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
       });
     }
 
-    return { nextArtist, word, chaosEffects };
+    return { nextArtist, word, chaosEffects, updatedUsedWords };
   } catch (err) {
     console.error('[advanceToNextTurn] error generating/persisting chaosEffects', err);
-    return { nextArtist, word, chaosEffects: null };
+    return { nextArtist, word, chaosEffects: null, updatedUsedWords };
   }
 };
 
