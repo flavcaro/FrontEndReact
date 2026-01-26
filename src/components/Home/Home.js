@@ -6,7 +6,7 @@ import { useUserData } from "../../hooks/useUserData";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import { generateRoomCode, validateNickname, extractRoomCode } from "../../utils/roomUtils";
-import { ref, get } from "firebase/database";
+import { ref, get, onValue } from "firebase/database";
 import { db } from "../../firebase";
 import { generateUniqueNickname } from "../../utils/nicknameUtils";
 import { CLASSICA } from "../../constants/gameModes/classica";
@@ -17,13 +17,21 @@ import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
 import "../../styles/home.css";
 import RoomActions from "./RoomActions";
 import CustomCreateForm from "./CustomCreateForm";
+import Leaderboard from "./Leaderboard";
+import { subscribeLeaderboard } from "../../services/userService";
 
 export default function Home() {
   const navigate = useNavigate();
   const { nickname, setNickname, xpPoints, level, user, isGuest } = useUserData();
   const [joinCode, setJoinCode] = useState("");
   const [showCustomModal, setShowCustomModal] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [nickError, setNickError] = useState("");
+  const [topFour, setTopFour] = useState([]);
+  const [myPosition, setMyPosition] = useState(null);
+  const [loadingLeaderboardPreview, setLoadingLeaderboardPreview] = useState(false);
+  const [userStats, setUserStats] = useState(null);
+  // preview shows only real leaderboard data from Firebase
   const [modeOptions, setModeOptions] = useState({
     [CLASSICA.id]: { turnDuration: CLASSICA.turnDuration || 60, rounds: 3, difficulty: 'medium' },
     [SOPRAVVIVENZA.id]: { turnDuration: SOPRAVVIVENZA.turnDuration || 30, rounds: 3, difficulty: 'medium' },
@@ -160,6 +168,36 @@ export default function Home() {
     };
   }, []);
 
+  React.useEffect(() => {
+    let mounted = true;
+    setLoadingLeaderboardPreview(true);
+    const unsub = subscribeLeaderboard((list) => {
+      if (!mounted) return;
+      setTopFour(list.slice(0,4));
+      // determine current user's position by uid or nickname
+      const currentId = user && user.uid ? user.uid : null;
+      const foundByUid = currentId ? list.findIndex(u => u.uid === currentId) : -1;
+      let found = foundByUid;
+      if (found === -1 && nickname) {
+        found = list.findIndex(u => (u.email === nickname) || (u.displayName === nickname) || (u.nickname === nickname));
+      }
+      setMyPosition(found >= 0 ? found + 1 : null);
+      setLoadingLeaderboardPreview(false);
+    }, 1000, 'totalScore');
+    return () => { mounted = false; if (typeof unsub === 'function') unsub(); };
+  }, [user, nickname]);
+
+  React.useEffect(() => {
+    if (!user || !user.uid) return;
+    const uRef = ref(db, `users/${user.uid}`);
+    const unsub = onValue(uRef, (snap) => {
+      setUserStats(snap.val() || null);
+    }, (err) => {
+      console.warn('Could not subscribe to user stats', err);
+    });
+    return () => { if (typeof unsub === 'function') unsub(); };
+  }, [user]);
+
   return (
     <div className="home" style={{ overflowY: 'hidden', height: '100vh' }}>
       <header className="home-header">
@@ -174,6 +212,7 @@ export default function Home() {
             {!isGuest && (
               <button className="header-profile-btn" onClick={() => navigate('/profile')}>👤 Profilo</button>
             )}
+            <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)}>🏆 Classifica</button>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         )}
@@ -259,6 +298,57 @@ export default function Home() {
               </div>
               {isGuest && <div className="guest-badge">Giocando come ospite</div>}
               {nickError && <div className="nickname-error">{nickError}</div>}
+              {userStats && (
+                <div style={{ marginTop: 8, fontSize: 13, color: '#374151' }}>
+                  <span style={{ fontWeight: 700, marginRight: 8 }}>⭐ {userStats.totalScore || 0}</span>
+                  <span style={{ color: '#64748b' }}>Best: {userStats.bestScore || 0}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="leaderboard-preview-card compact-leaderboard">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <div style={{ fontWeight: 700 }}>Classifica (Top 4)</div>
+                </div>
+                  <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)} style={{ fontSize: 12 }}>Vedi tutto</button>
+                </div>
+              <div style={{ marginTop: 8 }}>
+                {(() => {
+                  const display = (topFour && topFour.length > 0) ? topFour : [];
+                  return (
+                    <>
+                      {display.length > 0 ? (
+                        <ol style={{ paddingLeft: 12, margin: '8px 0', opacity: loadingLeaderboardPreview ? 0.85 : 1 }}>
+                          {display.map((u, i) => (
+                            <li key={u.uid || i}>
+                              <div className="leader-left">
+                                <div className="leader-avatar">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🏅'}</div>
+                                <div>
+                                  <div className="leader-name">{u.email ? u.email.split('@')[0] : (u.displayName || (`Utente-${(u.uid||'').slice(0,6)}`))}</div>
+                                  <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
+                                </div>
+                              </div>
+                              <div className="leader-score">⭐ {u.totalScore || 0}</div>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <div style={{ fontSize: 13, color: '#64748b', minHeight: 40, display: 'flex', alignItems: 'center' }}>Nessun dato disponibile</div>
+                      )}
+                      {loadingLeaderboardPreview && (
+                        <div className="loading-inline" style={{ marginTop: 6 }}>
+                          <div className="small-spinner" aria-hidden="true"></div>
+                          <div style={{ fontSize: 12, color: '#64748b' }}>Aggiornamento in tempo reale…</div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+              <div style={{ marginTop: 6, fontSize: 13, color: '#334155' }}>
+                La tua posizione: {myPosition ? `#${myPosition}` : '— Fuori top 1000'}
+              </div>
             </div>
           </div>
         </div>
@@ -308,6 +398,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      <Leaderboard show={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
 
       <div className="bg-elements">
         <div className="bg-shape shape-1"></div>

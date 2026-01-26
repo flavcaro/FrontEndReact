@@ -1,4 +1,4 @@
-import { ref, set, serverTimestamp, get, update } from "firebase/database";
+import { ref, set, serverTimestamp, get, update, query, orderByChild, limitToLast, onValue } from "firebase/database";
 import { db } from "../firebase";
 
 export const saveUserToDatabase = async (user) => {
@@ -69,9 +69,100 @@ export const updateGameStats = async (userId, score, isWinner) => {
       level,
       lastPlayed: serverTimestamp()
     });
+    // Mirror summary to leaderboard node for fast reads
+    try {
+      const lbRef = ref(db, `leaderboard/${userId}`);
+      await update(lbRef, {
+        uid: userId,
+        displayName: userData.nickname || userData.email || null,
+        email: userData.email || null,
+        totalScore,
+        level,
+        lastUpdated: serverTimestamp()
+      });
+    } catch (err) {
+      console.warn('Could not update leaderboard mirror', err);
+    }
     
     console.log(`✅ Statistiche aggiornate con successo per ${userId}`);
   } catch (error) {
     console.error("Error updating game stats:", error);
+  }
+};
+
+export const fetchLeaderboard = async (limit = 20, orderBy = 'totalScore') => {
+  try {
+    const q = query(ref(db, 'leaderboard'), orderByChild(orderBy), limitToLast(limit));
+    const snap = await get(q);
+    const val = snap.val() || {};
+    const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
+    // sort descending by chosen key
+    list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+    return list;
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    return [];
+  }
+};
+
+// Subscribe to leaderboard changes in realtime. Returns an unsubscribe function.
+export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore') => {
+  try {
+    const leaderboardRef = ref(db, 'leaderboard');
+    const usersRef = ref(db, 'users');
+
+    const subscribeTo = (refNode, label) => {
+      const q = query(refNode, orderByChild(orderBy), limitToLast(limit));
+      const unsub = onValue(q, (snap) => {
+        const val = snap.val() || {};
+        const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
+        list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+        console.log(`[subscribeLeaderboard] source=${label} count=${list.length}`);
+        onUpdate(list);
+      }, (err) => {
+        console.error('Realtime leaderboard error', err);
+      });
+      return unsub;
+    };
+
+    // First try leaderboard/ (mirror). If it's empty on first snapshot, fall back to users/.
+    let unsubPrimary = null;
+    let unsubFallback = null;
+    let initialChecked = false;
+
+    const primaryQuery = query(leaderboardRef, orderByChild(orderBy), limitToLast(limit));
+    unsubPrimary = onValue(primaryQuery, (snap) => {
+      const val = snap.val() || {};
+      const has = Object.keys(val).length > 0;
+      const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
+      list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+      if (!initialChecked) {
+        initialChecked = true;
+        if (!has) {
+          // leaderboard empty: switch to users/ fallback
+          console.log('[subscribeLeaderboard] leaderboard empty, falling back to users/');
+          if (typeof unsubPrimary === 'function') unsubPrimary();
+          unsubFallback = subscribeTo(usersRef, 'users');
+          return;
+        }
+      }
+      console.log(`[subscribeLeaderboard] source=leaderboard count=${list.length}`);
+      onUpdate(list);
+    }, (err) => {
+      console.error('Realtime leaderboard error', err);
+      // on error try fallback
+      if (!unsubFallback) {
+        console.log('[subscribeLeaderboard] error on leaderboard, falling back to users/');
+        unsubFallback = subscribeTo(usersRef, 'users');
+      }
+    });
+
+    return () => {
+      try { if (typeof unsubPrimary === 'function') unsubPrimary(); } catch(e){}
+      try { if (typeof unsubFallback === 'function') unsubFallback(); } catch(e){}
+    };
+  } catch (error) {
+    console.error('Error subscribing leaderboard:', error);
+    return () => {};
   }
 };
