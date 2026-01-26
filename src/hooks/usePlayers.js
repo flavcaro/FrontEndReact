@@ -351,16 +351,6 @@ export function usePlayers(roomId, nickname) {
         const ownerData = snapshot.val();
         const currentSessionId = sessionId.current;
         
-        console.log('👑 [usePlayers] Owner check:', {
-          ownerData,
-          playerId,
-          currentSessionId,
-          ownerSessionId: ownerData?.sessionId,
-          ownerPlayerId: ownerData?.playerId,
-          matchByPlayerId: ownerData?.playerId === playerId,
-          matchBySessionId: ownerData?.sessionId === currentSessionId
-        });
-        
         // store the owner snapshot in a ref so players listener can mark isOwner
         ownerRef.current = ownerData || null;
         if (ownerData) {

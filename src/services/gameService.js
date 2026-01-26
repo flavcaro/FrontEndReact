@@ -1,16 +1,22 @@
 import { ref, set, push, remove, get } from "firebase/database";
 import { db } from "../firebase";
 import { WORDS_BY_DIFFICULTY, GAME_MODES } from "../constants/gameConfig";
-import { generateChaosEffects} from "../constants/gameModes/chaosTools"; 
+import { generateChaosEffects} from "../constants/gameModes/chaosTools";
+import { getRandomWord as getRandomWordFromAPI, getRandomWordSync } from "./wordService";
 
 //DEBUG PER CHAOS TOOLS DI EDOARDO, NON TOCCARE
 //import { pickChaosEffect} from "../constants/gameModes/chaosTools"; 
 
 
-// Get random word based on difficulty
+// Get random word based on difficulty (sincrona per backward compatibility)
 const getRandomWord = (difficulty = 'MEDIUM') => {
   const wordList = WORDS_BY_DIFFICULTY[difficulty.toUpperCase()] || WORDS_BY_DIFFICULTY.MEDIUM;
   return wordList[Math.floor(Math.random() * wordList.length)];
+};
+
+// Get random word from API (asincrona)
+const getRandomWordAsync = async (difficulty = 'MEDIUM') => {
+  return await getRandomWordFromAPI(difficulty);
 };
 
 export const startNewGame = async (roomId, players, userId, gameConfig) => {
@@ -34,7 +40,8 @@ export const startNewGame = async (roomId, players, userId, gameConfig) => {
   const resolvedSurvival = selectedMode?.survivalMode || gameConfig?.survivalMode || false;
   const resolvedStartingLives = selectedMode?.startingLives || gameConfig?.startingLives || 3;
 
-  const word = getRandomWord(gameConfig.difficulty?.id);
+  // Usa l'API per ottenere la parola
+  const word = await getRandomWordAsync(gameConfig.difficulty?.id);
   
   // Rounds per player (not total rounds)
   const roundsPerPlayer = gameConfig.roundsPerGame || 6;
@@ -200,7 +207,7 @@ export const advanceToNextTurn = async (roomId, players, currentArtist, difficul
   const currentIndex = playerOrder.findIndex(name => name === currentArtist);
   const nextIndex = (currentIndex + 1) % playerOrder.length;
   const nextArtist = playerOrder[nextIndex];
-  const word = getRandomWord(difficultyId);
+  const word = await getRandomWordAsync(difficultyId);
   
   // Generate chaos effects server-side if game mode requires it
   try {
