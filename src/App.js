@@ -126,7 +126,10 @@ function RoomPlay() {
             roundsPerGame: gameData.roundsPerPlayer || DEFAULT_ROUNDS,
             survivalMode: gameData.survivalMode || false,
             hasChaosEffects: gameData.hasChaosEffects || false,
-            survivalThreshold: gameData.survivalThreshold || null
+            survivalThreshold: gameData.survivalThreshold || null,
+            // Aggiungi configurazione Puzzle Drawing
+            puzzleSections: gameData.puzzleSections,
+            puzzleCycles: gameData.puzzleCycles
           };
           console.log('✅ Config caricata da Firebase:', configFromDB);
           setGameConfig(configFromDB);
