@@ -1,5 +1,11 @@
 /* Home Responsive Styles */
 
+/* Hide mobile-only menu by default; shown only inside mobile media queries below */
+.mobile-hamburger,
+.mobile-menu {
+  display: none !important;
+}
+
 /* Tablets and smaller */
 @media (max-width: 1023px) {
   .home-main {
@@ -148,6 +154,22 @@
 
   /* Make Vedi tutto button full width and visually compact on mobile */
   .preview-vedi-btn { width: 100% !important; display: block !important; margin-top: 6px !important; padding: 8px 10px !important; font-size: 13px !important; border-radius: 10px !important; }
+  /* Reduce join/save button sizes to fit mobile screens */
+  /* Force smaller button sizes on mobile (high specificity + important) */
+  .join-card .lobby-btn.secondary, .join-card .lobby-btn.secondary.small,
+  .join-inputs .lobby-btn.secondary, .join-inputs .lobby-btn.secondary.small,
+  .lobby-btn.secondary.small, .lobby-btn.secondary, .lobby-btn.small, .lobby-btn {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+  /* Ensure inner text scales down */
+  .lobby-btn .btn-text { font-size: 13px !important; }
+  .lobby-btn .btn-icon { font-size: 14px !important; margin-right: 6px !important; }
+  .nickname-inputs .save-nick-btn { padding: 6px 8px !important; font-size: 13px !important; height: 36px !important; }
+  .nickname-inputs .lobby-input, .join-inputs .lobby-input { font-size: 14px !important; padding: 8px 10px !important; }
+  .inline-create-btn { font-size: 13px !important; padding: 8px 14px !important; }
 }
 
 /* Extra Small */
@@ -173,11 +195,11 @@
 @media (max-width: 480px) {
   /* Ensure header is compact and content starts below it */
   .home-header { padding: 6px 8px !important; height: 52px !important; }
-  .home { padding-top: 60px !important; }
+  .home { padding-top: 84px !important; }
 
   /* Hero */
-  .hero-content h1 { font-size: 20px !important; }
-  .hero-content h2, .hero-subtitle { font-size: 14px !important; }
+  .hero-content h1 { font-size: 20px !important; display: block !important; }
+  .hero-content h2, .hero-subtitle { font-size: 14px !important; display: block !important; }
   .main-emoji { font-size: 40px !important; }
   .inline-create-btn { font-size: 13px !important; padding: 8px 12px !important; }
 
@@ -202,8 +224,9 @@
   /* Compress header: hide non-essential stats and provide a mobile hamburger instead */
   .user-stats-header { display: none !important; }
   /* Reduce logo aggressively on phones and hide long text */
-  .home-header .logo { font-size: 16px !important; max-width: calc(100% - 96px) !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-  .home-header .logo .logo-text { display: none !important; }
+  /* Show a compact logo text on phones but constrained to avoid overflow */
+  .home-header .logo { font-size: 16px !important; max-width: calc(100% - 96px) !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
+  .home-header .logo .logo-text { display: inline-block !important; font-size: 13px !important; font-weight: 800; max-width: 90px !important; overflow: hidden; text-overflow: ellipsis; }
   .header-right { gap: 6px !important; }
   /* hide full-text header buttons on small phones - use hamburger */
   .header-profile-btn, .header-leaderboard-btn, .logout-btn { display: none !important; }

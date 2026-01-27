@@ -339,3 +339,61 @@
     min-height: 36px !important;
   }
 }
+
+/* Targeted small-button overrides for lobby buttons on phones */
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Make all lobby buttons more compact on phones */
+  .lobby-btn {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    min-height: 36px !important;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+  }
+
+  .lobby-btn .btn-text {
+    font-size: 13px !important;
+    padding: 0 !important;
+  }
+
+  /* Join card / inline create buttons should not force a large min-width */
+  .join-card .lobby-btn.secondary,
+  .inline-create-btn .lobby-btn,
+  .central-create-btn .lobby-btn {
+    min-width: 0 !important;
+    width: auto !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* Nickname save button compact */
+  .nickname-inputs .lobby-btn.save-nick-btn {
+    min-width: 0 !important;
+    width: auto !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* Header profile button: keep icon, hide text to save space */
+  .lobby-btn.header-profile-btn .btn-text {
+    display: none !important;
+  }
+
+  /* Make Vedi tutto / preview buttons full width but compact height */
+  .preview-vedi-btn {
+    width: 100% !important;
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Extra small phones: tighten further */
+@media (max-width: 375px) and (orientation: portrait) {
+  .lobby-btn {
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+    min-height: 32px !important;
+  }
+
+  .lobby-btn .btn-text { font-size: 12px !important; }
+}
