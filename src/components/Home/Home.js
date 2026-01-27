@@ -195,9 +195,9 @@ export default function Home() {
   };
 
   React.useEffect(() => {
-    // Prevent body scroll while on the Home screen
+    // Allow normal body scroll on Home so mobile can scroll content
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = prev || 'auto';
     return () => {
       document.body.style.overflow = prev || '';
     };
@@ -282,7 +282,7 @@ export default function Home() {
   };
 
   return (
-    <div className="home" style={{ overflowY: 'hidden', height: '100vh' }}>
+    <div className="home" style={{ minHeight: '100vh' }}>
       <header className="home-header">
         <div className="logo">🎨 SketchUp</div>
         {user && (

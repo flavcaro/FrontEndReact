@@ -57,95 +57,97 @@
 
 /* Mobile */
 @media (max-width: 480px) {
+  /* compact mobile header to avoid large fixed header covering content */
   .home-header {
-    padding: 30px 35px;
-    gap: 16px;
+    padding: 8px 10px !important;
+    gap: 8px;
+    height: 56px;
+    align-items: center;
   }
 
+  /* Mobile: compact header layout */
+  .home-header .logo { font-size: 26px; }
+  .home-header .logo .logo-text { display: none; }
+  .header-right { display: flex; flex-direction: row; gap: 6px; align-items: center; }
+  .home-header .user-name { display: none; }
+
+  /* Keep header buttons compact but tappable */
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+    text-align: center;
+    min-width: 40px;
+    height: 36px;
+  }
+
+  /* Ensure preview leaderboard and rows are compact and touch-friendly */
+  .leaderboard-preview-card.compact-leaderboard { padding: 6px !important; }
+  .leaderboard-preview-card.compact-leaderboard ol { padding-left: 6px !important; }
+  .leader-row-btn { padding: 8px 6px !important; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .leader-left { display: flex; gap: 8px; align-items: center; }
+  .leader-avatar { width: 36px !important; height: 36px !important; font-size: 16px !important; }
+  .leader-name { font-size: 13px !important; }
+  .leader-meta { font-size: 11px !important; color: #64748b !important; }
+  .leader-score { font-size: 12px !important; }
+
+  /* Make save nickname button full width on phones */
+  .nickname-inputs { display: flex; flex-direction: column; gap: 8px; }
+  .nickname-inputs .save-nick-btn { width: 100% !important; }
+  .nickname-inputs .lobby-input { font-size: 14px !important; padding: 8px 10px !important; }
+
+  /* Modal content should fit narrow screens */
+  .modal-content { max-width: 94% !important; margin: 10px auto !important; }
+
+  /* Reduce base font size on small phones to avoid huge UI */
+  .home { font-size: 13px !important; padding-top: 68px !important; }
+  .hero-content h1 { font-size: 24px !important; line-height: 1.06 !important; }
+  .hero-content h2 { font-size: 16px !important; }
+  .main-emoji { font-size: 48px !important; }
+  .inline-create-btn { font-size: 14px !important; padding: 8px 12px !important; }
+
+  /* Reorder columns on phone: show join/nickname first, then hero, then modes */
+  .home-row-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .join-column { order: 1 !important; }
+  .hero-column { order: 2 !important; }
+  .modes-column { order: 3 !important; }
+
   .user-info {
-    gap: 16px;
+    gap: 12px;
     flex-direction: column;
     align-items: stretch;
   }
 
   .user-nickname {
-    padding: 14px 22px;
+    padding: 10px 16px;
     justify-content: center;
     flex-wrap: wrap;
     text-align: center;
   }
 
-  .nickname-icon {
-    font-size: 28px;
-  }
+  .nickname-icon { font-size: 24px; }
+  .nickname-text { font-size: 20px; }
 
-  .nickname-text {
-    font-size: 28px;
-  }
+  .user-stats { gap: 6px; }
+  .stats-row { gap: 6px; }
 
-  .user-stats {
-    gap: 6px;
-  }
+  .xp-badge, .games-badge, .winrate-badge { padding: 8px 12px; font-size: 14px; }
+  .level-badge { padding: 12px 16px; font-size: 18px; }
 
-  .stats-row {
-    gap: 6px;
-  }
+  .header-actions { flex-direction: column; gap: 8px; }
+  .btn-profile, .btn-logout { width: 100%; padding: 10px 16px; font-size: 14px; }
 
-  .xp-badge,
-  .games-badge,
-  .winrate-badge {
-    padding: 12px 16px;
-    font-size: 16px;
-  }
+  .home-main { padding: 12px 12px; align-items: flex-start; padding-top: 12px; }
+  .home-hero { gap: 18px; }
 
-  .level-badge {
-    padding: 20px 28px;
-    font-size: 32px;
-  }
+  .hero-subtitle { font-size: 16px; }
+  .home-card { padding: 14px 12px; border-radius: 12px; }
+  .nickname-section { padding: 10px; margin-bottom: 12px; }
 
-  .header-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
+  .stats-sidebar { display: none; }
 
-  .btn-profile,
-  .btn-logout {
-    width: 100%;
-    padding: 14px 24px;
-    font-size: 16px;
-  }
-
-  .home-main {
-    padding: 20px 16px;
-    align-items: flex-start;
-    padding-top: 20px;
-  }
-
-  .home-hero {
-    gap: 30px;
-  }
-
-  .hero-content h1 {
-    font-size: 40px;
-  }
-
-  .hero-subtitle {
-    font-size: 20px;
-  }
-
-  .home-card {
-    padding: 20px 16px;
-    border-radius: 16px;
-  }
-
-  .nickname-section {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .stats-sidebar {
-    display: none;
-  }
+  /* Make Vedi tutto button full width and visually compact on mobile */
+  .preview-vedi-btn { width: 100% !important; display: block !important; margin-top: 6px !important; padding: 8px 10px !important; font-size: 13px !important; border-radius: 10px !important; }
 }
 
 /* Extra Small */
