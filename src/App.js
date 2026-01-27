@@ -154,25 +154,36 @@ function RoomPlay() {
               console.log("📦 Config da localStorage:", config);
               setGameConfig(config);
             } else {
-            // Ultimo tentativo: infer from URL
-            const modeParam = query.get('mode');
-            if (modeParam) {
-              const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
-              if (modeObj) {
-                const inferred = {
-                  ...modeObj,
-                  difficulty: DEFAULT_DIFFICULTY,
-                  roundsPerGame: DEFAULT_ROUNDS,
-                  turnDuration: modeObj.turnDuration || TURN_DURATION
-                };
-                console.log('🔍 Config inferita da URL:', inferred);
-                setGameConfig(inferred);
+              // Ultimo tentativo: infer from URL
+              const modeParam = query.get('mode');
+              if (modeParam) {
+                const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
+                if (modeObj) {
+                  const inferred = {
+                    ...modeObj,
+                    difficulty: DEFAULT_DIFFICULTY,
+                    roundsPerGame: DEFAULT_ROUNDS,
+                    turnDuration: modeObj.turnDuration || TURN_DURATION
+                  };
+                  console.log('🔍 Config inferita da URL:', inferred);
+                  setGameConfig(inferred);
+                }
               }
             }
           }
         }
-        }
-  }
+        
+        setConfigLoaded(true); // Marca come caricato!
+      } catch (error) {
+        console.error('❌ Errore caricamento config:', error);
+        setConfigLoaded(true); // Anche in caso di errore, non riprovare
+      }
+    };
+
+    loadGameConfig();
+    setNickname(nick);
+    setIsReady(true);
+  }, [navigate, roomId, user, authLoading, configLoaded]); // Aggiungi configLoaded alle dipendenze
 
   return <Board roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
 }
