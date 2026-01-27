@@ -17,17 +17,7 @@ import { useChat } from "../../hooks/useChat";
  * Il canvas è diviso in 3 sezioni, ogni giocatore disegna nella propria sezione
  */
 const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
-  console.log('🧩🧩🧩 PUZZLE BOARD CARICATO!', { roomId, nickname, gameConfig });
-  
-  
-
   const { players, finalNickname, isOwner } = usePlayers(roomId, nickname);
-
-  console.log('🎮 [PuzzleBoard] Nicknames:', { 
-    original: nickname, 
-    final: finalNickname,
-    different: nickname !== finalNickname 
-  });
 
   const {
     gameState,
@@ -54,9 +44,6 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   const [selectedColor, setSelectedColor] = useState("#1e293b");
   const [selectedInstrument, setSelectedInstrument] = useState("pencil");
   const [brushSize, setBrushSize] = useState(4);
-  
-  // Log per debug
-  console.log('🎨 [PuzzleBoard] selectedInstrument:', selectedInstrument);
 
   const handleStartGame = () => {
     startGame(gameConfig);
@@ -171,6 +158,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                 onFinishStroke={finishStroke}
                 showSectionBorders={true}
                 selectedInstrument={selectedInstrument}
+                totalSections={gameState?.puzzleSections || 3}
               />
 
               {/* Palette solo per i disegnatori */}

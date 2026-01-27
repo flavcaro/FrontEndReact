@@ -27,6 +27,11 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     throw new Error(`Servono almeno ${PUZZLE_DRAWING.minPlayers} giocatori per Puzzle Drawing`);
   }
 
+  // Recupera la configurazione delle sezioni e cicli (default 3 sezioni, 1 ciclo)
+  const sectionsCount = gameConfig.puzzleSections || 3;
+  const cyclesCount = gameConfig.puzzleCycles || 1;
+  console.log('[startPuzzleGame] Configurazione sezioni:', sectionsCount, 'Cicli:', cyclesCount);
+
   // Reset punteggi
   const resetPromises = players.map(player => 
     set(ref(db, `rooms/${roomId}/players/${player.id}/score`), 0)
@@ -34,7 +39,7 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   await Promise.all(resetPromises);
 
   const word = await getRandomWordAsync(gameConfig.difficulty?.id, []);
-  const minRounds = calculateMinRounds(players.length);
+  const minRounds = calculateMinRounds(players.length, sectionsCount, cyclesCount);
   
   // Crea la lista dei giocatori per i ruoli - ordina per joinedAt per consistenza
   const playersList = players
@@ -45,12 +50,13 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     }));
 
   console.log('👥 Lista giocatori ordinata per ruoli:', playersList);
+  console.log('🔢 Round calcolati per', players.length, 'giocatori con', sectionsCount, 'sezioni:', minRounds);
 
-  // Assegna i ruoli per il primo round
-  const roles = assignPuzzleRoles(playersList, 0);
+  // Assegna i ruoli per il primo round con il numero di sezioni configurato
+  const roles = assignPuzzleRoles(playersList, 0, sectionsCount);
   
   console.log('🎭 Ruoli assegnati - Round 1:', {
-    guesser: roles.guesser?.name,
+    guessers: roles.guessers?.map(g => g.name),
     drawers: roles.drawers?.map(d => `${d.player.name} (sezione ${d.section})`)
   });
 
@@ -58,7 +64,7 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   console.log('🎯 Parola selezionata per TUTTI i giocatori:', word);
   console.log('⏱️ Durata turno configurata:', gameConfig.turnDuration);
   console.log('💾 Salvataggio ruoli nel DB:', {
-    currentGuesser: roles.guesser,
+    currentGuessers: roles.guessers,
     currentDrawers: roles.drawers
   });
   
@@ -69,6 +75,8 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     difficulty: gameConfig.difficulty?.name || 'Medio',
     difficultyId: gameConfig.difficulty?.id || 'medium',
     turnDuration: gameConfig.turnDuration || PUZZLE_DRAWING.turnDuration,
+    puzzleSections: sectionsCount, // Salva configurazione sezioni
+    puzzleCycles: cyclesCount, // Salva numero di cicli richiesti
     
     // Stato del round corrente
     round: 1,
@@ -77,12 +85,14 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     usedWords: [word.toLowerCase()], // Traccia le parole usate
     turnStartedAt: Date.now(),
     
-    // Ruoli attuali
-    currentGuesser: roles.guesser,
+    // Ruoli attuali (aggiornato per supportare array di guessers)
+    currentGuesser: roles.guessers[0] || null, // Backwards compatibility
+    currentGuessers: roles.guessers,
     currentDrawers: roles.drawers,
     
     // Tracciamento giocatori
-    playersWhoGuessed: [], // Array di uid che hanno indovinato
+    playersWhoGuessed: [], // Array di uid che hanno indovinato almeno una volta
+    playersWhoGuessedCounts: {}, // Object {uid: count} per tracciare quante volte ognuno ha indovinato
     guessedInCurrentRound: false,
     
     // Metadata
@@ -110,9 +120,18 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
 
   // Annuncia i ruoli
   const drawersNames = roles.drawers.map(d => d.player.name).join(', ');
+  const guessersNames = roles.guessers.map(g => g.name).join(', ');
+  
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎨 Disegnatori: ${drawersNames} | 🤔 Indovinatore: ${roles.guesser.name}`,
+    message: `🎨 Disegnatori: ${drawersNames}`,
+    timestamp: Date.now(),
+    isSystem: true
+  });
+  
+  await push(ref(db, `rooms/${roomId}/chat`), {
+    user: "Sistema",
+    message: `🔍 Indovinatori: ${guessersNames}`,
     timestamp: Date.now(),
     isSystem: true
   });
@@ -130,6 +149,15 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
 
   if (!gameState || gameState.guessedInCurrentRound) {
     return; // Già indovinato in questo round
+  }
+
+  // Verifica che il giocatore sia effettivamente un guesser
+  const guessers = gameState.currentGuessers || (gameState.currentGuesser ? [gameState.currentGuesser] : []);
+  const isGuesser = guessers.some(g => g.uid === guesserId || g.name === guesserName);
+  
+  if (!isGuesser) {
+    console.warn('❌ Tentativo di indovinare da parte di un non-guesser:', guesserName);
+    return;
   }
 
   // Calcola i punteggi
@@ -161,11 +189,19 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
     }
   }
 
-  // Aggiorna lo stato del gioco
-  const updatedPlayersWhoGuessed = [...(gameState.playersWhoGuessed || []), guesserId];
+  // Aggiorna lo stato del gioco - incrementa il contatore per questo giocatore
+  const playersWhoGuessedCounts = gameState.playersWhoGuessedCounts || {};
+  playersWhoGuessedCounts[guesserId] = (playersWhoGuessedCounts[guesserId] || 0) + 1;
+  
+  const updatedPlayersWhoGuessed = [...(gameState.playersWhoGuessed || [])];
+  if (!updatedPlayersWhoGuessed.includes(guesserId)) {
+    updatedPlayersWhoGuessed.push(guesserId);
+  }
+  
   await update(gameRef, {
     guessedInCurrentRound: true,
-    playersWhoGuessed: updatedPlayersWhoGuessed
+    playersWhoGuessed: updatedPlayersWhoGuessed,
+    playersWhoGuessedCounts
   });
 
   // Messaggio di sistema
@@ -225,15 +261,17 @@ export const advancePuzzleRound = async (roomId) => {
   
   console.log(`🔄 Avanzamento al round ${nextRound} - Lista giocatori:`, playersList.map(p => p.name));
 
-  // Verifica se tutti hanno indovinato
+  // Verifica se tutti hanno indovinato il numero di volte richiesto
   const gameStateForCheck = {
     ...gameState,
     playersWhoGuessed: gameState.playersWhoGuessed || [],
+    playersWhoGuessedCounts: gameState.playersWhoGuessedCounts || {},
+    puzzleCycles: gameState.puzzleCycles || 1,
     players: playersData
   };
 
   if (allPlayersHaveGuessed(gameStateForCheck)) {
-    console.log('🎉 Tutti hanno indovinato almeno una volta! Fine partita.');
+    console.log('🎉 Tutti hanno indovinato il numero di volte richiesto! Fine partita.');
     await endPuzzleGame(roomId);
     return;
   }
@@ -245,8 +283,9 @@ export const advancePuzzleRound = async (roomId) => {
     return;
   }
 
-  // Assegna i nuovi ruoli
-  const newRoles = assignPuzzleRoles(playersList, nextRound - 1);
+  // Assegna i nuovi ruoli (usa il numero di sezioni salvato nello stato)
+  const sectionsCount = gameState.puzzleSections || 3;
+  const newRoles = assignPuzzleRoles(playersList, nextRound - 1, sectionsCount);
   
   // Ottieni una nuova parola non ancora usata
   const usedWords = gameState.usedWords || [];
@@ -254,7 +293,7 @@ export const advancePuzzleRound = async (roomId) => {
   const updatedUsedWords = [...usedWords, newWord.toLowerCase()];
 
   console.log('🎭 Nuovi ruoli assegnati - Round', nextRound, ':', {
-    guesser: newRoles.guesser?.name,
+    guessers: newRoles.guessers?.map(g => g.name),
     drawers: newRoles.drawers?.map(d => `${d.player.name} (sezione ${d.section})`)
   });
 
@@ -265,13 +304,15 @@ export const advancePuzzleRound = async (roomId) => {
     word: newWord,
     usedWords: updatedUsedWords, // Aggiorna la lista delle parole usate
     turnStartedAt: Date.now(),
-    currentGuesser: newRoles.guesser,
+    currentGuesser: newRoles.guessers[0] || null, // Backwards compatibility
+    currentGuessers: newRoles.guessers,
     currentDrawers: newRoles.drawers,
     guessedInCurrentRound: false
   });
 
   // Annuncia i nuovi ruoli
   const drawersNames = newRoles.drawers.map(d => d.player.name).join(', ');
+  const guessersNames = newRoles.guessers.map(g => g.name).join(', ');
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
     message: `🔄 Round ${nextRound}/${gameState.totalRounds}`,
@@ -281,7 +322,14 @@ export const advancePuzzleRound = async (roomId) => {
 
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎨 Disegnatori: ${drawersNames} | 🤔 Indovinatore: ${newRoles.guesser.name}`,
+    message: `🎨 Disegnatori: ${drawersNames}`,
+    timestamp: Date.now(),
+    isSystem: true
+  });
+  
+  await push(ref(db, `rooms/${roomId}/chat`), {
+    user: "Sistema",
+    message: `🔍 Indovinatori: ${guessersNames}`,
     timestamp: Date.now(),
     isSystem: true
   });

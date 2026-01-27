@@ -41,7 +41,7 @@ export default function Home() {
     [CLASSICA.id]: { turnDuration: CLASSICA.turnDuration || 60, rounds: 3, difficulty: 'medium' },
     [SOPRAVVIVENZA.id]: { turnDuration: SOPRAVVIVENZA.turnDuration || 30, rounds: 3, difficulty: 'medium' },
     [CHAOS_TOOLS.id]: { turnDuration: CHAOS_TOOLS.turnDuration || 45, rounds: 3, difficulty: 'medium' },
-    [PUZZLE_DRAWING.id]: { turnDuration: PUZZLE_DRAWING.turnDuration || 90, rounds: 3, difficulty: 'medium' }
+    [PUZZLE_DRAWING.id]: { turnDuration: PUZZLE_DRAWING.turnDuration || 90, rounds: 3, difficulty: 'medium', sections: 3, cycles: 1 }
   });
   const [selectedModeId, setSelectedModeId] = useState(CLASSICA.id);
 
@@ -178,7 +178,10 @@ export default function Home() {
       difficulty: { id: opts.difficulty || 'medium', name: opts.difficulty === 'easy' ? 'Facile' : opts.difficulty === 'hard' ? 'Difficile' : 'Media' },
       survivalMode: gameMode.survivalMode || false,
       startingLives: gameMode.startingLives || null,
-      hasChaosEffects: gameMode.hasChaosEffects || false
+      hasChaosEffects: gameMode.hasChaosEffects || false,
+      // Aggiungi configurazione sezioni e cicli per Puzzle Drawing
+      puzzleSections: selectedModeId === 'puzzleDrawing' ? (opts.sections || 3) : undefined,
+      puzzleCycles: selectedModeId === 'puzzleDrawing' ? (opts.cycles || 1) : undefined
     };
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`);

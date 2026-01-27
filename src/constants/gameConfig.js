@@ -2,7 +2,7 @@
 import { CLASSICA } from './gameModes/classica';
 import { CHAOS_TOOLS, generateChaosEffects } from './gameModes/chaosTools';
 import { SOPRAVVIVENZA, getSurvivalDifficulty, applySurvivalPenalties, SURVIVAL_DEFAULT_THRESHOLD } from './gameModes/sopravvivenza';
-import { PUZZLE_DRAWING, assignPuzzleRoles, calculateMinRounds, allPlayersHaveGuessed, getSectionBounds, isPointInSection, calculatePuzzleScore } from './gameModes/puzzleDrawing';
+import { PUZZLE_DRAWING, PUZZLE_SECTIONS_CONFIG, assignPuzzleRoles, calculateMinRounds, allPlayersHaveGuessed, getSectionBounds, isPointInSection, calculatePuzzleScore } from './gameModes/puzzleDrawing';
 
 // Words by difficulty
 export const WORDS_BY_DIFFICULTY = {
@@ -118,6 +118,7 @@ export {
   getSurvivalDifficulty, 
   applySurvivalPenalties, 
   SURVIVAL_DEFAULT_THRESHOLD,
+  PUZZLE_SECTIONS_CONFIG,
   assignPuzzleRoles,
   calculateMinRounds,
   allPlayersHaveGuessed,

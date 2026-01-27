@@ -21,21 +21,10 @@ export function usePuzzleGame(roomId, nickname, players) {
   const [mySection, setMySection] = useState(null);
 
   // Determina il ruolo del giocatore corrente
-  const isGuesser = gameState?.currentGuesser?.name === nickname;
+  const guessers = gameState?.currentGuessers || (gameState?.currentGuesser ? [gameState.currentGuesser] : []);
+  const isGuesser = guessers.some(g => g.name === nickname);
   const myDrawerInfo = gameState?.currentDrawers?.find(d => d.player.name === nickname);
   const isDrawer = !!myDrawerInfo;
-
-  // Log di debug per verificare i ruoli
-  useEffect(() => {
-    if (gameState?.active && gameState?.currentGuesser && gameState?.currentDrawers) {
-      console.log('🎭 [usePuzzleGame] Verifica ruolo per:', nickname);
-      console.log('   Guesser nel DB:', gameState.currentGuesser?.name);
-      console.log('   Drawers nel DB:', gameState.currentDrawers?.map(d => d.player.name));
-      console.log('   isGuesser:', isGuesser);
-      console.log('   isDrawer:', isDrawer);
-      console.log('   mySection:', myDrawerInfo?.section);
-    }
-  }, [gameState?.active, gameState?.currentGuesser, gameState?.currentDrawers, nickname, isGuesser, isDrawer, myDrawerInfo]);
 
   // Aggiorna la sezione assegnata
   useEffect(() => {
@@ -122,23 +111,16 @@ export function usePuzzleGame(roomId, nickname, players) {
   }, [roomId, players]);
 
   /* ---------------- HANDLE GUESS ---------------- */
-  const handleGuess = useCallback(async (guessedWord) => {
+  const handleGuess = useCallback(async (guesserNickname) => {
     if (!gameState?.active || gameState?.guessedInCurrentRound || !isGuesser) {
       return;
-    }
-
-    const correctWord = gameState.word.toLowerCase().trim();
-    const guess = guessedWord.toLowerCase().trim();
-
-    if (guess !== correctWord) {
-      return; // Indovinata sbagliata
     }
 
     try {
       const user = auth.currentUser;
       if (!user) return;
 
-      await handlePuzzleGuess(roomId, user.uid, nickname, timeLeft);
+      await handlePuzzleGuess(roomId, user.uid, guesserNickname || nickname, timeLeft);
 
       // Dopo un breve delay, avanza al prossimo round
       setTimeout(async () => {

@@ -11,7 +11,8 @@ export default function PuzzleCanvas({
   onAddPoint,
   onFinishStroke,
   showSectionBorders = true,
-  selectedInstrument = 'pencil' // 'pencil' | 'eraser'
+  selectedInstrument = 'pencil', // 'pencil' | 'eraser'
+  totalSections = 3 // Numero totale di sezioni (2 o 3)
 }) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -52,9 +53,10 @@ export default function PuzzleCanvas({
       y,
       assignedSection,
       canvasRef.current.width,
-      canvasRef.current.height
+      canvasRef.current.height,
+      totalSections
     );
-  }, [assignedSection]);
+  }, [assignedSection, totalSections]);
 
   /* -----------------------------
      DRAW HELPERS
@@ -67,22 +69,22 @@ export default function PuzzleCanvas({
 
     if (!showSectionBorders) return;
 
-    const sectionW = w / 3;
+    const sectionW = w / totalSections;
     ctx.setLineDash([5, 5]);
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 2;
 
     ctx.beginPath();
-    ctx.moveTo(sectionW, 0);
-    ctx.lineTo(sectionW, h);
-    ctx.moveTo(sectionW * 2, 0);
-    ctx.lineTo(sectionW * 2, h);
+    for (let i = 1; i < totalSections; i++) {
+      ctx.moveTo(sectionW * i, 0);
+      ctx.lineTo(sectionW * i, h);
+    }
     ctx.stroke();
 
     ctx.setLineDash([]);
 
     if (assignedSection !== null) {
-      const b = getSectionBounds(assignedSection, w, h);
+      const b = getSectionBounds(assignedSection, w, h, totalSections);
       ctx.fillStyle = 'rgba(59,130,246,0.05)';
       ctx.fillRect(b.x, b.y, b.width, b.height);
 
@@ -90,7 +92,7 @@ export default function PuzzleCanvas({
       ctx.lineWidth = 3;
       ctx.strokeRect(b.x + 2, b.y + 2, b.width - 4, b.height - 4);
     }
-  }, [assignedSection, showSectionBorders]);
+  }, [assignedSection, showSectionBorders, totalSections]);
 
   const drawStroke = useCallback((ctx, stroke) => {
     if (!stroke?.points?.length) return;
