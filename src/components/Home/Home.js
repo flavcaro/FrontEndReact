@@ -6,7 +6,7 @@ import { useUserData } from "../../hooks/useUserData";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import { generateRoomCode, validateNickname, extractRoomCode } from "../../utils/roomUtils";
-import { ref, get, onValue } from "firebase/database";
+import { ref, get, onValue, set } from "firebase/database";
 import { db } from "../../firebase";
 import { generateUniqueNickname } from "../../utils/nicknameUtils";
 import { CLASSICA } from "../../constants/gameModes/classica";
@@ -31,6 +31,11 @@ export default function Home() {
   const [myPosition, setMyPosition] = useState(null);
   const [loadingLeaderboardPreview, setLoadingLeaderboardPreview] = useState(false);
   const [userStats, setUserStats] = useState(null);
+  const [isSavingNick, setIsSavingNick] = useState(false);
+  const [savedNick, setSavedNick] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileData, setProfileData] = useState(null);
   // preview shows only real leaderboard data from Firebase
   const [modeOptions, setModeOptions] = useState({
     [CLASSICA.id]: { turnDuration: CLASSICA.turnDuration || 60, rounds: 3, difficulty: 'medium' },
@@ -120,6 +125,31 @@ export default function Home() {
     })();
   };
 
+  const handleSaveNickname = async () => {
+    const nick = (nickname || '').trim();
+    if (!nick) {
+      setNickError('Inserisci un nickname valido');
+      return;
+    }
+    try {
+      setIsSavingNick(true);
+      localStorage.setItem('nickname', nick);
+      // if we have an authenticated user (including anonymous), persist to realtime DB under users/{uid}/nickname
+      if (user && user.uid) {
+        await set(ref(db, `users/${user.uid}/nickname`), nick);
+      }
+      setNickError('');
+      // visual feedback: mark as saved briefly
+      setSavedNick(true);
+      setTimeout(() => setSavedNick(false), 2500);
+    } catch (err) {
+      console.warn('Could not save nickname to DB', err);
+      setNickError('Errore nel salvataggio');
+    } finally {
+      setIsSavingNick(false);
+    }
+  };
+
   const setModeOption = (modeId, key, value) => {
     setModeOptions(prev => ({ ...prev, [modeId]: { ...prev[modeId], [key]: value } }));
   };
@@ -173,18 +203,43 @@ export default function Home() {
   React.useEffect(() => {
     let mounted = true;
     setLoadingLeaderboardPreview(true);
-    const unsub = subscribeLeaderboard((list) => {
+    const unsub = subscribeLeaderboard(async (list) => {
       if (!mounted) return;
-      setTopFour(list.slice(0,4));
-      // determine current user's position by uid or nickname
-      const currentId = user && user.uid ? user.uid : null;
-      const foundByUid = currentId ? list.findIndex(u => u.uid === currentId) : -1;
-      let found = foundByUid;
-      if (found === -1 && nickname) {
-        found = list.findIndex(u => (u.email === nickname) || (u.displayName === nickname) || (u.nickname === nickname));
+      try {
+        const top = list.slice(0,4);
+        // enrich top entries with latest users/{uid} data when possible
+        const uids = Array.from(new Set(top.map(u => u.uid).filter(Boolean)));
+        if (uids.length > 0) {
+          const fetches = uids.map(async (uid) => {
+            try {
+              const snap = await get(ref(db, `users/${uid}`));
+              return [uid, snap.val() || null];
+            } catch (err) {
+              console.warn('Could not fetch user for preview', uid, err);
+              return [uid, null];
+            }
+          });
+          const fetched = await Promise.all(fetches);
+          const usersMap = Object.fromEntries(fetched);
+          const mergedTop = top.map((u) => (u.uid && usersMap[u.uid]) ? { ...u, nickname: usersMap[u.uid].nickname || u.nickname, level: usersMap[u.uid].level || u.level, gamesPlayed: usersMap[u.uid].gamesPlayed || u.gamesPlayed } : u);
+          setTopFour(mergedTop);
+        } else {
+          setTopFour(top);
+        }
+        // determine current user's position by uid or nickname
+        const currentId = user && user.uid ? user.uid : null;
+        const foundByUid = currentId ? list.findIndex(u => u.uid === currentId) : -1;
+        let found = foundByUid;
+        if (found === -1 && nickname) {
+          found = list.findIndex(u => (u.email === nickname) || (u.displayName === nickname) || (u.nickname === nickname));
+        }
+        setMyPosition(found >= 0 ? found + 1 : null);
+      } catch (err) {
+        console.warn('Error enriching top preview', err);
+        setTopFour(list.slice(0,4));
+      } finally {
+        setLoadingLeaderboardPreview(false);
       }
-      setMyPosition(found >= 0 ? found + 1 : null);
-      setLoadingLeaderboardPreview(false);
     }, 1000, 'totalScore');
     return () => { mounted = false; if (typeof unsub === 'function') unsub(); };
   }, [user, nickname]);
@@ -199,6 +254,29 @@ export default function Home() {
     });
     return () => { if (typeof unsub === 'function') unsub(); };
   }, [user]);
+
+  // Open profile modal: try to fetch full user record if uid present
+  const openUserProfile = async (u) => {
+    setProfileData(null);
+    setShowProfileModal(true);
+    if (!u) return;
+    if (u.uid) {
+      try {
+        setProfileLoading(true);
+        const snap = await get(ref(db, `users/${u.uid}`));
+        const data = snap.val() || {};
+        setProfileData({ ...u, ...data });
+      } catch (err) {
+        console.warn('Could not fetch user profile', err);
+        setProfileData(u);
+      } finally {
+        setProfileLoading(false);
+      }
+    } else {
+      // use available data from leaderboard entry
+      setProfileData(u);
+    }
+  };
 
   return (
     <div className="home" style={{ overflowY: 'hidden', height: '100vh' }}>
@@ -237,8 +315,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="hero-content">
-                <h1>Il gioco di disegno dove indovini le parole</h1>
-                <p>Un giocatore disegna, gli altri indovinano. Divertente e creativo!</p>
+                <h2>SketchUp! Indovina le parole</h2>
+                <p>Disegna e indovina. Divertente e creativo!</p>
               </div>
               <div className="hero-create-inline">
                 <Button onClick={() => setShowCustomModal(true)} className="create-btn inline-create-btn">
@@ -297,9 +375,18 @@ export default function Home() {
                   maxLength={15}
                   placeholder="Come vuoi chiamarti?"
                 />
-                <Button variant="tertiary" size="small" onClick={() => { localStorage.setItem('nickname', nickname); setNickError(''); }}>
-                  💾 Salva
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  className={`save-nick-btn ${isSavingNick ? 'saving' : ''} ${savedNick ? 'saved' : ''}`}
+                  onClick={handleSaveNickname}
+                  disabled={isSavingNick}
+                >
+                  {savedNick ? 'Salvato' : isSavingNick ? 'Salvando...' : 'Salva'}
                 </Button>
+              </div>
+              <div className="save-feedback" aria-live="polite" style={{ textAlign: 'center', marginTop: 8 }}>
+                {savedNick ? 'Nickname salvato' : ''}
               </div>
               {isGuest && <div className="guest-badge">Giocando come ospite</div>}
               {nickError && <div className="nickname-error">{nickError}</div>}
@@ -314,9 +401,9 @@ export default function Home() {
             <div className="leaderboard-preview-card compact-leaderboard">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <div style={{ fontWeight: 700 }}>Classifica (Top 4)</div>
+                  <h3 style={{ margin: 0 }}>Classifica (Top 4)</h3>
                 </div>
-                  <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)} style={{ fontSize: 12 }}>Vedi tutto</button>
+                  <button className="header-leaderboard-btn preview-vedi-btn" onClick={() => setShowLeaderboard(true)}>Vedi tutto</button>
                 </div>
               <div style={{ marginTop: 8 }}>
                 {(() => {
@@ -326,11 +413,17 @@ export default function Home() {
                       {display.length > 0 ? (
                         <ol style={{ paddingLeft: 12, margin: '8px 0', opacity: loadingLeaderboardPreview ? 0.85 : 1 }}>
                           {display.map((u, i) => (
-                            <li key={u.uid || i}>
+                            <li
+                              key={u.uid || i}
+                              className="leader-row-btn"
+                              tabIndex={0}
+                              onClick={() => openUserProfile(u)}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserProfile(u); }}
+                            >
                               <div className="leader-left">
                                 <div className="leader-avatar">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🏅'}</div>
                                 <div>
-                                  <div className="leader-name">{u.email ? u.email.split('@')[0] : (u.displayName || (`Utente-${(u.uid||'').slice(0,6)}`))}</div>
+                                  <div className="leader-name">{u.nickname || (u.email ? u.email.split('@')[0] : (u.displayName || (`Utente-${(u.uid||'').slice(0,6)}`)))}</div>
                                   <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
                                 </div>
                               </div>
@@ -351,10 +444,57 @@ export default function Home() {
                   );
                 })()}
               </div>
-              <div style={{ marginTop: 6, fontSize: 13, color: '#334155' }}>
+              <div className="your-position" style={{ marginTop: 6, fontSize: 13, color: '#334155' }}>
                 La tua posizione: {myPosition ? `#${myPosition}` : '— Fuori top 1000'}
               </div>
             </div>
+
+            {/* PROFILE MODAL for public user info */}
+            {showProfileModal && (
+              <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
+                <div className="modal-content profile-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+                  <div className="modal-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div className="modal-illustration">👤</div>
+                      <div>
+                        <h2>{profileLoading ? 'Caricamento...' : (profileData?.nickname || profileData?.displayName || 'Profilo Utente')}</h2>
+                        <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>Info pubbliche</p>
+                      </div>
+                    </div>
+                    <button className="modal-close" onClick={() => setShowProfileModal(false)}>✕</button>
+                  </div>
+                  <div className="modal-body">
+                    {profileLoading ? (
+                      <div>Caricamento…</div>
+                    ) : (
+                      <div style={{ display: 'grid', gap: 12 }}>
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                          <div style={{ width: 72, height: 72, borderRadius: 12, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>👤</div>
+                          <div>
+                            <div style={{ fontWeight: 800, fontSize: 18 }}>{profileData?.nickname || profileData?.displayName || (profileData?.email ? profileData.email.split('@')[0] : 'Utente')}</div>
+                            <div style={{ color: '#64748b' }}>Lv. {profileData?.level || 1} • ⭐ {profileData?.totalScore || 0}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontWeight: 800 }}>{profileData?.gamesPlayed || 0}</div>
+                            <div style={{ color: '#64748b' }}>Partite</div>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontWeight: 800 }}>{profileData?.wins || 0}</div>
+                            <div style={{ color: '#64748b' }}>Vittorie</div>
+                          </div>
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontWeight: 800 }}>{profileData?.xpPoints || profileData?.xp || 0}</div>
+                            <div style={{ color: '#64748b' }}>XP</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -163,14 +163,15 @@
   margin-bottom: 8px;
 }
 
-.level-badge {
+.profile-card .level-badge {
+  /* more specific selector so it wins over global header styles */
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: white;
-  padding: 6px 12px;
+  color: #0b1220; /* dark text for good contrast on light cards */
+  padding: 8px 14px;
   border-radius: 20px;
   font-size: 24px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.22);
 }
 
 .xp-text {

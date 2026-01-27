@@ -71,15 +71,27 @@ export const updateGameStats = async (userId, score, isWinner) => {
     });
     // Mirror summary to leaderboard node for fast reads
     try {
-      const lbRef = ref(db, `leaderboard/${userId}`);
-      await update(lbRef, {
-        uid: userId,
-        displayName: userData.nickname || userData.email || null,
-        email: userData.email || null,
-        totalScore,
-        level,
-        lastUpdated: serverTimestamp()
-      });
+      // Do not mirror guest/anonymous users to the public leaderboard
+      if (!userData.isAnonymous) {
+        const lbRef = ref(db, `leaderboard/${userId}`);
+        await update(lbRef, {
+          uid: userId,
+          displayName: userData.nickname || userData.email || null,
+          email: userData.email || null,
+          totalScore,
+          level,
+          isAnonymous: !!userData.isAnonymous,
+          lastUpdated: serverTimestamp()
+        });
+      } else {
+        // If the user is anonymous, ensure there's no public leaderboard entry
+        try {
+          const lbRef = ref(db, `leaderboard/${userId}`);
+          await update(lbRef, { uid: null });
+        } catch (e) {
+          // ignore
+        }
+      }
     } catch (err) {
       console.warn('Could not update leaderboard mirror', err);
     }
@@ -95,7 +107,10 @@ export const fetchLeaderboard = async (limit = 20, orderBy = 'totalScore') => {
     const q = query(ref(db, 'leaderboard'), orderByChild(orderBy), limitToLast(limit));
     const snap = await get(q);
     const val = snap.val() || {};
-    const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
+    // filter out anonymous/guest entries if present in the mirror
+    const list = Object.entries(val)
+      .map(([uid, u]) => ({ uid, ...u }))
+      .filter(item => !item.isAnonymous && item.uid);
     // sort descending by chosen key
     list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
     return list;
@@ -110,6 +125,9 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
   try {
     const leaderboardRef = ref(db, 'leaderboard');
     const usersRef = ref(db, 'users');
+    // store per-uid listeners so we can update nicknames in realtime
+    const perUidUnsubs = {};
+    let latestPrimaryList = [];
 
     const subscribeTo = (refNode, label) => {
       const q = query(refNode, orderByChild(orderBy), limitToLast(limit));
@@ -128,9 +146,11 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
           }
           return ({ uid, ...u });
         });
-        list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
-        console.log(`[subscribeLeaderboard] source=${label} count=${list.length}`);
-        onUpdate(list);
+        // Filter out anonymous users when using the users/ fallback
+        const filtered = list.filter(item => !(label === 'users' && (item.isAnonymous || (item && item.isAnonymous))));
+        filtered.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+        console.log(`[subscribeLeaderboard] source=${label} count=${filtered.length}`);
+        onUpdate(filtered);
       }, (err) => {
         console.error('Realtime leaderboard error', err);
       });
@@ -148,6 +168,16 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
       const has = Object.keys(val).length > 0;
       const list = Object.entries(val).map(([uid, u]) => ({ uid, ...u }));
       list.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+      // keep reference for per-uid nickname listeners
+      latestPrimaryList = list.slice();
+      const currentUids = new Set(latestPrimaryList.map(i => i.uid).filter(Boolean));
+      // remove listeners for uids no longer in the top list
+      Object.keys(perUidUnsubs).forEach((uid) => {
+        if (!currentUids.has(uid)) {
+          try { perUidUnsubs[uid](); } catch(e){}
+          delete perUidUnsubs[uid];
+        }
+      });
       if (!initialChecked) {
         initialChecked = true;
         if (!has) {
@@ -158,8 +188,53 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
           return;
         }
       }
-      console.log(`[subscribeLeaderboard] source=leaderboard count=${list.length}`);
-      onUpdate(list);
+      // Enrich mirror entries with gamesPlayed from users/ if available
+      (async () => {
+        try {
+          const enriched = await Promise.all(list.map(async (item) => {
+            try {
+              const snapGames = await get(ref(db, `users/${item.uid}/gamesPlayed`));
+              const gp = snapGames && snapGames.exists() ? snapGames.val() : (item.gamesPlayed !== undefined ? item.gamesPlayed : 0);
+              return { ...item, gamesPlayed: gp };
+            } catch (e) {
+              return { ...item, gamesPlayed: (item.gamesPlayed !== undefined ? item.gamesPlayed : 0) };
+            }
+          }));
+          // After initial enrichment, also subscribe to users/{uid}/nickname for realtime updates
+          enriched.forEach((entry) => {
+            const uid = entry.uid;
+            if (!uid) return;
+            if (perUidUnsubs[uid]) return; // already listening
+            try {
+              const nickRef = ref(db, `users/${uid}/nickname`);
+              const unsubNick = onValue(nickRef, (snapNick) => {
+                try {
+                  const nickVal = snapNick && snapNick.exists() ? snapNick.val() : null;
+                  // update latestPrimaryList and emit updated list
+                  latestPrimaryList = latestPrimaryList.map(it => it.uid === uid ? { ...it, nickname: nickVal !== null ? nickVal : it.nickname } : it);
+                  // ensure sorting remains consistent
+                  latestPrimaryList.sort((a, b) => (b[orderBy] || 0) - (a[orderBy] || 0));
+                  onUpdate(latestPrimaryList.slice());
+                } catch (e) {
+                  console.warn('Error applying nickname update for', uid, e);
+                }
+              }, (err) => {
+                console.warn('Nickname realtime error', uid, err);
+              });
+              perUidUnsubs[uid] = unsubNick;
+            } catch (e) {
+              // ignore subscription errors
+            }
+          });
+
+          console.log(`[subscribeLeaderboard] source=leaderboard count=${enriched.length}`);
+          onUpdate(enriched);
+        } catch (errEnrich) {
+          console.warn('Could not enrich leaderboard entries with gamesPlayed', errEnrich);
+          console.log(`[subscribeLeaderboard] source=leaderboard count=${list.length}`);
+          onUpdate(list);
+        }
+      })();
     }, (err) => {
       console.error('Realtime leaderboard error', err);
       // on error try fallback
@@ -172,6 +247,10 @@ export const subscribeLeaderboard = (onUpdate, limit = 20, orderBy = 'totalScore
     return () => {
       try { if (typeof unsubPrimary === 'function') unsubPrimary(); } catch(e){}
       try { if (typeof unsubFallback === 'function') unsubFallback(); } catch(e){}
+      // cleanup per-uid listeners
+      Object.keys(perUidUnsubs).forEach((uid) => {
+        try { perUidUnsubs[uid](); } catch(e){}
+      });
     };
   } catch (error) {
     console.error('Error subscribing leaderboard:', error);

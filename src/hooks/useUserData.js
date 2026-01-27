@@ -22,6 +22,11 @@ export function useUserData() {
       try {
         const data = snapshot.val();
         if (data) {
+          // If the user record contains a nickname, prefer it and keep localStorage in sync
+          if (data.nickname) {
+            setNickname(data.nickname);
+            try { localStorage.setItem('nickname', data.nickname); } catch (e) { /* ignore */ }
+          }
           const xp = data.xp || 0;
           setXpPoints(xp);
           

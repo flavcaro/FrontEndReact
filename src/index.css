@@ -7,22 +7,59 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Increase base readability and apply a gentle desktop scale. */
+/* Root typography scale variables for consistent, linear sizing across the app */
+:root {
+  /* bumped globally for improved readability */
+  --font-xs: 1rem;        /* 16px */
+  --font-sm: 1.125rem;    /* 18px */
+  --font-md: 1.25rem;     /* 20px */
+  --font-lg: 1.375rem;    /* 22px */
+  --font-xl: 1.5rem;      /* 24px */
+  --font-xxl: 1.875rem;   /* 30px */
+  --heading-scale-1: clamp(1.6rem, 2.6vw, 3.2rem); /* responsive h1 */
+  --heading-scale-2: clamp(1.25rem, 2.0vw, 2.2rem); /* responsive h2 */
+  --base-line-height: 1.45;
+}
+
+/* Apply a consistent base font-size and line-height; prefer font-size scaling over zoom */
+html, body { font-size: var(--font-md); line-height: var(--base-line-height); }
+
+/* Increase base readability with modest scaling on larger viewports */
 html, body, #root { height: 100%; }
-@media (min-width: 769px) {
-  body {
-    font-size: 18px; /* base font for legacy px rules to scale reasonably */
-    zoom: 1.18; /* supported in Chromium-based browsers; boosts overall UI size */
-  }
+@media (min-width: 1024px) {
+  body { font-size: var(--font-lg); }
+}
+@media (min-width: 769px) and (max-width: 1023px) {
+  body { font-size: var(--font-md); }
 }
 @media (max-width: 768px) {
-  body {
-    zoom: 1; /* keep mobile unscaled to avoid overflow */
-    font-size: 16px;
-  }
+  body { font-size: var(--font-sm); }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Global typography normalization */
+h1 { font-size: var(--heading-scale-1); line-height: 1.05; margin: 0 0 0.4em; }
+h2 { font-size: var(--heading-scale-2); margin: 0 0 0.35em; }
+h3 { font-size: 1.125rem; margin: 0 0 0.3em; }
+p, span, label { font-size: var(--font-md); }
+button, input, select, textarea { font-size: var(--font-md); }
+
+/* Buttons and common interactive elements use a slightly larger font for legibility */
+button { font-weight: 700; }
+
+/* Reduce wildly large fonts set in some components, but keep component-level overrides possible */
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Prevent showing a text caret when clicking non-editable elements.
+   Keep caret visible inside inputs, textareas and contenteditable elements only. */
+*:not(input):not(textarea):not([contenteditable]) {
+  caret-color: transparent !important;
+}
+
+input, textarea, [contenteditable] {
+  caret-color: auto;
 }
