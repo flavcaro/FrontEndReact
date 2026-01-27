@@ -58,7 +58,16 @@ export default function GameHeader({
   if (puzzleDetected) gameMode = PUZZLE_DRAWING.name;
 
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
-  const roundsPerPlayer = gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
+  
+  // Per Puzzle Drawing, mostra i cicli invece dei rounds a testa
+  const getRoundsPerPlayerDisplay = () => {
+    if (puzzleDetected) {
+      return gameState?.puzzleCycles || gameConfig?.puzzleCycles || 1;
+    }
+    return gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
+  };
+  
+  const roundsPerPlayer = getRoundsPerPlayerDisplay();
   
   const playersCount = players?.length || 0;
   
@@ -144,7 +153,7 @@ export default function GameHeader({
             </div>
 
             <div className="round-info">
-              <div className="room-label">Rounds a testa</div>
+              <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
               <div className="round-display">{roundsPerPlayer}</div>
             </div>
 

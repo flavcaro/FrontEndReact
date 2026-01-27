@@ -20,10 +20,18 @@ export function usePuzzleGame(roomId, nickname, players) {
   const [finalResults, setFinalResults] = useState(null);
   const [mySection, setMySection] = useState(null);
 
-  // Determina il ruolo del giocatore corrente
+  // Trova l'uid del giocatore corrente
+  const currentPlayer = players?.find(p => p.name === nickname);
+  const currentPlayerId = currentPlayer?.id;
+
+  // Determina il ruolo del giocatore corrente - matching sia su name che su uid
   const guessers = gameState?.currentGuessers || (gameState?.currentGuesser ? [gameState.currentGuesser] : []);
-  const isGuesser = guessers.some(g => g.name === nickname);
-  const myDrawerInfo = gameState?.currentDrawers?.find(d => d.player.name === nickname);
+  const isGuesser = guessers.some(g => 
+    g.name === nickname || (currentPlayerId && g.uid === currentPlayerId)
+  );
+  const myDrawerInfo = gameState?.currentDrawers?.find(d => 
+    d.player.name === nickname || (currentPlayerId && d.player.uid === currentPlayerId)
+  );
   const isDrawer = !!myDrawerInfo;
 
   // Aggiorna la sezione assegnata
