@@ -168,3 +168,48 @@
     font-size: 23px;
   }
 }
+
+/* Strong mobile-only overrides: scale down hero/header/cards specifically for phones */
+@media (max-width: 480px) {
+  /* Ensure header is compact and content starts below it */
+  .home-header { padding: 6px 8px !important; height: 52px !important; }
+  .home { padding-top: 60px !important; }
+
+  /* Hero */
+  .hero-content h1 { font-size: 20px !important; }
+  .hero-content h2, .hero-subtitle { font-size: 14px !important; }
+  .main-emoji { font-size: 40px !important; }
+  .inline-create-btn { font-size: 13px !important; padding: 8px 12px !important; }
+
+  /* Cards and grid spacing */
+  .home-top-row { padding: 12px 10px 8px !important; }
+  .home-row-grid { gap: 8px !important; grid-template-columns: 1fr !important; }
+  .home-card, .join-card, .nickname-card, .leaderboard-preview-card { padding: 10px !important; border-radius: 10px !important; }
+
+  /* Make hero appear first on mobile */
+  .hero-column { order: 1 !important; }
+  .join-column { order: 2 !important; }
+  .modes-column { order: 3 !important; }
+
+  /* Leaderboard preview compact */
+  .leaderboard-preview-card.compact-leaderboard { padding: 6px !important; }
+  .leader-avatar { width: 32px !important; height: 32px !important; font-size: 14px !important; }
+  .leader-name { font-size: 13px !important; }
+  .leader-meta { font-size: 11px !important; }
+  .leader-score { font-size: 12px !important; }
+
+  /* Buttons */
+  /* Compress header: hide non-essential stats, allow compact buttons and horizontal scroll if needed */
+  .user-stats-header { display: none !important; }
+  .home-header .logo { font-size: 20px !important; }
+  .header-right { gap: 6px !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .header-right::-webkit-scrollbar { display: none; }
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn { padding: 4px 6px !important; font-size: 12px !important; min-width: 36px !important; height: 34px !important; }
+  .preview-vedi-btn { width: 100% !important; padding: 8px 10px !important; font-size: 13px !important; }
+
+  /* Inputs */
+  .nickname-inputs .lobby-input { font-size: 14px !important; padding: 8px 10px !important; }
+
+  /* Ensure page can scroll and content isn't clipped */
+  .home { min-height: auto !important; }
+}
