@@ -109,6 +109,7 @@ function RoomPlay() {
     // Leggi la configurazione dal database Firebase
     const loadGameConfig = async () => {
       try {
+        // Prima prova a leggere da rooms/${roomId}/game (se il gioco è già iniziato)
         const gameRef = ref(db, `rooms/${roomId}/game`);
         const gameSnap = await get(gameRef);
         const gameData = gameSnap.val();
@@ -131,32 +132,42 @@ function RoomPlay() {
             puzzleSections: gameData.puzzleSections,
             puzzleCycles: gameData.puzzleCycles
           };
-          console.log('✅ Config caricata da Firebase:', configFromDB);
+          console.log('✅ Config caricata da Firebase (game):', configFromDB);
           setGameConfig(configFromDB);
         } else {
-          console.log('⚠️ Nessuna config nel DB, uso fallback');
-          // Fallback: prova localStorage o URL
-          const storedConfigKey = `room_${roomId}_mode`;
-          const storedConfig = localStorage.getItem(storedConfigKey);
+          // Se il gioco non è iniziato, prova a leggere da rooms/${roomId}/config
+          const configRef = ref(db, `rooms/${roomId}/config`);
+          const configSnap = await get(configRef);
+          const configData = configSnap.val();
           
-          if (storedConfig) {
-            const config = JSON.parse(storedConfig);
-            console.log("📦 Config da localStorage:", config);
-            setGameConfig(config);
+          if (configData) {
+            console.log('✅ Config caricata da Firebase (config):', configData);
+            setGameConfig(configData);
           } else {
-            // Ultimo tentativo: infer from URL
-            const modeParam = query.get('mode');
-            if (modeParam) {
-              const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
-              if (modeObj) {
-                const inferred = {
-                  ...modeObj,
-                  difficulty: DEFAULT_DIFFICULTY,
-                  roundsPerGame: DEFAULT_ROUNDS,
-                  turnDuration: modeObj.turnDuration || TURN_DURATION
-                };
-                console.log('🔍 Config inferita da URL:', inferred);
-                setGameConfig(inferred);
+            console.log('⚠️ Nessuna config nel DB, uso fallback');
+            // Fallback: prova localStorage o URL
+            const storedConfigKey = `room_${roomId}_mode`;
+            const storedConfig = localStorage.getItem(storedConfigKey);
+            
+            if (storedConfig) {
+              const config = JSON.parse(storedConfig);
+              console.log("📦 Config da localStorage:", config);
+              setGameConfig(config);
+            } else {
+              // Ultimo tentativo: infer from URL
+              const modeParam = query.get('mode');
+              if (modeParam) {
+                const modeObj = Object.values(GAME_MODES).find(m => m.id === modeParam);
+                if (modeObj) {
+                  const inferred = {
+                    ...modeObj,
+                    difficulty: DEFAULT_DIFFICULTY,
+                    roundsPerGame: DEFAULT_ROUNDS,
+                    turnDuration: modeObj.turnDuration || TURN_DURATION
+                  };
+                  console.log('🔍 Config inferita da URL:', inferred);
+                  setGameConfig(inferred);
+                }
               }
             }
           }
@@ -173,17 +184,6 @@ function RoomPlay() {
     setNickname(nick);
     setIsReady(true);
   }, [navigate, roomId, user, authLoading, configLoaded]); // Aggiungi configLoaded alle dipendenze
-
-  if (authLoading) return <Loading message="Verificando autenticazione..." />;
-  if (!user) return <Loading message="Reindirizzamento..." />;
-  if (!isReady || !nickname) return <Loading message="Entrando nella stanza..." />;
-
-  // Determina quale Board renderizzare in base alla modalità
-  const isPuzzleMode = gameConfig?.id === 'puzzleDrawing' || gameConfig?.gameModeId === 'puzzleDrawing';
-
-  if (isPuzzleMode) {
-    return <PuzzleBoard roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
-  }
 
   return <Board roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;
 }

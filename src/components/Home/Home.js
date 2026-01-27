@@ -155,7 +155,7 @@ export default function Home() {
     setModeOptions(prev => ({ ...prev, [modeId]: { ...prev[modeId], [key]: value } }));
   };
 
-  const handleCreateFromModal = () => {
+  const handleCreateFromModal = async () => {
     const gameModes = [CLASSICA, SOPRAVVIVENZA, CHAOS_TOOLS, PUZZLE_DRAWING];
     const gameMode = gameModes.find((m) => m.id === selectedModeId) || CLASSICA;
     const opts = { ...(modeOptions[selectedModeId] || {}) };
@@ -185,6 +185,15 @@ export default function Home() {
       puzzleCycles: selectedModeId === 'puzzleDrawing' ? (opts.cycles || 1) : undefined
     };
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
+    
+    // Salva la configurazione in Firebase per tutti i giocatori
+    try {
+      await set(ref(db, `rooms/${roomId}/config`), cfg);
+      console.log('✅ Configurazione salvata in Firebase:', cfg);
+    } catch (error) {
+      console.error('❌ Errore salvando configurazione in Firebase:', error);
+    }
+    
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`);
     setShowCustomModal(false);
   };
