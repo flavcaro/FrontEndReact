@@ -306,15 +306,18 @@ export default function Home() {
         {/* Mobile hamburger - visible only on small screens via CSS */}
         <button className="mobile-hamburger" onClick={(e) => { e.stopPropagation(); setShowMobileMenu(s => !s); }} aria-label="Menu">☰</button>
         {showMobileMenu && (
-          <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
-            <ul>
-              {user && !isGuest && (
-                <li><button onClick={() => { navigate('/profile'); setShowMobileMenu(false); }}>Profilo</button></li>
-              )}
-              <li><button onClick={() => { setShowLeaderboard(true); setShowMobileMenu(false); }}>Classifica</button></li>
-              <li><button onClick={() => { handleLogout(); setShowMobileMenu(false); }}>Logout</button></li>
-            </ul>
-          </div>
+          <>
+            <div className="mobile-menu-backdrop" onClick={() => setShowMobileMenu(false)} />
+            <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+              <ul>
+                {user && !isGuest && (
+                  <li><button onClick={() => { navigate('/profile'); setShowMobileMenu(false); }}><span className="menu-icon">👤</span> Profilo</button></li>
+                )}
+                <li><button onClick={() => { setShowLeaderboard(true); setShowMobileMenu(false); }}><span className="menu-icon">🏆</span> Classifica</button></li>
+                <li><button onClick={() => { handleLogout(); setShowMobileMenu(false); }}><span className="menu-icon">🚪</span> Logout</button></li>
+              </ul>
+            </div>
+          </>
         )}
         {user && (
           <div className="header-right">
@@ -324,10 +327,19 @@ export default function Home() {
             </div>
             <span className="user-name">{user.email}</span>
             {!isGuest && (
-              <button className="header-profile-btn" onClick={() => navigate('/profile')}>👤 Profilo</button>
+              <button className="header-profile-btn" onClick={() => navigate('/profile')}>
+                <span className="btn-ico">👤</span>
+                <span className="btn-label">Profilo</span>
+              </button>
             )}
-            <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)}>🏆 Classifica</button>
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+            <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)}>
+              <span className="btn-ico">🏆</span>
+              <span className="btn-label">Classifica</span>
+            </button>
+            <button className="logout-btn" onClick={handleLogout}>
+              <span className="btn-ico">🚪</span>
+              <span className="btn-label">Logout</span>
+            </button>
           </div>
         )}
       </header>

@@ -397,3 +397,52 @@
 
   .lobby-btn .btn-text { font-size: 12px !important; }
 }
+
+/* Top4 / leaderboard badge compacting for mobile */
+@media (max-width: 768px) and (orientation: portrait) {
+  .leaderboard-preview-card.compact-leaderboard .leader-row-btn,
+  .leaderboard-preview-card .leader-row-btn {
+    padding: 6px 8px !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard .leader-avatar,
+  .leaderboard-preview-card .leader-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard .leader-name,
+  .leaderboard-preview-card .leader-name {
+    font-size: 12px !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard .leader-meta,
+  .leaderboard-preview-card .leader-meta {
+    font-size: 10px !important;
+    color: #64748b !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard .leader-score,
+  .leaderboard-preview-card .leader-score {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 375px) and (orientation: portrait) {
+  .leaderboard-preview-card.compact-leaderboard .leader-avatar,
+  .leaderboard-preview-card .leader-avatar {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 11px !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard .leader-name,
+  .leaderboard-preview-card .leader-name { font-size: 11px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-meta,
+  .leaderboard-preview-card .leader-meta { font-size: 9px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-score,
+  .leaderboard-preview-card .leader-score { font-size: 10px !important; }
+}

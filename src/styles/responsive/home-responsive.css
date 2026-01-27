@@ -87,6 +87,31 @@
     height: 36px;
   }
 
+  .mobile-menu {
+    display: block !important;
+    position: fixed;
+    top: 56px;
+    right: 8px;
+    left: 8px;
+    margin: 0 auto;
+    max-width: 360px;
+    background: #ffffffcc;
+    color: #0f172a;
+    border-radius: 12px;
+    box-shadow: 0 20px 48px rgba(2,6,23,0.18);
+    z-index: 1200;
+    padding: 6px;
+    min-width: 160px;
+    backdrop-filter: blur(6px);
+    transform-origin: top right;
+    animation: mobileMenuIn .22s ease both;
+  }
+
+  @keyframes mobileMenuIn {
+    from { transform: translateY(-6px) scaleY(.98); opacity: 0; }
+    to   { transform: translateY(0) scaleY(1); opacity: 1; }
+  }
+
   /* Ensure preview leaderboard and rows are compact and touch-friendly */
   .leaderboard-preview-card.compact-leaderboard { padding: 6px !important; }
   .leaderboard-preview-card.compact-leaderboard ol { padding-left: 6px !important; }
@@ -232,12 +257,44 @@
   .header-profile-btn, .header-leaderboard-btn, .logout-btn { display: none !important; }
   .mobile-hamburger { display: inline-flex !important; align-items: center; justify-content: center; font-size: 20px; padding: 6px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 8px; position: absolute !important; right: 8px !important; top: 8px !important; z-index: 950 !important; }
   .mobile-hamburger:active { transform: translateY(1px); }
-  .mobile-menu { position: absolute; top: 52px; right: 8px; background: #fff; color: #0f172a; border-radius: 10px; box-shadow: 0 12px 32px rgba(2,6,23,0.16); z-index: 900; padding: 8px; min-width: 160px; }
+  .mobile-menu {
+    display: block !important;
+    position: fixed;
+    top: 56px;
+    right: 8px;
+    left: 8px;
+    margin: 0 auto;
+    max-width: 360px;
+    background: #ffffffcc;
+    color: #0f172a;
+    border-radius: 12px;
+    box-shadow: 0 20px 48px rgba(2,6,23,0.18);
+    z-index: 1200;
+    padding: 6px;
+    min-width: 160px;
+    backdrop-filter: blur(6px);
+  }
   /* hide username and stats from header to leave room for hamburger */
   .home-header .user-name { display: none !important; }
   .mobile-menu ul { list-style: none; margin: 0; padding: 0; }
   .mobile-menu li + li { margin-top: 6px; }
-  .mobile-menu button { display: block; width: 100%; text-align: left; background: transparent; border: none; padding: 8px 10px; font-weight: 700; color: inherit; }
+  .mobile-menu button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 10px 12px;
+    font-weight: 700;
+    color: inherit;
+    border-radius: 8px;
+    transition: background .12s ease, transform .08s ease;
+  }
+
+  .mobile-menu button:hover { background: rgba(2,6,23,0.04); transform: translateY(-1px); }
+  .mobile-menu button + button { border-top: 1px solid #eef2f7; }
   .preview-vedi-btn { width: 100% !important; padding: 8px 10px !important; font-size: 13px !important; }
 
   /* Inputs */
@@ -245,4 +302,97 @@
 
   /* Ensure page can scroll and content isn't clipped */
   .home { min-height: auto !important; }
+}
+
+/* Show compact icon-only header buttons on small screens (tablet -> small phones) */
+@media (max-width: 600px) and (min-width: 481px) {
+  .mobile-hamburger { display: none !important; }
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+  }
+  .header-profile-btn .btn-label,
+  .header-leaderboard-btn .btn-label,
+  .logout-btn .btn-label { display: none !important; }
+  .header-profile-btn .btn-ico,
+  .header-leaderboard-btn .btn-ico,
+  .logout-btn .btn-ico { font-size: 18px !important; }
+}
+
+/* Backdrop for mobile menu (visible only when menu is open) */
+.mobile-menu-backdrop { display: none; }
+@media (max-width: 480px) {
+  .mobile-menu-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 1150; }
+}
+
+/* Improve modal layout for small screens */
+@media (max-width: 520px) {
+  .modal-content { width: calc(100% - 24px) !important; margin: 8px !important; max-height: 92vh; padding: 0 !important; }
+  .modal-body { padding: 12px !important; }
+  /* option rows layout on narrow screens handled by separate breakpoints below */
+  /* (see 361-520px two-column grid; <=360px vertical stack) */
+  .custom-create .rounds-box { width: 100% !important; max-width: none !important; }
+  .custom-create .options-row > div { width: 100% !important; }
+  /* tighten header and illustration inside modal on phones */
+  .modal-header { padding: 12px 14px !important; }
+  .modal-illustration { width: 56px !important; height: 56px !important; font-size: 24px !important; border-radius: 10px !important; }
+  .modal-mode-icon { width: 52px !important; height: 52px !important; font-size: 28px !important; }
+  /* Tweak option buttons: keep compact padding, limit font-size and height */
+  .custom-create .option-btn { display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; gap: 8px !important; padding: 8px 10px !important; font-size: 13px !important; min-height: 36px !important; border-radius: 10px !important; white-space: nowrap !important; box-sizing: border-box !important; width: 100% !important; }
+  .custom-create .options-row .option-btn span { white-space: normal !important; }
+}
+
+/* Two-column fixed layout for option rows on small-but-not-tiny screens */
+@media (min-width: 361px) and (max-width: 520px) {
+  .custom-create .options-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; align-items: start !important; }
+  .custom-create .option-btn { width: 100% !important; text-align: left !important; }
+}
+
+/* Very small phones: stack vertically */
+@media (max-width: 360px) {
+  .custom-create .options-row { display: flex !important; flex-direction: column !important; gap: 8px !important; align-items: stretch !important; }
+  .custom-create .option-btn { width: 100% !important; }
+}
+
+/* Very small phone fixes: prevent modal from appearing stretched/centered */
+@media (max-width: 420px) {
+  .modal-overlay {
+    align-items: flex-start !important;
+    padding-top: 14px !important;
+  }
+
+  .modal-content {
+    width: calc(100% - 20px) !important;
+    margin: 8px !important;
+    max-height: 88vh !important;
+    border-radius: 10px !important;
+    padding: 0 !important;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.24) !important;
+    overflow: hidden !important;
+  }
+
+  .modal-header {
+    padding: 10px 12px !important;
+  }
+
+  .modal-body {
+    padding: 10px 12px !important;
+  }
+
+  .modal-illustration { width: 48px !important; height: 48px !important; font-size: 20px !important; }
+  .modal-mode-icon { width: 46px !important; height: 46px !important; font-size: 22px !important; }
+
+  /* Ensure lists of options do not force extra width; stack vertically if needed */
+  .custom-create .options-row { gap: 8px !important; }
+  .custom-create .options-row .option-btn { padding: 8px 10px !important; font-size: 13px !important; min-height: 36px !important; border-radius: 10px !important; width: 100% !important; text-align: left !important; }
+
+  /* Reduce descriptive text size to avoid long lines */
+  .difficulty-help, .modal-header p, .modal-mode-content p { font-size: 12px !important; }
+
+  /* Prevent internal grids from stretching horizontally */
+  .modal-modes-grid, .modal-mode-card { width: 100% !important; box-sizing: border-box !important; }
 }
