@@ -36,6 +36,7 @@ export default function Home() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileData, setProfileData] = useState(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   // preview shows only real leaderboard data from Firebase
   const [modeOptions, setModeOptions] = useState({
     [CLASSICA.id]: { turnDuration: CLASSICA.turnDuration || 60, rounds: 3, difficulty: 'medium' },
@@ -203,6 +204,14 @@ export default function Home() {
     };
   }, []);
 
+  // close mobile menu when clicking outside
+  React.useEffect(() => {
+    if (!showMobileMenu) return;
+    const onDoc = () => setShowMobileMenu(false);
+    document.addEventListener('click', onDoc);
+    return () => document.removeEventListener('click', onDoc);
+  }, [showMobileMenu]);
+
   React.useEffect(() => {
     let mounted = true;
     setLoadingLeaderboardPreview(true);
@@ -284,7 +293,20 @@ export default function Home() {
   return (
     <div className="home" style={{ minHeight: '100vh' }}>
       <header className="home-header">
-        <div className="logo">🎨 SketchUp</div>
+        <div className="logo">🎨 <span className="logo-text">SketchUp</span></div>
+        {/* Mobile hamburger - visible only on small screens via CSS */}
+        <button className="mobile-hamburger" onClick={(e) => { e.stopPropagation(); setShowMobileMenu(s => !s); }} aria-label="Menu">☰</button>
+        {showMobileMenu && (
+          <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+            <ul>
+              {user && !isGuest && (
+                <li><button onClick={() => { navigate('/profile'); setShowMobileMenu(false); }}>Profilo</button></li>
+              )}
+              <li><button onClick={() => { setShowLeaderboard(true); setShowMobileMenu(false); }}>Classifica</button></li>
+              <li><button onClick={() => { handleLogout(); setShowMobileMenu(false); }}>Logout</button></li>
+            </ul>
+          </div>
+        )}
         {user && (
           <div className="header-right">
             <div className="user-stats-header">

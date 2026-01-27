@@ -199,12 +199,22 @@
   .leader-score { font-size: 12px !important; }
 
   /* Buttons */
-  /* Compress header: hide non-essential stats, allow compact buttons and horizontal scroll if needed */
+  /* Compress header: hide non-essential stats and provide a mobile hamburger instead */
   .user-stats-header { display: none !important; }
-  .home-header .logo { font-size: 20px !important; }
-  .header-right { gap: 6px !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
-  .header-right::-webkit-scrollbar { display: none; }
-  .header-profile-btn, .header-leaderboard-btn, .logout-btn { padding: 4px 6px !important; font-size: 12px !important; min-width: 36px !important; height: 34px !important; }
+  /* Reduce logo aggressively on phones and hide long text */
+  .home-header .logo { font-size: 16px !important; max-width: calc(100% - 96px) !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .home-header .logo .logo-text { display: none !important; }
+  .header-right { gap: 6px !important; }
+  /* hide full-text header buttons on small phones - use hamburger */
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn { display: none !important; }
+  .mobile-hamburger { display: inline-flex !important; align-items: center; justify-content: center; font-size: 20px; padding: 6px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 8px; position: absolute !important; right: 8px !important; top: 8px !important; z-index: 950 !important; }
+  .mobile-hamburger:active { transform: translateY(1px); }
+  .mobile-menu { position: absolute; top: 52px; right: 8px; background: #fff; color: #0f172a; border-radius: 10px; box-shadow: 0 12px 32px rgba(2,6,23,0.16); z-index: 900; padding: 8px; min-width: 160px; }
+  /* hide username and stats from header to leave room for hamburger */
+  .home-header .user-name { display: none !important; }
+  .mobile-menu ul { list-style: none; margin: 0; padding: 0; }
+  .mobile-menu li + li { margin-top: 6px; }
+  .mobile-menu button { display: block; width: 100%; text-align: left; background: transparent; border: none; padding: 8px 10px; font-weight: 700; color: inherit; }
   .preview-vedi-btn { width: 100% !important; padding: 8px 10px !important; font-size: 13px !important; }
 
   /* Inputs */
