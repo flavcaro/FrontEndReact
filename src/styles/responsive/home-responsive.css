@@ -6,6 +6,10 @@
   display: none !important;
 }
 
+/* Mobile-only create CTA (inserted into join-column) */
+.mobile-create-btn-wrapper { display: none; }
+.mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
 /* Tablets and smaller */
 @media (max-width: 1023px) {
   .home-main {
@@ -142,6 +146,11 @@
   .join-column { order: 1 !important; }
   .hero-column { order: 2 !important; }
   .modes-column { order: 3 !important; }
+
+  /* Show the mobile create CTA inside the join column and hide the inline hero create to avoid duplicates */
+  .mobile-create-btn-wrapper { display: block !important; }
+  .mobile-create-btn { width: 100% !important; padding: 12px 14px !important; font-size: 16px !important; border-radius: 12px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; }
+  .hero-create-inline { display: none !important; }
 
   /* Further compact specific home sections so they don't appear oversized */
   .hero-column { padding: 6px 4px !important; }
@@ -495,9 +504,10 @@
   .modes-column { order: 3 !important; }
 
   /* Minimize hero visual weight: hide illustration and large headings but keep create CTA visible */
-  .hero-illustration { display: none !important; }
-  .hero-content h2, .hero-content p, .hero-subtitle { display: none !important; }
-  .hero-create-inline { display: block !important; margin-top: 4px !important; }
+    .hero-illustration { display: none !important; }
+    .hero-content h2, .hero-content p, .hero-subtitle { display: none !important; }
+    /* ensure hero inline CTA is hidden because we surface a dedicated mobile CTA in the join column */
+    .hero-create-inline { display: none !important; }
 
   /* Slightly tighten spacing so join + create sit together visually */
   .join-column, .nickname-card, .join-card { margin-bottom: 6px !important; }

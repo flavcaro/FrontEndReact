@@ -399,6 +399,12 @@ export default function Home() {
           </div>
 
           <div className="join-column">
+            {/* Mobile: quick access create button shown only on small viewports */}
+            <div className="mobile-create-btn-wrapper">
+              <Button onClick={() => setShowCustomModal(true)} className="mobile-create-btn">
+                🎨 Crea stanza personalizzata
+              </Button>
+            </div>
             <div className="join-card compact-join">
               <h3>Unisciti a una stanza esistente</h3>
               <p className="join-subtitle">Hai ricevuto un codice? Inseriscilo qui per giocare con i tuoi amici!</p>
