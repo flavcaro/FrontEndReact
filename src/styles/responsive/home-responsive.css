@@ -10,6 +10,8 @@
 .mobile-create-btn-wrapper { display: none; }
 .mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .mobile-cta-column { display: none; }
+/* mobile nickname badge is mobile-only; hide by default on desktop */
+.mobile-nickname-badge { display: none; }
 
 /* Tablets and smaller */
 @media (max-width: 1023px) {
@@ -153,7 +155,8 @@
 
   /* Show the mobile create CTA inside the join column and hide the inline hero create to avoid duplicates */
   .mobile-create-btn-wrapper { display: block !important; }
-  .mobile-create-btn { width: 100% !important; padding: 12px 14px !important; font-size: 16px !important; border-radius: 12px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; }
+  /* Larger, taller mobile CTA matching quick-create title visual weight */
+  .mobile-create-btn { width: 100% !important; padding: 14px 16px !important; font-size: 18px !important; line-height: 1 !important; border-radius: 14px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; font-weight: 700 !important; }
   .hero-create-inline { display: none !important; }
 
   /* Show the mobile CTA column at the top of the grid */
@@ -572,4 +575,33 @@
     font-weight: 700 !important;
     white-space: nowrap !important;
   }
+
+/* Mobile touch/interaction effects: provide hover-like and press feedback on touch devices */
+@media (max-width: 768px) {
+  .mobile-create-btn, .quick-button-card, .leader-row-btn, .mobile-menu button, .lobby-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, opacity .12s ease;
+    will-change: transform, opacity;
+  }
+
+  /* subtle lift on pointer hover when supported */
+  .mobile-create-btn:hover, .quick-button-card:hover, .leader-row-btn:hover, .mobile-menu button:hover, .lobby-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(2,6,23,0.10);
+  }
+
+  /* active/tap feedback: compress slightly and dim shadow */
+  .mobile-create-btn:active, .quick-button-card:active, .leader-row-btn:active, .mobile-menu button:active, .lobby-btn:active {
+    transform: translateY(0) scale(0.995);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.06) !important;
+    opacity: 0.98;
+  }
+
+  /* keyboard focus visible for accessibility */
+  .mobile-create-btn:focus-visible, .quick-button-card:focus-visible, .leader-row-btn:focus-visible, .mobile-menu button:focus-visible, .lobby-btn:focus-visible {
+    outline: 2px solid rgba(99,102,241,0.18);
+    outline-offset: 2px;
+  }
+}
 }

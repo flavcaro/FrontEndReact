@@ -28,6 +28,7 @@ export default function Home() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [nickError, setNickError] = useState("");
   const [topFour, setTopFour] = useState([]);
+  const [leaderboardCount, setLeaderboardCount] = useState(0);
   const [myPosition, setMyPosition] = useState(null);
   const [loadingLeaderboardPreview, setLoadingLeaderboardPreview] = useState(false);
   const [userStats, setUserStats] = useState(null);
@@ -227,6 +228,8 @@ export default function Home() {
     const unsub = subscribeLeaderboard(async (list) => {
       if (!mounted) return;
       try {
+        // keep a record of how many entries the leaderboard query returned
+        setLeaderboardCount(Array.isArray(list) ? list.length : 0);
         const top = list.slice(0,4);
         // enrich top entries with latest users/{uid} data when possible
         const uids = Array.from(new Set(top.map(u => u.uid).filter(Boolean)));
@@ -257,7 +260,7 @@ export default function Home() {
         setMyPosition(found >= 0 ? found + 1 : null);
       } catch (err) {
         console.warn('Error enriching top preview', err);
-        setTopFour(list.slice(0,4));
+        setTopFour((Array.isArray(list) ? list.slice(0,4) : []));
       } finally {
         setLoadingLeaderboardPreview(false);
       }
@@ -325,12 +328,12 @@ export default function Home() {
           </>
         )}
         {user && (
-          <div className="header-right">
+            <div className="header-right">
             <div className="user-stats-header">
               <span className="level-badge">🏆 Lv.{level}</span>
               <span className="xp-badge">⭐ {xpPoints} XP</span>
             </div>
-            <span className="user-name">{user.email}</span>
+            <span className="user-name">{nickname || (user && (user.email ? user.email.split('@')[0] : user.email) )}</span>
             {!isGuest && (
               <button className="header-profile-btn" onClick={() => navigate('/profile')}>
                 <span className="btn-ico">👤</span>
@@ -466,7 +469,7 @@ export default function Home() {
                 </div>
               <div style={{ marginTop: 8 }}>
                 {(() => {
-                  const display = (topFour && topFour.length > 0) ? topFour : [];
+                  const display = (topFour && topFour.length > 0) ? topFour.slice(0,4) : [];
                   return (
                     <>
                       {display.length > 0 ? (
@@ -492,6 +495,10 @@ export default function Home() {
                         </ol>
                       ) : (
                         <div style={{ fontSize: 13, color: '#64748b', minHeight: 40, display: 'flex', alignItems: 'center' }}>Nessun dato disponibile</div>
+                      )}
+                      {/* If there are more than 4 entries, hint how many additional users exist */}
+                      {leaderboardCount > 4 && (
+                        <div style={{ marginTop: 6, fontSize: 12, color: '#475569' }}>{`... e altri ${leaderboardCount - 4}`}</div>
                       )}
                       {loadingLeaderboardPreview && (
                         <div className="loading-inline" style={{ marginTop: 6 }}>
