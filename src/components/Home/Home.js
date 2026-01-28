@@ -303,6 +303,11 @@ export default function Home() {
     <div className="home" style={{ minHeight: '100vh' }}>
       <header className="home-header">
         <div className="logo">🎨 <span className="logo-text">SketchUp</span></div>
+        {/* Mobile compact nickname+XP badge shown top-left on small screens */}
+        <div className="mobile-nickname-badge" aria-hidden={nickname ? 'false' : 'true'}>
+          <span className="mobile-nick-text">{nickname || (isGuest ? 'Ospite' : '')}</span>
+          <span className="mobile-nick-xp">⭐ {xpPoints || 0}</span>
+        </div>
         {/* Mobile hamburger - visible only on small screens via CSS */}
         <button className="mobile-hamburger" onClick={(e) => { e.stopPropagation(); setShowMobileMenu(s => !s); }} aria-label="Menu">☰</button>
         {showMobileMenu && (
@@ -349,6 +354,14 @@ export default function Home() {
       {/* COMBINED TOP ROW: HERO | MODES | JOIN+NICKNAME */}
       <section className="home-top-row">
         <div className="home-row-grid">
+          {/* Mobile CTA column (rendered as first child so it can be ordered on mobile) */}
+          <div className="mobile-cta-column">
+            <div className="mobile-create-btn-wrapper">
+              <Button onClick={() => setShowCustomModal(true)} className="mobile-create-btn">
+                🎨 Crea stanza personalizzata
+              </Button>
+            </div>
+          </div>
           <div className="hero-column">
             <div className="hero-text-side">
               <div className="hero-illustration">
@@ -399,12 +412,6 @@ export default function Home() {
           </div>
 
           <div className="join-column">
-            {/* Mobile: quick access create button shown only on small viewports */}
-            <div className="mobile-create-btn-wrapper">
-              <Button onClick={() => setShowCustomModal(true)} className="mobile-create-btn">
-                🎨 Crea stanza personalizzata
-              </Button>
-            </div>
             <div className="join-card compact-join">
               <h3>Unisciti a una stanza esistente</h3>
               <p className="join-subtitle">Hai ricevuto un codice? Inseriscilo qui per giocare con i tuoi amici!</p>
