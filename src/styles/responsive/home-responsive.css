@@ -131,17 +131,46 @@
   .modal-content { max-width: 94% !important; margin: 10px auto !important; }
 
   /* Reduce base font size on small phones to avoid huge UI */
-  .home { font-size: 13px !important; padding-top: 68px !important; }
-  .hero-content h1 { font-size: 24px !important; line-height: 1.06 !important; }
-  .hero-content h2 { font-size: 16px !important; }
-  .main-emoji { font-size: 48px !important; }
-  .inline-create-btn { font-size: 14px !important; padding: 8px 12px !important; }
+  .home { font-size: 12px !important; padding-top: 60px !important; }
+  .hero-content h1 { font-size: 18px !important; line-height: 1.06 !important; }
+  .hero-content h2 { font-size: 14px !important; }
+  .main-emoji { font-size: 36px !important; }
+  .inline-create-btn { font-size: 13px !important; padding: 7px 10px !important; }
 
   /* Reorder columns on phone: show join/nickname first, then hero, then modes */
   .home-row-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
   .join-column { order: 1 !important; }
   .hero-column { order: 2 !important; }
   .modes-column { order: 3 !important; }
+
+  /* Further compact specific home sections so they don't appear oversized */
+  .hero-column { padding: 6px 4px !important; }
+  .hero-content { padding: 6px 0 !important; }
+  .hero-illustration { width: 72px !important; height: 72px !important; }
+  .main-emoji { font-size: 32px !important; }
+  .hero-content h2 { margin: 4px 0 !important; font-size: 16px !important; }
+  .hero-content p { margin: 2px 0 6px 0 !important; font-size: 13px !important; color: #475569 !important; }
+
+  /* Modes quick create: smaller cards and tighter grid */
+  .quick-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quick-button-card { padding: 8px !important; border-radius: 10px !important; min-height: 64px !important; display: flex; gap: 8px; align-items: center; }
+  .quick-button-icon { width: 40px !important; height: 40px !important; font-size: 20px !important; }
+  .quick-button-content h3 { font-size: 14px !important; margin: 0; }
+  .quick-button-content p { font-size: 12px !important; margin: 2px 0; color: #64748b !important; }
+
+  /* Join card and nickname: reduce header sizes and input heights */
+  .join-card h3, .nickname-card .nickname-header { font-size: 15px !important; margin-bottom: 6px !important; }
+  .join-subtitle { font-size: 12px !important; }
+  .join-inputs .lobby-input, .nickname-inputs .lobby-input { font-size: 14px !important; padding: 8px 10px !important; }
+  .join-inputs .lobby-btn, .nickname-inputs .save-nick-btn { font-size: 13px !important; padding: 6px 8px !important; height: 36px !important; }
+
+  /* Leaderboard compact rows */
+  .leaderboard-preview-card { padding: 6px !important; }
+  .leader-row-btn { padding: 6px 8px !important; }
+  .leader-left { gap: 8px !important; }
+  .leader-avatar { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+  .leader-name { font-size: 13px !important; }
+  .leader-meta { font-size: 11px !important; }
 
   .user-info {
     gap: 12px;
@@ -220,13 +249,13 @@
 @media (max-width: 480px) {
   /* Ensure header is compact and content starts below it */
   .home-header { padding: 6px 8px !important; height: 52px !important; }
-  .home { padding-top: 84px !important; }
+  .home { padding-top: 72px !important; }
 
   /* Hero */
-  .hero-content h1 { font-size: 20px !important; display: block !important; }
-  .hero-content h2, .hero-subtitle { font-size: 14px !important; display: block !important; }
-  .main-emoji { font-size: 40px !important; }
-  .inline-create-btn { font-size: 13px !important; padding: 8px 12px !important; }
+  .hero-content h1 { font-size: 18px !important; display: block !important; }
+  .hero-content h2, .hero-subtitle { font-size: 13px !important; display: block !important; }
+  .main-emoji { font-size: 36px !important; }
+  .inline-create-btn { font-size: 12px !important; padding: 7px 10px !important; }
 
   /* Cards and grid spacing */
   .home-top-row { padding: 12px 10px 8px !important; }
@@ -395,4 +424,82 @@
 
   /* Prevent internal grids from stretching horizontally */
   .modal-modes-grid, .modal-mode-card { width: 100% !important; box-sizing: border-box !important; }
+}
+
+/* Tone down oversized labels, scores and headings on small phones */
+@media (max-width: 480px) {
+  /* Nickname box */
+  .nickname-card .nickname-header { font-size: 14px !important; font-weight: 700 !important; }
+  .nickname-card .save-feedback { font-size: 12px !important; }
+  /* Override inline user-stats size in Home.js for mobile */
+  .nickname-card > div[style], .nickname-card > div { font-size: 12px !important; }
+  .nickname-text { font-size: 16px !important; }
+
+  /* Leaderboard title and rows */
+  .leaderboard-preview-card h3 { font-size: 15px !important; margin: 0 0 6px 0 !important; }
+  .leaderboard-preview-card { padding: 6px !important; }
+  .leader-row-btn { padding: 6px 6px !important; }
+  .leader-avatar { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+  .leader-name { font-size: 13px !important; font-weight: 600 !important; }
+  .leader-meta { font-size: 11px !important; }
+  .leader-score { font-size: 12px !important; }
+  .your-position { font-size: 12px !important; }
+
+  /* Quick-create titles smaller and balanced */
+  .quick-create-title { font-size: 16px !important; }
+  .quick-create-subtitle { font-size: 12px !important; }
+
+  /* Ensure generic card titles are not oversized */
+  .home-card h3, .join-card h3 { font-size: 15px !important; }
+
+  /* Reduce badges and small stats to avoid large visual weight */
+  .level-badge, .xp-badge { font-size: 12px !important; padding: 6px 8px !important; }
+}
+
+/* Specific override to tone down score numbers and "Best" label inside nickname card */
+@media (max-width: 480px) {
+  /* target any element inside .nickname-card that has inline styles (the userStats div) */
+  .nickname-card div[style] {
+    font-size: 12px !important;
+    color: #374151 !important;
+  }
+  .nickname-card div[style] span:first-child {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    margin-right: 6px !important;
+  }
+  .nickname-card div[style] span:last-child {
+    font-size: 11px !important;
+    color: #64748b !important;
+    font-weight: 500 !important;
+  }
+  /* ensure saved/feedback text is small */
+  .nickname-card .save-feedback { font-size: 12px !important; }
+}
+
+/* Compact modal overrides for very small screens */
+@media (max-width: 480px) {
+  .modal-content { max-width: 420px !important; width: calc(100% - 28px) !important; padding: 6px !important; }
+  .modal-header h2 { font-size: 16px !important; margin: 0; }
+  .modal-body { font-size: 13px !important; padding: 10px !important; }
+  .modal-illustration { width:44px !important; height:44px !important; font-size:18px !important; }
+  .modal-close { padding: 6px !important; }
+}
+
+/* Force desired ordering and hide oversized hero illustration on phones
+   Show only the inline create CTA so users see "Crea stanza" + "Unisciti" first */
+@media (max-width: 480px) {
+  .home-row-grid { grid-template-columns: 1fr !important; }
+  .join-column { order: 1 !important; }
+  .hero-column { order: 2 !important; }
+  .modes-column { order: 3 !important; }
+
+  /* Minimize hero visual weight: hide illustration and large headings but keep create CTA visible */
+  .hero-illustration { display: none !important; }
+  .hero-content h2, .hero-content p, .hero-subtitle { display: none !important; }
+  .hero-create-inline { display: block !important; margin-top: 4px !important; }
+
+  /* Slightly tighten spacing so join + create sit together visually */
+  .join-column, .nickname-card, .join-card { margin-bottom: 6px !important; }
+  .home-row-grid > * { padding: 6px 6px !important; }
 }
