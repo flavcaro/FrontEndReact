@@ -256,6 +256,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
           {finalResults && (
             <GameResults
+              roomId={roomId}
+              players={players}
+              finalNickname={finalNickname}
               finalResults={finalResults}
               onRestart={restartGame}
             />
