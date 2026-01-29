@@ -41,19 +41,26 @@ export default function PuzzleCanvas({
     const scaleY = canvas.height / rect.height;
 
     return {
+      // Return both pixel coords (canvas internal pixels) and normalized coords (0..1)
       x: clientX * scaleX,
-      y: clientY * scaleY
+      y: clientY * scaleY,
+      nx: clientX / rect.width,
+      ny: clientY / rect.height
     };
   }, []);
 
   const isAllowedPoint = useCallback((x, y) => {
     if (assignedSection === null || !canvasRef.current) return false;
+    // x,y may be normalized or pixel coords; detect normalized (0..1)
+    const canvas = canvasRef.current;
+    const px = (x > 0 && x <= 1) ? Math.round(x * canvas.width) : x;
+    const py = (y > 0 && y <= 1) ? Math.round(y * canvas.height) : y;
     return isPointInSection(
-      x,
-      y,
+      px,
+      py,
       assignedSection,
-      canvasRef.current.width,
-      canvasRef.current.height,
+      canvas.width,
+      canvas.height,
       totalSections
     );
   }, [assignedSection, totalSections]);
@@ -109,9 +116,18 @@ export default function PuzzleCanvas({
       ctx.strokeStyle = stroke.color;
     }
 
+    // Points are stored normalized (nx, ny) or pixel; detect and map to pixels
+    const pts = stroke.points.map(p => {
+      if (p.nx !== undefined && p.ny !== undefined) {
+        return { x: p.nx * ctx.canvas.width, y: p.ny * ctx.canvas.height };
+      }
+      // legacy support: numeric x/y pixels
+      return { x: p.x, y: p.y };
+    });
+
     ctx.beginPath();
-    ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-    stroke.points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.moveTo(pts[0].x, pts[0].y);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
     ctx.stroke();
 
     ctx.globalCompositeOperation = 'source-over';
@@ -147,8 +163,7 @@ export default function PuzzleCanvas({
     if (!allStrokes) return;
 
     Object.entries(allStrokes).forEach(([section, strokes]) => {
-      const visible =
-        assignedSection === null || Number(section) === assignedSection;
+      const visible = assignedSection === null || Number(section) === assignedSection;
 
       if (!visible) return;
 
@@ -156,6 +171,7 @@ export default function PuzzleCanvas({
     });
 
     if (currentStrokeRef.current) {
+      // currentStrokeRef may hold normalized points (nx,ny)
       drawStroke(ctx, currentStrokeRef.current);
     }
   }, [allStrokes, assignedSection, drawBackground, drawStroke]);
@@ -168,7 +184,7 @@ export default function PuzzleCanvas({
     if (!isDrawing || assignedSection === null) return;
 
     const p = getCanvasPoint(e);
-    if (!p || !isAllowedPoint(p.x, p.y)) return;
+    if (!p || !isAllowedPoint(p.nx, p.ny)) return;
 
     setIsPointerDown(true);
     setLastPoint(p);
@@ -176,13 +192,13 @@ export default function PuzzleCanvas({
     const eraser = selectedInstrument === 'eraser';
 
     currentStrokeRef.current = {
-      points: [p],
+      // store normalized coords for cross-client compatibility
+      points: p.nx !== undefined ? [{ nx: p.nx, ny: p.ny }] : [{ x: p.x, y: p.y }],
       size: brushSize,
       color: eraser ? null : currentColor,
       eraser
     };
-
-    onStartStroke?.(p.x, p.y, currentColor, brushSize, eraser);
+    onStartStroke?.(p.nx !== undefined ? p.nx : p.x, p.ny !== undefined ? p.ny : p.y, currentColor, brushSize, eraser);
   }, [isDrawing, assignedSection, brushSize, currentColor, selectedInstrument, getCanvasPoint, isAllowedPoint, onStartStroke]);
 
   const handleMove = useCallback((e) => {
@@ -190,7 +206,7 @@ export default function PuzzleCanvas({
 
     const ctx = ctxRef.current;
     const p = getCanvasPoint(e);
-    if (!ctx || !p || !isAllowedPoint(p.x, p.y)) return;
+    if (!ctx || !p || !isAllowedPoint(p.nx, p.ny)) return;
 
     ctx.lineWidth = brushSize;
     ctx.lineCap = 'round';
@@ -209,8 +225,8 @@ export default function PuzzleCanvas({
     ctx.stroke();
     ctx.globalCompositeOperation = 'source-over';
 
-    currentStrokeRef.current.points.push(p);
-    onAddPoint?.(p.x, p.y);
+    currentStrokeRef.current.points.push(p.nx !== undefined ? { nx: p.nx, ny: p.ny } : { x: p.x, y: p.y });
+    onAddPoint?.(p.nx !== undefined ? p.nx : p.x, p.ny !== undefined ? p.ny : p.y);
     setLastPoint(p);
   }, [isPointerDown, lastPoint, brushSize, currentColor, selectedInstrument, getCanvasPoint, isAllowedPoint, onAddPoint]);
 

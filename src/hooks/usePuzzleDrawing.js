@@ -47,8 +47,10 @@ export function usePuzzleDrawing(roomId, assignedSection, isActive) {
   // Inizia un nuovo stroke
   const startStroke = useCallback((x, y, color, size, isEraser = false) => {
     console.log('🖊️ [usePuzzleDrawing] startStroke:', { x, y, color, size, isEraser, assignedSection });
+    // If coordinates are normalized (0..1), store them as nx/ny to keep consistent
+    const isNormalized = typeof x === 'number' && typeof y === 'number' && x >= 0 && x <= 1 && y >= 0 && y <= 1;
     currentStrokeRef.current = {
-      points: [{ x, y }],
+      points: isNormalized ? [{ nx: x, ny: y }] : [{ x, y }],
       color: isEraser ? null : color,
       size,
       section: assignedSection,
@@ -60,7 +62,8 @@ export function usePuzzleDrawing(roomId, assignedSection, isActive) {
   // Aggiungi un punto allo stroke corrente
   const addPoint = useCallback((x, y) => {
     if (currentStrokeRef.current) {
-      currentStrokeRef.current.points.push({ x, y });
+      const isNormalized = typeof x === 'number' && typeof y === 'number' && x >= 0 && x <= 1 && y >= 0 && y <= 1;
+      currentStrokeRef.current.points.push(isNormalized ? { nx: x, ny: y } : { x, y });
     }
   }, []);
 
