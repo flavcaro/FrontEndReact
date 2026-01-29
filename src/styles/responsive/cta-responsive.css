@@ -1,0 +1,24 @@
+/* CTA and hero-related responsive rules */
+
+/* Larger, taller mobile CTA and hero adjustments */
+@media (max-width: 480px) {
+  .mobile-create-btn-wrapper { display: block !important; }
+  .mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100% !important; padding: 14px 16px !important; font-size: 18px !important; line-height: 1 !important; border-radius: 14px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; font-weight: 700 !important; }
+  .hero-create-inline { display: none !important; }
+  .mobile-cta-column { display: block !important; order: 0 !important; }
+  .mobile-cta-column .mobile-create-btn { margin-bottom: 6px !important; }
+
+  .hero-column { padding: 6px 4px !important; }
+  .hero-content { padding: 6px 0 !important; }
+  .hero-illustration { width: 72px !important; height: 72px !important; }
+  .main-emoji { font-size: 32px !important; }
+  .hero-content h2 { margin: 4px 0 !important; font-size: 16px !important; }
+  .hero-content p { margin: 2px 0 6px 0 !important; font-size: 13px !important; color: #475569 !important; }
+}
+
+@media (max-width: 420px) {
+  .hero-illustration { display: none !important; }
+  .hero-content h2, .hero-content p, .hero-subtitle { display: none !important; }
+  .hero-create-inline { display: none !important; }
+  .home-top-row { padding: 0px 10px 4px !important; }
+}

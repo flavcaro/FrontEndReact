@@ -1,72 +1,17 @@
-/* Home Responsive Styles */
+/* home-responsive.css — imports modular responsive files to keep responsibilities separated */
 
-/* Hide mobile-only menu by default; shown only inside mobile media queries below */
-.mobile-hamburger,
-.mobile-menu {
-  display: none !important;
-}
+@import "./header-responsive.css";
+@import "./menu-responsive.css";
+@import "./cta-responsive.css";
+@import "./modes-responsive.css";
+@import "./join-responsive.css";
+@import "./leaderboard-responsive.css";
+@import "./modal-responsive.css";
+@import "./interactions-responsive.css";
 
-/* Mobile-only create CTA (inserted into join-column) */
-.mobile-create-btn-wrapper { display: none; }
-.mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.mobile-cta-column { display: none; }
-/* mobile nickname badge is mobile-only; hide by default on desktop */
-.mobile-nickname-badge { display: none; }
-
-/* Tablets and smaller */
-@media (max-width: 1023px) {
-  .home-main {
-    padding: 40px 20px;
-    gap: 30px;
-  }
-
-  .stats-sidebar {
-    width: 100%;
-    max-width: 500px;
-    order: -1;
-  }
-
-  .home-content {
-    width: 100%;
-  }
-
-  .home-hero {
-    gap: 40px;
-  }
-
-  .hero-content h1 {
-    font-size: 48px;
-  }
-
-  .hero-subtitle {
-    font-size: 24px;
-  }
-
-  .game-description {
-    grid-template-columns: 1fr;
-    max-width: 400px;
-    margin: 30px auto 0;
-  }
-
-  .drawing-examples {
-    gap: 15px;
-  }
-
-  .example-drawing {
-    min-width: 100px;
-  }
-
-  .home-card {
-    padding: 24px 20px;
-    border-radius: 20px;
-    max-width: 500px;
-  }
-
-  .nickname-section {
-    padding: 14px;
-    margin-bottom: 18px;
-  }
-}
+/* Minimal safe fallbacks */
+.home-row-grid { grid-template-columns: 1fr; }
+.home { min-height: auto; }
 
 /* Mobile */
 @media (max-width: 480px) {
@@ -268,8 +213,8 @@
 /* Strong mobile-only overrides: scale down hero/header/cards specifically for phones */
 @media (max-width: 480px) {
   /* Ensure header is compact and content starts below it */
-  .home-header { padding: 6px 8px !important; height: 52px !important; }
-  .home { padding-top: 72px !important; }
+  .home-header { padding: 3px 5px !important; height: 52px !important; }
+  .home { padding-top: 30px !important; }
 
   /* Hero */
   .hero-content h1 { font-size: 18px !important; display: block !important; }
@@ -575,33 +520,4 @@
     font-weight: 700 !important;
     white-space: nowrap !important;
   }
-
-/* Mobile touch/interaction effects: provide hover-like and press feedback on touch devices */
-@media (max-width: 768px) {
-  .mobile-create-btn, .quick-button-card, .leader-row-btn, .mobile-menu button, .lobby-btn {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, opacity .12s ease;
-    will-change: transform, opacity;
-  }
-
-  /* subtle lift on pointer hover when supported */
-  .mobile-create-btn:hover, .quick-button-card:hover, .leader-row-btn:hover, .mobile-menu button:hover, .lobby-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(2,6,23,0.10);
-  }
-
-  /* active/tap feedback: compress slightly and dim shadow */
-  .mobile-create-btn:active, .quick-button-card:active, .leader-row-btn:active, .mobile-menu button:active, .lobby-btn:active {
-    transform: translateY(0) scale(0.995);
-    box-shadow: 0 4px 10px rgba(2,6,23,0.06) !important;
-    opacity: 0.98;
-  }
-
-  /* keyboard focus visible for accessibility */
-  .mobile-create-btn:focus-visible, .quick-button-card:focus-visible, .leader-row-btn:focus-visible, .mobile-menu button:focus-visible, .lobby-btn:focus-visible {
-    outline: 2px solid rgba(99,102,241,0.18);
-    outline-offset: 2px;
-  }
-}
 }

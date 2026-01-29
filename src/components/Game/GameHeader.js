@@ -88,6 +88,7 @@ export default function GameHeader({
   const [malusManualOpen, setMalusManualOpen] = useState(false);
   const malusRef = useRef(null);
   const malusAutoTimeoutRef = useRef(null);
+  const [mobileInfoOpen, setMobileInfoOpen] = useState(false);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -141,7 +142,18 @@ export default function GameHeader({
             <div className="room-code">{roomId}</div>
           </div>
 
-          <div className="game-info">
+          {/* mobile info toggle (visible only on small screens via CSS) */}
+          <button
+            type="button"
+            className="mobile-info-btn"
+            aria-expanded={mobileInfoOpen}
+            onClick={() => setMobileInfoOpen((s) => !s)}
+          >
+            ℹ️
+          </button>
+
+          {/* Render game-info normally (desktop) */}
+          <div className="game-info desktop-only"> 
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
               <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
@@ -168,7 +180,6 @@ export default function GameHeader({
                 className="malus-inline"
                 ref={malusRef}
                 onMouseEnter={() => {
-                  // cancel any pending auto-hide and show popover on hover
                   if (malusAutoTimeoutRef.current) {
                     clearTimeout(malusAutoTimeoutRef.current);
                     malusAutoTimeoutRef.current = null;
@@ -176,7 +187,6 @@ export default function GameHeader({
                   setMalusOpen(true);
                 }}
                 onMouseLeave={() => {
-                  // restore to manual-open state when the mouse leaves
                   setMalusOpen(malusManualOpen);
                 }}
               >
@@ -226,6 +236,30 @@ export default function GameHeader({
                   </div>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile popover with compact game info (only used on small screens) */}
+        <div className={`mobile-game-info-popover ${mobileInfoOpen ? 'open' : ''}`} role="dialog" aria-hidden={!mobileInfoOpen}>
+          <div className="mobile-game-info-inner">
+            <div className="game-mode-info">
+              <div className="room-label">Modalità</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
+            </div>
+            <div className="difficulty-info">
+              <div className="room-label">Difficoltà</div>
+              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+            </div>
+            <div className="round-info">
+              <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
+              <div className="round-display">{roundsPerPlayer}</div>
+            </div>
+            {gameState?.active && (
+              <div className="round-info"><div className="room-label">Round</div><div className="round-display">{currentRound}/{totalRounds}</div></div>
+            )}
+            {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
+              <div className="malus-compact">{gameState.chaosEffects.length} malus attivi</div>
             )}
           </div>
         </div>

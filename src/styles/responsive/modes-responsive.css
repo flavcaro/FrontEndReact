@@ -1,0 +1,12 @@
+/* Quick-create / modes responsive rules */
+
+@media (max-width: 480px) {
+  .quick-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quick-button-card { padding: 8px !important; border-radius: 10px !important; min-height: 64px !important; display: flex; gap: 8px; align-items: center; }
+  .quick-button-icon { width: 40px !important; height: 40px !important; font-size: 20px !important; }
+  .quick-button-content h3 { font-size: 14px !important; margin: 0; }
+  .quick-button-content p { font-size: 12px !important; margin: 2px 0; color: #64748b !important; }
+
+  .quick-create-title { font-size: 16px !important; }
+  .quick-create-subtitle { font-size: 12px !important; }
+}

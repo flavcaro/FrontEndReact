@@ -1,0 +1,15 @@
+/* Leaderboard preview responsive rules */
+
+@media (max-width: 480px) {
+  .leaderboard-preview-card.compact-leaderboard { padding: 6px !important; }
+  .leaderboard-preview-card.compact-leaderboard ol { padding-left: 6px !important; }
+  .leaderboard-preview-card { padding: 6px !important; }
+  .leader-row-btn { padding: 6px 8px !important; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .leader-left { display: flex; gap: 8px; align-items: center; }
+  .leader-avatar { width: 36px !important; height: 36px !important; font-size: 16px !important; }
+  .leader-name { font-size: 13px !important; font-weight: 600 !important; }
+  .leader-meta { font-size: 11px !important; color: #64748b !important; }
+  .leader-score { font-size: 12px !important; }
+  .leader-avatar { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+  .your-position { font-size: 12px !important; }
+}

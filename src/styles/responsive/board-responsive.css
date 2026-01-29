@@ -193,3 +193,157 @@
     padding: 10px 16px;
   }
 }
+
+/* Strong overrides for very small screens: keep game header compact and actions horizontal
+   (some global home responsive rules were too generic and made the in-game header stack vertically) */
+@media (max-width: 480px) {
+  .board-header {
+    padding: 8px 10px !important;
+    gap: 8px !important;
+    height: auto !important;
+    align-items: center !important;
+  }
+
+  .board-header .room-info {
+    font-size: 13px !important;
+    gap: 8px !important;
+  }
+
+  .board-header .header-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-items: center !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+
+  .board-header .btn-clear,
+  .board-header .btn-start,
+  .board-header .btn-leave {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    height: 36px !important;
+    min-width: auto !important;
+  }
+
+  /* ensure the center column has room: reduce top padding reserved by page-level rules */
+  .board-center { padding-top: 0 !important; }
+}
+
+/* Extra strong compacting for any remaining large header elements on very small devices */
+@media (max-width: 480px) {
+  .board-header { font-size: 14px !important; padding: 6px 8px !important; }
+  .board-header .header-main { gap: 8px !important; flex-wrap: nowrap !important; }
+  .board-header .room-code { font-size: 18px !important; padding: 4px 8px !important; }
+  .board-header .mode-badge, .board-header .difficulty-badge, .board-header .round-display {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+  .board-header .room-label { font-size: 11px !important; }
+  .board-header .word-display { font-size: 18px !important; }
+
+  /* Keep actions compact and horizontal */
+  .board-header .header-actions { display:flex !important; flex-direction:row !important; gap:6px !important; }
+
+  /* Guarantee canvas area is visible and not hidden by unintended overlays */
+  .canvas-wrapper { visibility: visible !important; opacity: 1 !important; z-index: 1 !important; }
+  .canvas-stage-inner { max-height: calc(100vh - 120px) !important; }
+}
+
+/* Emergency compact header for playable mobile experience
+   - hide non-essential badges/info
+   - force header to a single compact row so canvas gets most vertical space
+   This intentionally trades some visible metadata for playability on very small screens. */
+@media (max-width: 480px) {
+  .board-header {
+    padding: 6px 8px !important;
+    height: auto !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  /* Keep only essential room/basic info visible */
+  .room-info-section { display: flex !important; align-items: center !important; gap: 8px !important; }
+  .room-basic { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; }
+  .room-label { font-size: 10px !important; display: none !important; }
+  .room-code { font-size: 16px !important; padding: 4px 8px !important; }
+
+  /* Hide larger game metadata to free space (mode/difficulty/rounds) */
+  .game-info { display: none !important; }
+  .word-display { display: none !important; }
+
+  /* Keep actions compact and inline */
+  .header-actions { display: flex !important; flex-direction: row !important; gap: 6px !important; align-items: center !important; }
+  .header-actions button, .header-actions .btn-start, .header-actions .btn-clear, .header-actions .btn-leave {
+    padding: 6px 8px !important; font-size: 13px !important; height: 36px !important; min-width: 36px !important;
+  }
+
+  /* Make canvas take the remaining viewport height (account for compact header only) */
+  .canvas-wrapper { max-height: calc(100vh - 56px) !important; height: auto !important; }
+  .canvas-stage-inner { max-height: calc(100vh - 56px) !important; }
+}
+
+/* Force compact, home-like header on very small phones — highest specificity + important
+   Ensures header doesn't stack vertically and frees vertical space for the canvas. */
+@media (max-width: 480px) {
+  .board-header, .board-header * {
+    box-sizing: border-box !important;
+  }
+
+  .board-header {
+    padding: 6px 8px !important;
+    /* allow variable height so wrapped content remains visible */
+    height: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+  }
+
+  .board-header .room-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 13px !important;
+    max-width: 65% !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: initial !important;
+  }
+
+  .board-header .room-info .room-code,
+  .board-header .room-info .room-label {
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+  }
+
+  .board-header .header-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    align-items: center !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+
+  /* show a compact hamburger if present; otherwise keep action buttons small */
+  .mobile-hamburger { display: inline-flex !important; }
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn, .btn-start, .btn-clear, .btn-leave {
+    display: inline-flex !important;
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* ensure center gets no extra top padding from other rules */
+  .board-center { padding-top: 0 !important; }
+}

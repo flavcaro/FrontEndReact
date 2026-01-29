@@ -1,0 +1,45 @@
+/* Header responsive rules extracted from home-responsive.css */
+
+/* Hide mobile-only menu by default; shown only inside mobile media queries */
+.mobile-hamburger,
+.mobile-menu { display: none !important; }
+
+/* Tablet adjustments */
+@media (max-width: 1023px) {
+  .home-header { padding: 10px 12px; }
+  .home-header .logo { font-size: 28px; }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+}
+
+/* Mobile header compacting */
+@media (max-width: 480px) {
+  .home-header { padding: 8px 10px !important; gap: 8px; height: 56px; align-items: center; }
+  .home-header .logo { font-size: 26px; }
+  .home-header .logo .logo-text { display: none; }
+  .header-right { display: flex; flex-direction: row; gap: 6px; align-items: center; }
+  .home-header .user-name { display: none; }
+
+  .header-profile-btn, .header-leaderboard-btn, .logout-btn {
+    padding: 6px 8px !important; font-size: 13px !important; border-radius: 10px !important; min-width: 40px; height: 36px;
+  }
+
+  /* compact logo on very small phones */
+  .home-header .logo { font-size: 20px !important; max-width: calc(100% - 96px) !important; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
+  .home-header .logo .logo-text { display: inline-block !important; font-size: 13px !important; font-weight: 800; max-width: 90px !important; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Mobile nickname badge (small header pill) - visible only on phones */
+@media (max-width: 480px) {
+  .mobile-nickname-badge { display: inline-flex !important; align-items: center !important; gap: 6px !important; max-width: 48% !important; padding: 3px 6px !important; border-radius: 8px !important; background: rgba(0,0,0,0.08) !important; color: rgba(255,255,255,0.95) !important; overflow: hidden !important; box-sizing: border-box !important; }
+  .mobile-nickname-badge .mobile-nick-text { flex: 1 1 auto !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; font-size: clamp(11px, 2.2vw, 13px) !important; font-weight: 600 !important; }
+  .mobile-nickname-badge .mobile-nick-xp { flex: 0 0 auto !important; margin-left: 6px !important; background: rgba(255,255,255,0.04) !important; padding: 2px 6px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; }
+}
+
+/* Game header: mobile info toggle and popover */
+@media (max-width: 480px) {
+  .mobile-info-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px; font-size: 16px; background: transparent; border: none; color: inherit; }
+  .mobile-game-info-popover { display: none; position: absolute; top: 56px; right: 8px; left: 8px; margin: 0 auto; max-width: 360px; z-index: 1300; }
+  .mobile-game-info-popover.open { display: block; }
+  .mobile-game-info-inner { background: #fff; color: #0f172a; padding: 10px; border-radius: 10px; box-shadow: 0 14px 40px rgba(0,0,0,0.16); }
+  .desktop-only { display: none !important; }
+}

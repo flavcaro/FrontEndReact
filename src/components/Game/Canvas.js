@@ -71,7 +71,12 @@ export default function Canvas({
 
       // Ensure canvas height never exceeds its wrapper visible height (avoids creating page scroll)
       const containerRect = container.getBoundingClientRect();
-      const containerAvailableHeight = Math.max(160, Math.floor(containerRect.height - 16));
+      // Limit container available height to the smaller of the container's actual height
+      // and the previously computed availableHeight (based on viewport minus header/sidebars).
+      // This prevents cases on mobile where the container's rect can be much larger
+      // than the viewport (causing an oversized canvas).
+      const rawContainerHeight = Math.floor(containerRect.height - 16);
+      const containerAvailableHeight = Math.max(160, Math.min(rawContainerHeight, availableHeight + 16));
 
       // Compute sensible minimums so the canvas doesn't become visually tiny
       const minWidth = Math.max(220, Math.floor(vw * 0.2));
