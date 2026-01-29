@@ -61,8 +61,19 @@ export function usePlayers(roomId, nickname) {
       isAddingPlayer.current = true;
       addingPlayersMap.set(mapKey, true);
 
-      console.log('👤 [usePlayers] Aggiunta/Aggiornamento player:', { nickname, sessionId: currentSessionId });
+      // Resolve effective nickname: prop -> localStorage -> auth.displayName -> empty
+      const user = auth.currentUser;
+      const storedNick = typeof window !== 'undefined' ? localStorage.getItem('nickname') : null;
+      const resolvedNickname = (nickname && nickname.toString().trim())
+        ? nickname.toString().trim()
+        : (storedNick && storedNick.toString().trim())
+          ? storedNick.toString().trim()
+          : (user && !user.isAnonymous && user.displayName ? user.displayName.toString().trim() : '');
 
+      // set an initial finalNickname so UI can show the intended name earlier
+      if (resolvedNickname) setFinalNickname(resolvedNickname);
+
+      console.log('👤 [usePlayers] Aggiunta/Aggiornamento player:', { nickname: resolvedNickname, sessionId: currentSessionId });
       try {
         // Get all existing players
         const playersRef = ref(db, `rooms/${roomId}/players`);
@@ -125,14 +136,14 @@ export function usePlayers(roomId, nickname) {
           // New session - create new player with unique name if needed
           // Re-check names right before writing to avoid race conditions where
           // two clients join with the same nickname at the same time.
-          let uniqueName = generateUniqueNickname(nickname, playersList);
-          const user = auth.currentUser;
+          let uniqueName = generateUniqueNickname(resolvedNickname, playersList);
+          // user is available above
           try {
             // refresh players list from server
             const latestSnap = await get(playersRef);
             const latestPlayersObj = latestSnap.val() || {};
             const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
-            uniqueName = generateUniqueNickname(nickname, latestPlayersList);
+            uniqueName = generateUniqueNickname(resolvedNickname, latestPlayersList);
           } catch (err) {
             console.warn('Could not refresh players before creating new player:', err);
           }
@@ -143,8 +154,8 @@ export function usePlayers(roomId, nickname) {
             return;
           }
 
-          if (uniqueName !== nickname) {
-            console.log(`Nickname "${nickname}" già in uso. Cambiato in "${uniqueName}"`);
+          if (resolvedNickname && uniqueName !== resolvedNickname) {
+            console.log(`Nickname "${resolvedNickname}" già in uso. Cambiato in "${uniqueName}"`);
           }
 
           playerNickname = uniqueName;
@@ -163,7 +174,7 @@ export function usePlayers(roomId, nickname) {
               // Ensure we write the chosen uniqueName
               await set(playerReference, {
                 name: uniqueName,
-                originalNickname: nickname,
+                originalNickname: resolvedNickname,
                 sessionId: currentSessionId,
                 userId: user && !user.isAnonymous ? user.uid : null,
                 joinedAt: Date.now(),
@@ -178,7 +189,7 @@ export function usePlayers(roomId, nickname) {
               const latestSnap = await get(playersRef);
               const latestPlayersObj = latestSnap.val() || {};
               const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
-              uniqueName = generateUniqueNickname(nickname, latestPlayersList);
+              uniqueName = generateUniqueNickname(resolvedNickname, latestPlayersList);
             }
           }
           if (!created) {
@@ -189,7 +200,7 @@ export function usePlayers(roomId, nickname) {
           
           await set(playerReference, {
             name: uniqueName,
-            originalNickname: nickname,
+            originalNickname: resolvedNickname,
             sessionId: currentSessionId,
             userId: user && !user.isAnonymous ? user.uid : null,
             joinedAt: Date.now(),

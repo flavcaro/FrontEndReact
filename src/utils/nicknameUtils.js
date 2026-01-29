@@ -25,26 +25,21 @@ export const getPlayerColor = (index) => {
  * If nickname exists, append a number (nickname1, nickname2, etc.)
  */
 export const generateUniqueNickname = (desiredNickname, existingPlayers) => {
-  if (!desiredNickname || !desiredNickname.trim()) {
-    return null;
-  }
+  const existingNames = (existingPlayers || []).map(p => p.name);
 
-  const cleanNickname = desiredNickname.trim();
-  
-  // Check if nickname already exists
-  const existingNames = existingPlayers.map(p => p.name);
-  
-  if (!existingNames.includes(cleanNickname)) {
-    return cleanNickname;
-  }
+  // If no desired nickname provided, generate a fallback base name
+  const hasDesired = Boolean(desiredNickname && desiredNickname.toString().trim());
+  const base = hasDesired ? desiredNickname.toString().trim() : 'Giocatore';
 
-  // Find a unique version by appending numbers
+  // If base is free, return it
+  if (!existingNames.includes(base)) return base;
+
+  // Otherwise append a counter until unique
   let counter = 1;
-  let uniqueNickname = `${cleanNickname}${counter}`;
-  
+  let uniqueNickname = `${base}${counter}`;
   while (existingNames.includes(uniqueNickname)) {
     counter++;
-    uniqueNickname = `${cleanNickname}${counter}`;
+    uniqueNickname = `${base}${counter}`;
   }
 
   return uniqueNickname;

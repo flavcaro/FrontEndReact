@@ -206,8 +206,11 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           {/* Risultati finali */}
           {finalResults && (
             <GameResults
+              roomId={roomId}
+              players={players}
+              finalNickname={finalNickname}
               finalResults={finalResults}
-              onRestart={isOwner ? restartGame : null}
+              onRestart={restartGame}
             />
           )}
         </div>
