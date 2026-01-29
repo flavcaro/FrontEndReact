@@ -6,6 +6,9 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Loading from '../common/Loading';
 import { validateNickname } from '../../utils/roomUtils';
+import { ref, get } from "firebase/database";
+import { db } from "../../firebase";
+import { generateUniqueNickname } from "../../utils/nicknameUtils";
 
 export default function RoomJoin({ roomId }) {
   const navigate = useNavigate();
@@ -35,14 +38,29 @@ export default function RoomJoin({ roomId }) {
     return unsubscribe;
   }, []);
 
-  const handleJoinRoom = () => {
+  const handleJoinRoom = async () => {
     if (!validateNickname(nickname)) {
       alert('⚠️ Inserisci un nickname valido!');
       return;
     }
 
-    localStorage.setItem('nickname', nickname);
-    navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`, { replace: true });
+    try {
+      // Verifica unicità nickname nella stanza target
+      const playersRef = ref(db, `rooms/${roomId}/players`);
+      const snap = await get(playersRef);
+      const existing = snap.val() || {};
+      const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
+      const unique = generateUniqueNickname(nickname, latestList) || nickname;
+      if (unique !== nickname) {
+        setNickname(unique);
+      }
+      localStorage.setItem('nickname', unique);
+      navigate(`/room/${roomId}/play?nick=${encodeURIComponent(unique)}`, { replace: true });
+    } catch (err) {
+      console.warn('Could not verify nickname uniqueness before join', err);
+      localStorage.setItem('nickname', nickname);
+      navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`, { replace: true });
+    }
   };
 
   const handleBackToAuth = () => {

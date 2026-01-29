@@ -24,14 +24,10 @@ export function usePuzzleGame(roomId, nickname, players) {
   const currentPlayer = players?.find(p => p.name === nickname);
   const currentPlayerId = currentPlayer?.id;
 
-  // Determina il ruolo del giocatore corrente - matching sia su name che su uid
+  // Determina il ruolo del giocatore corrente - usa solo uid per evitare conflitti con nomi duplicati
   const guessers = gameState?.currentGuessers || (gameState?.currentGuesser ? [gameState.currentGuesser] : []);
-  const isGuesser = guessers.some(g => 
-    g.name === nickname || (currentPlayerId && g.uid === currentPlayerId)
-  );
-  const myDrawerInfo = gameState?.currentDrawers?.find(d => 
-    d.player.name === nickname || (currentPlayerId && d.player.uid === currentPlayerId)
-  );
+  const isGuesser = currentPlayerId && guessers.some(g => g.uid === currentPlayerId);
+  const myDrawerInfo = gameState?.currentDrawers?.find(d => currentPlayerId && d.player.uid === currentPlayerId);
   const isDrawer = !!myDrawerInfo;
 
   // Aggiorna la sezione assegnata
