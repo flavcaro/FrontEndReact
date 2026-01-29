@@ -427,7 +427,10 @@ export default function Home() {
                 <Button variant="secondary" size="small" onClick={handleJoinRoom}>🔗 Unisciti</Button>
               </div>
             </div>
+          </div>
 
+          {/* Right column: nickname + leaderboard (desktop right-side) */}
+          <div className="right-column">
             <div className="nickname-card compact-nick">
               <div className="nickname-header">Il tuo nickname</div>
               <div className="nickname-inputs">

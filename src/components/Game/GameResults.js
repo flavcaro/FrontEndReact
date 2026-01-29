@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, remove as dbRemove } from 'firebase/database';
 import { db } from '../../firebase';
@@ -7,7 +7,6 @@ import { startRestartVote, castRestartVote, listenRestartVote, endRestartVote } 
 export default function GameResults({ roomId, players = [], finalNickname, finalResults, onRestart }) {
   const navigate = useNavigate();
 
-  if (!finalResults || finalResults.length === 0) return null;
 
   const podium = finalResults.slice(0, 3);
 
@@ -61,6 +60,8 @@ export default function GameResults({ roomId, players = [], finalNickname, final
   const currentPlayerId = currentPlayer?.id;
 
   const canInitiate = players.length >= 2;
+
+  if (!finalResults || finalResults.length === 0) return null;
 
   const handleStartVote = async () => {
     if (!canInitiate) return;

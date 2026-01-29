@@ -9,9 +9,26 @@
 @import "./modal-responsive.css";
 @import "./interactions-responsive.css";
 
+/* Mobile-only badge hidden by default (desktop should not show it) */
+.mobile-nickname-badge { display: none; }
+
+/* Mobile CTA: hidden by default on desktop; mobile stylesheet will show it */
+.mobile-create-btn-wrapper { display: none !important; }
+.mobile-cta-column { display: none !important; }
+.hero-create-inline { display: block !important; }
+
+/* Desktop: show header stats (level + XP). Keep mobile badge hidden on desktop */
+@media (min-width: 769px) {
+  .home .home-header .user-name {
+    display: none !important;
+  }
+  /* ensure mobile badge stays hidden on desktop
+     (mobile CSS will show it on small screens via media queries) */
+  .home .home-header .mobile-nickname-badge { display: none !important; }
+}
+
 /* Minimal safe fallbacks */
-.home-row-grid { grid-template-columns: 1fr; }
-.home { min-height: auto; }
+/* Minimal safe fallbacks (moved into mobile media queries to avoid applying on desktop) */
 
 /* Mobile */
 @media (max-width: 480px) {
@@ -90,7 +107,12 @@
   .inline-create-btn { font-size: 13px !important; padding: 7px 10px !important; }
 
   /* Reorder columns on phone: show modes (partite rapide) first, then join/nickname, then hero */
-  .home-row-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .home-row-grid { display: block !important; grid-template-columns: 1fr !important; grid-template-areas: none !important; gap: 2px !important; }
+  /* tighten vertical spacing between blocks on very small screens */
+  .home-row-grid > * { width: 100% !important; box-sizing: border-box; margin-bottom: 2px !important; }
+  .mobile-cta-column { margin-bottom: 1px !important; }
+  .mobile-create-btn-wrapper { margin-bottom: 0 !important; }
+  .quick-create-section { margin-top: 2px !important; }
   .modes-column { order: 1 !important; }
   .join-column { order: 2 !important; }
   .hero-column { order: 3 !important; }
@@ -98,14 +120,9 @@
   /* Hide the white nickname card on mobile in favor of the compact header badge */
   .nickname-card { display: none !important; }
 
-  /* Show the mobile create CTA inside the join column and hide the inline hero create to avoid duplicates */
-  .mobile-create-btn-wrapper { display: block !important; }
   /* Larger, taller mobile CTA matching quick-create title visual weight */
   .mobile-create-btn { width: 100% !important; padding: 14px 16px !important; font-size: 18px !important; line-height: 1 !important; border-radius: 14px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; font-weight: 700 !important; }
-  .hero-create-inline { display: none !important; }
-
-  /* Show the mobile CTA column at the top of the grid */
-  .mobile-cta-column { display: block !important; order: 0 !important; }
+  
   .mobile-cta-column .mobile-create-btn { margin-bottom: 6px !important; }
 
   /* Further compact specific home sections so they don't appear oversized */
@@ -224,7 +241,7 @@
 
   /* Cards and grid spacing */
   .home-top-row { padding: 0px 10px 4px !important; }
-  .home-row-grid { gap: 8px !important; grid-template-columns: 1fr !important; }
+  .home-row-grid { gap: 8px !important; grid-template-columns: 1fr !important; grid-template-areas: none !important; }
   .home-card, .join-card, .nickname-card, .leaderboard-preview-card { padding: 10px !important; border-radius: 10px !important; }
 
   /* Make hero appear first on mobile */
@@ -235,7 +252,7 @@
 
   /* Hide the white nickname card on phones and surface a compact badge in header */
   .nickname-card { display: none !important; }
-  .mobile-nickname-badge { display: block !important; font-size: 11px !important; color: rgba(255,255,255,0.95) !important; background: rgba(0,0,0,0.14) !important; padding: 6px 10px !important; border-radius: 10px !important; margin-left: 6px !important; max-width: 46% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+  .mobile-nickname-badge { font-size: 11px !important; color: rgba(255,255,255,0.95) !important; background: rgba(0,0,0,0.14) !important; padding: 6px 10px !important; border-radius: 10px !important; margin-left: 6px !important; max-width: 46% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
 
   /* Leaderboard preview compact */
   .leaderboard-preview-card.compact-leaderboard { padding: 6px !important; }
@@ -460,15 +477,18 @@
 /* Force desired ordering and hide oversized hero illustration on phones
    Show only the inline create CTA so users see "Crea stanza" + "Unisciti" first */
 @media (max-width: 480px) {
-  .home-row-grid { grid-template-columns: 1fr !important; }
+  .home-row-grid { grid-template-columns: 1fr !important; grid-template-areas: none !important; }
   .modes-column { order: 1 !important; }
   .join-column { order: 2 !important; }
   .hero-column { order: 3 !important; }
 
+  /* When hero content is hidden on small screens, remove the whole hero column to avoid empty space */
+  .hero-column { display: none !important; }
+
   /* Hide nickname white card on very small screens; use header badge */
   .nickname-card { display: none !important; }
   /* Smaller, less intrusive nickname+XP badge */
-  .mobile-nickname-badge { display: block !important; font-size: 12px !important; color: rgba(255,255,255,0.92) !important; background: rgba(0,0,0,0.10) !important; padding: 4px 6px !important; border-radius: 8px !important; margin-left: 6px !important; max-width: 46% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; box-shadow: none !important; }
+  .mobile-nickname-badge { font-size: 12px !important; color: rgba(255,255,255,0.92) !important; background: rgba(0,0,0,0.10) !important; padding: 4px 6px !important; border-radius: 8px !important; margin-left: 6px !important; max-width: 46% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; box-shadow: none !important; }
 
   .mobile-nick-text { display: inline-block; max-width: 62%; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; font-weight: 500 !important; }
   .mobile-nick-xp { display: inline-block; margin-left: 6px; background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 6px; font-weight: 700; font-size: 11px; vertical-align: middle; }
@@ -481,7 +501,7 @@
 
   /* Slightly tighten spacing so join + create sit together visually */
   .join-column, .nickname-card, .join-card { margin-bottom: 6px !important; }
-  .home-row-grid > * { padding: 6px 6px !important; }
+  .home-row-grid > * { padding: 3px 6px !important; }
 }
 
 /* Strong override: make mobile nickname badge responsive to length and avoid overlap with XP */
@@ -520,4 +540,46 @@
     font-weight: 700 !important;
     white-space: nowrap !important;
   }
+}
+
+/* Final override: show mobile CTA only on small screens (ensures it wins over global hide) */
+@media (max-width: 480px) {
+  .mobile-create-btn-wrapper { display: block !important; }
+  .mobile-cta-column { display: block !important; }
+  .hero-create-inline { display: none !important; }
+  /* Hide entire hero text block to remove empty space on very small screens */
+  .hero-text-side { display: none !important; }
+}
+
+/* Safety fallback for all small screens up to tablet width: enforce stacked layout */
+@media (max-width: 768px) {
+  .home-row-grid { display: block !important; grid-template-columns: none !important; grid-template-areas: none !important; }
+  .home-row-grid > * { width: 100% !important; box-sizing: border-box; margin-bottom: 10px !important; }
+  .hero-column, .modes-column, .join-column, .right-column { width: 100% !important; display: block !important; }
+  .hero-create-inline { display: none !important; }
+  .mobile-create-btn-wrapper { display: block !important; }
+  .mobile-cta-column { display: block !important; }
+}
+
+/* Ensure mobile top row doesn't keep large viewport min-height */
+@media (max-width: 768px) {
+  .home-top-row { min-height: auto !important; }
+}
+
+/* Overrides to eliminate remaining vertical gap between mobile CTA and modes section */
+@media (max-width: 480px) {
+  .mobile-cta-column .mobile-create-btn { margin-bottom: 0 !important; }
+  .mobile-create-btn-wrapper { margin-bottom: 0 !important; }
+  .quick-create-section { margin-top: 0 !important; }
+  .quick-create-title { margin-bottom: 4px !important; }
+  .quick-create-subtitle { margin-bottom: 4px !important; }
+  .join-card { margin-top: 4px !important; }
+  .home-row-grid > * { margin-bottom: 0 !important; }
+}
+
+@media (max-width: 768px) {
+  .mobile-cta-column .mobile-create-btn { margin-bottom: 0 !important; }
+  .mobile-create-btn-wrapper { margin-bottom: 0 !important; }
+  .quick-create-section { margin-top: 0 !important; }
+  .home-row-grid > * { margin-bottom: 2px !important; }
 }
