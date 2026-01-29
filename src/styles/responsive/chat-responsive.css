@@ -3,7 +3,7 @@
 /* Large Tablets */
 @media (max-width: 1400px) {
   .chat-sidebar {
-    width: 280px;
+    width: 320px;
   }
 }
 
@@ -213,7 +213,7 @@
 /* High Resolution */
 @media (min-width: 1920px) {
   .chat-sidebar {
-    width: 360px;
+    width: 420px;
   }
 }
 
@@ -236,4 +236,24 @@
     min-width: 48px;
     min-height: 48px;
   }
+  .chat-user { font-size: 16px !important; }
+  .chat-text { font-size: 18px !important; }
+}
+
+/* Desktop enhancements */
+@media (min-width: 1024px) {
+  .chat-sidebar { width: 600px !important; }
+  .chat-messages { padding: 22px !important; }
+  .chat-message { padding: 16px 20px !important; }
+  .chat-user { font-size: 18px !important; font-weight: 400 !important; }
+  .chat-text { font-size: 18px !important; line-height: 1.45 !important; }
+  .chat-input input { font-size: 25px !important; padding: 14px 16px !important; }
+
+  /* Ensure system messages remain extra-large on desktop despite generic .chat-text rules */
+  .chat-message.system .chat-text { font-size: 27px !important; line-height: 1.25 !important; }
+  .chat-message.system .chat-user { font-size: 25px !important; }
+}
+
+@media (min-width: 1400px) {
+  .chat-sidebar { width: 560px !important; }
 }

@@ -10,6 +10,7 @@ import Palette from "./Palette";
 import { usePlayers } from "../../hooks/usePlayers";
 import { usePuzzleGame } from "../../hooks/usePuzzleGame";
 import { usePuzzleDrawing } from "../../hooks/usePuzzleDrawing";
+import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
 import { useChat } from "../../hooks/useChat";
 
 /**
@@ -48,6 +49,26 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   const handleStartGame = () => {
     startGame(gameConfig);
   };
+
+  // Compute effective sections robustly: prefer gameState, then gameConfig, then default.
+  const rawSections = gameState?.puzzleSections ?? gameConfig?.puzzleSections ?? PUZZLE_DRAWING.sections;
+  // Try a safe numeric coercion first (handles numbers, numeric-strings and booleans)
+  let effectiveSections = Number(rawSections);
+  // Reject booleans which coerce to 1/0 (true -> 1)
+  if (typeof rawSections === 'boolean' || !Number.isFinite(effectiveSections) || ![2, 3].includes(effectiveSections)) {
+    // Try parseInt as a last attempt for weird string shapes
+    const parsed = parseInt(rawSections, 10);
+    if (Number.isFinite(parsed) && [2, 3].includes(parsed)) {
+      effectiveSections = parsed;
+    } else {
+      console.warn('⚠️ [PuzzleBoard] Invalid puzzleSections=', rawSections, '(', typeof rawSections, ') falling back to default', PUZZLE_DRAWING.sections);
+      effectiveSections = PUZZLE_DRAWING.sections || 3;
+    }
+  } else {
+    effectiveSections = Math.floor(effectiveSections);
+  }
+
+  console.log('🔧 [PuzzleBoard] effectiveSections=', effectiveSections, 'raw=', rawSections, 'typeofRaw=', typeof rawSections, 'gameState.puzzleSections=', gameState?.puzzleSections, 'gameConfig.puzzleSections=', gameConfig?.puzzleSections);
 
   // PuzzleBoard doesn't forcibly change body scroll here; parent layout
   // (Board/overall app) controls body overflow to avoid layout conflicts.
@@ -108,7 +129,11 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                 {isDrawer && (
                   <>
                     🎨 TU DISEGNI - Sezione:{' '}
-                    <strong>{['SINISTRA', 'CENTRO', 'DESTRA'][mySection]}</strong>
+                    <strong>{
+                      // Try to display the sectionName from assigned drawers when available
+                      (gameState?.currentDrawers || []).find(d => d.player.name === finalNickname || (players.find(p => p.name === finalNickname) && d.player.uid === players.find(p => p.name === finalNickname).id))?.sectionName
+                      || ['SINISTRA', 'CENTRO', 'DESTRA'][mySection]
+                    }</strong>
                   </>
                 )}
                 {isGuesser && (
@@ -147,7 +172,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
           <main className="board-main">
             <div className="game-content" style={{ maxWidth: '1100px' }}>
-              <PuzzleCanvas
+                <PuzzleCanvas
                 currentColor={selectedColor}
                 brushSize={brushSize}
                 isDrawing={isDrawer && !hasGuessed}
@@ -158,7 +183,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                 onFinishStroke={finishStroke}
                 showSectionBorders={true}
                 selectedInstrument={selectedInstrument}
-                totalSections={gameState?.puzzleSections || 3}
+                  totalSections={effectiveSections}
               />
 
               {/* Palette solo per i disegnatori */}

@@ -128,12 +128,14 @@ export default function PuzzleCanvas({
     const ctx = canvas.getContext('2d');
     ctxRef.current = ctx;
 
+    console.log('🔧 [PuzzleCanvas] init drawBackground totalSections=', totalSections);
+
     const size = Math.min(canvas.parentElement.clientWidth, window.innerHeight * 0.7);
     canvas.width = size;
     canvas.height = size;
 
     drawBackground(ctx, canvas.width, canvas.height);
-  }, [drawBackground]);
+  }, [drawBackground, totalSections]);
 
   useEffect(() => {
     const ctx = ctxRef.current;

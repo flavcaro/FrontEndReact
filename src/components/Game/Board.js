@@ -6,6 +6,7 @@ import PlayersSidebar from "./PlayersSidebar";
 import ChatSidebar from "./ChatSidebar";
 import GameHeader from "./GameHeader";
 import Canvas from "./Canvas";
+import PuzzleBoard from "./PuzzleBoard";
 import GameResults from "./GameResults";
 import Palette from "./Palette";
 
@@ -40,6 +41,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     restartGame,
     showResults
   } = useGame(roomId, finalNickname, players);
+
 
   // Survival threshold info (may be stored as {type,value} or {thresholdType,thresholdValue})
   const survivalThreshold = gameState?.survivalThreshold;
@@ -142,6 +144,11 @@ export default function Board({ roomId, nickname, gameConfig }) {
     }
     return () => { document.body.style.overflow = prev || ''; };
   }, [isPinned]);
+
+  // If this room is configured for Puzzle Drawing, render the specialized board.
+  if ((gameConfig && gameConfig.id === 'puzzleDrawing') || (gameState && gameState.gameModeId === 'puzzleDrawing')) {
+    return <PuzzleBoard roomId={roomId} nickname={nickname} gameConfig={gameConfig} />;
+  }
 
   return (
     <>

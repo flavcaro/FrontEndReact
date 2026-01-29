@@ -3,8 +3,24 @@
 /* Large Tablets */
 @media (max-width: 1400px) {
   .players-sidebar {
-    width: 240px;
+    width: 360px; /* increased width for desktop parity */
+    padding: 22px;
   }
+
+  .players-sidebar .player-item .avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .players-sidebar .player-item .player-name {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .players-sidebar .player-item { gap: 12px; }
+  .share-box { padding: 16px !important; }
+  .share-box label { font-size: 16px !important; }
+  .share-box input { font-size: 16px !important; padding: 10px !important; }
 }
 
 /* Tablets Portrait */
@@ -296,4 +312,32 @@
     width: 40px;
     height: 40px;
   }
+}
+
+/* Desktop: ensure large sidebars, roomy invite input and prominent avatars */
+@media (min-width: 1024px) {
+  .players-sidebar {
+    width: 420px !important;
+    padding: 22px !important;
+  }
+
+  .players-sidebar .player-item .avatar,
+  .player-avatar {
+    width: 72px !important;
+    height: 72px !important;
+  }
+
+  .players-sidebar .player-item .player-name,
+  .player-name {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+  }
+
+  .share-box { padding: 18px !important; }
+  .share-box label { font-size: 18px !important; }
+  .share-box input { font-size: 18px !important; padding: 12px !important; }
+}
+
+@media (min-width: 1400px) {
+  .players-sidebar { width: 480px !important; }
 }

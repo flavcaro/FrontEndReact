@@ -1,5 +1,9 @@
 /* Header responsive rules extracted from home-responsive.css */
 
+/* Desktop-first: hide mobile-only info toggle/popover by default */
+.mobile-info-btn, .mobile-game-info-popover { display: none; }
+.desktop-only { display: block; }
+
 /* Hide mobile-only menu by default; shown only inside mobile media queries */
 .mobile-hamburger,
 .mobile-menu { display: none !important; }

@@ -33,6 +33,15 @@
   text-align: center;
 }
 
+.chat-message.system .chat-text {
+  font-size: 28px; /* larger system messages */
+  line-height: 1.35;
+}
+
+.chat-message.system .chat-user {
+  font-size: 18px;
+}
+
 .chat-user {
   font-size: 22px;
   font-weight: 600;
@@ -59,7 +68,7 @@
   padding: 10px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 24px;
+  font-size: 20px;
   min-width: 0;
 }
 
@@ -134,7 +143,7 @@
   }
 
   .chat-text {
-    font-size: 23px;
+    font-size: 20px;
   }
 
   .chat-input {

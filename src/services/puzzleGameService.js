@@ -28,8 +28,18 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
   }
 
   // Recupera la configurazione delle sezioni e cicli (default 3 sezioni, 1 ciclo)
-  const sectionsCount = gameConfig.puzzleSections || 3;
-  const cyclesCount = gameConfig.puzzleCycles || 1;
+  // Supporta sia `puzzleSections` che `sections` (fallback), e normalizza a number
+  const rawSections = gameConfig?.puzzleSections ?? gameConfig?.sections ?? 3;
+  let sectionsCount = Number(rawSections);
+  // Reject boolean values saved accidentally (true -> 1)
+  if (typeof rawSections === 'boolean' || !Number.isFinite(sectionsCount) || ![2, 3].includes(sectionsCount)) {
+    const parsed = parseInt(rawSections, 10);
+    sectionsCount = (Number.isFinite(parsed) && [2, 3].includes(parsed)) ? parsed : 3;
+  } else {
+    sectionsCount = Math.floor(sectionsCount);
+  }
+  const cyclesCountRaw = gameConfig?.puzzleCycles;
+  const cyclesCount = Number.isFinite(Number(cyclesCountRaw)) ? parseInt(cyclesCountRaw, 10) : 1;
   console.log('[startPuzzleGame] Configurazione sezioni:', sectionsCount, 'Cicli:', cyclesCount);
 
   // Reset punteggi
@@ -75,8 +85,8 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
     difficulty: gameConfig.difficulty?.name || 'Medio',
     difficultyId: gameConfig.difficulty?.id || 'medium',
     turnDuration: gameConfig.turnDuration || PUZZLE_DRAWING.turnDuration,
-    puzzleSections: sectionsCount, // Salva configurazione sezioni
-    puzzleCycles: cyclesCount, // Salva numero di cicli richiesti
+    puzzleSections: sectionsCount, // Salva configurazione sezioni (number)
+    puzzleCycles: cyclesCount, // Salva numero di cicli richiesti (number)
     
     // Stato del round corrente
     round: 1,
@@ -284,7 +294,14 @@ export const advancePuzzleRound = async (roomId) => {
   }
 
   // Assegna i nuovi ruoli (usa il numero di sezioni salvato nello stato)
-  const sectionsCount = gameState.puzzleSections || 3;
+  const raw = gameState?.puzzleSections;
+  let sectionsCount = Number(raw);
+  if (typeof raw === 'boolean' || !Number.isFinite(sectionsCount) || ![2, 3].includes(sectionsCount)) {
+    const parsed = parseInt(raw, 10);
+    sectionsCount = (Number.isFinite(parsed) && [2, 3].includes(parsed)) ? parsed : 3;
+  } else {
+    sectionsCount = Math.floor(sectionsCount);
+  }
   const newRoles = assignPuzzleRoles(playersList, nextRound - 1, sectionsCount);
   
   // Ottieni una nuova parola non ancora usata

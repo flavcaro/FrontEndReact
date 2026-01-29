@@ -34,7 +34,7 @@
 
   /* Chat Sidebar - Right side, wider than mobile */
   .chat-sidebar {
-    width: 270px !important;
+    width: 360px !important; /* give more room on tablet landscape */
     height: 100vh !important;
     max-height: none !important;
     border-left: 1px solid #e2e8f0 !important;

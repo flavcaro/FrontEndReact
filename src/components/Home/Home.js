@@ -591,7 +591,9 @@ export default function Home() {
                     classica: CLASSICA.id,
                     sopravvivenza: SOPRAVVIVENZA.id,
                     chaos_tools: CHAOS_TOOLS.id,
+                    // accept both variants from the form ('puzzleDrawing' and 'puzzle_drawing')
                     puzzle_drawing: PUZZLE_DRAWING.id,
+                    puzzleDrawing: PUZZLE_DRAWING.id
                   };
                   const resolved = map[id] || CLASSICA.id;
                   setSelectedModeId(resolved);

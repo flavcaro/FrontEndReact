@@ -71,36 +71,59 @@ export const assignPuzzleRoles = (players, roundIndex, sectionsCount = 3) => {
 
   const config = PUZZLE_SECTIONS_CONFIG[sectionsCount] || PUZZLE_SECTIONS_CONFIG[3];
   const totalPlayers = players.length;
-  
-  // Gli indovinatori ruotano ad ogni round
+
+  // Normalize players: accept objects with `id` or `uid` and ensure { uid, name }
+  const normalized = players.map(p => ({ uid: p.uid || p.id || p.playerId || p.id, name: p.name || p.nickname || p.displayName || '' }));
+
+  // Determine counts
+  const drawersCount = config.drawers || config.sections || sectionsCount;
+  const guessersCount = Math.min(config.guessers || 1, Math.max(0, totalPlayers - drawersCount));
+
   const guessers = [];
   const drawers = [];
-  
-  // Calcola quanti giocatori devono indovinare in questo round
-  const guessersCount = Math.min(config.guessers, totalPlayers - config.drawers);
-  
-  // Assegna gli indovinatori (rotazione basata sul round)
-  for (let i = 0; i < guessersCount; i++) {
-    const guesserIndex = (roundIndex * guessersCount + i) % totalPlayers;
-    guessers.push(players[guesserIndex]);
+
+  // Defensive: if guessersCount is 0, make at least one guesser if possible
+  const finalGuessersCount = guessersCount > 0 ? guessersCount : Math.min(1, Math.max(0, totalPlayers - drawersCount));
+
+  // Pick guessers by rotating start index so rounds cycle fairly
+  let pickIndex = (roundIndex * finalGuessersCount) % totalPlayers;
+  while (guessers.length < finalGuessersCount) {
+    const candidate = normalized[pickIndex % totalPlayers];
+    if (!guessers.find(g => g.uid === candidate.uid)) {
+      guessers.push(candidate);
+    }
+    pickIndex++;
   }
-  
-  // Assegna i disegnatori (tutti gli altri fino al massimo di sezioni disponibili)
+
   const guesserUIDs = new Set(guessers.map(g => g.uid));
+
+  // Assign drawers: pick next players after guessers, skipping guessers, until drawersCount
+  pickIndex = (roundIndex * finalGuessersCount + finalGuessersCount) % totalPlayers; // start after primary guessers block
   let sectionIndex = 0;
-  
-  for (let i = 0; i < totalPlayers && drawers.length < config.sections; i++) {
-    const player = players[i];
-    if (!guesserUIDs.has(player.uid)) {
-      drawers.push({
-        player: player,
-        section: sectionIndex,
-        sectionName: config.sectionNames[sectionIndex]
-      });
-      sectionIndex++;
+  let safety = 0;
+  while (drawers.length < drawersCount && safety < totalPlayers * 2) {
+    const candidate = normalized[pickIndex % totalPlayers];
+    if (!guesserUIDs.has(candidate.uid) && !drawers.find(d => d.player.uid === candidate.uid)) {
+      drawers.push({ player: candidate, section: sectionIndex, sectionName: config.sectionNames[sectionIndex] });
+      sectionIndex = (sectionIndex + 1) % drawersCount;
+    }
+    pickIndex++;
+    safety++;
+  }
+
+  // Fallback: if still not enough drawers (unlikely), fill from front skipping guessers
+  if (drawers.length < drawersCount) {
+    for (let i = 0; i < normalized.length && drawers.length < drawersCount; i++) {
+      const candidate = normalized[i];
+      if (!guesserUIDs.has(candidate.uid) && !drawers.find(d => d.player.uid === candidate.uid)) {
+        drawers.push({ player: candidate, section: sectionIndex, sectionName: config.sectionNames[sectionIndex] });
+        sectionIndex = (sectionIndex + 1) % drawersCount;
+      }
     }
   }
-  
+
+  console.log('assignPuzzleRoles debug:', { totalPlayers, sectionsCount, drawersCount, finalGuessersCount, guessers: guessers.map(g=>g.name), drawers: drawers.map(d=>d.player.name) });
+
   return { drawers, guessers };
 };
 

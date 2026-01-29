@@ -149,11 +149,12 @@ export default function ChatSidebar({
       <div className="chat-messages">
         {messages.map((msg) => {
           const messageStyle = getMessageStyle(msg);
+          const classNames = `chat-message ${msg.isSystem ? 'system' : ''}`;
           
           return (
             <div 
               key={msg.id} 
-              className="chat-message"
+              className={classNames}
               style={messageStyle}
             >
               {!msg.isSystem && (
