@@ -1,7 +1,7 @@
 // Modalità Sopravvivenza
 export const SOPRAVVIVENZA = {
   id: 'sopravvivenza',
-  name: '🏃 Sopravvivenza',
+  name: 'Sopravvivenza',
   description: 'Difficoltà crescente per round. Penalità per non indovinare: perdita vite, eliminazione. Vince l\'ultimo rimasto!',
   icon: '🏃',
   turnDuration: 30,

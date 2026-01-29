@@ -378,7 +378,7 @@ export default function Home() {
               </div>
               <div className="hero-content">
                 <h2>SketchUp! Indovina le parole</h2>
-                <p>Disegna e indovina. Divertente e creativo!</p>
+                <h3>Disegna e indovina. Divertente e creativo!</h3>
               </div>
               <div className="hero-create-inline">
                 <Button onClick={() => setShowCustomModal(true)} className="create-btn inline-create-btn">

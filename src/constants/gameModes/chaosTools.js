@@ -1,7 +1,7 @@
 // Modalità Chaos Tools
 export const CHAOS_TOOLS = {
   id: 'chaos_tools',
-  name: '🌀 Chaos Tools',
+  name: 'Chaos Tools',
   description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, linee tremolanti',
   icon: '🌀',
   turnDuration: 45,

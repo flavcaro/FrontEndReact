@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { subscribeLeaderboard } from "../../services/userService";
 import { ref, get } from "firebase/database";
 import { db } from "../../firebase";
+import { useUserData } from "../../hooks/useUserData";
 
 export default function Leaderboard({ show, onClose, limit = 20 }) {
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState([]);
+  const { user, nickname } = useUserData();
 
   useEffect(() => {
     if (!show) return;
@@ -73,20 +75,36 @@ export default function Leaderboard({ show, onClose, limit = 20 }) {
             <div>Nessun dato disponibile</div>
           ) : (
             <ol className="leaderboard-list" style={{ padding: 0, margin: 0 }}>
-              {list.map((u, idx) => (
-                <li key={u.uid || idx} style={{ listStyle: 'none', marginBottom: 6 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="leader-left">
-                      <div className={`leader-avatar`}>{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx === 3 ? '🏅' : (idx+1))}</div>
-                      <div>
-                        <div className="leader-name">{u.nickname || u.email || u.displayName || `Utente-${(u.uid || '').slice(0,6)}`}</div>
-                        <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
+              {(() => {
+                // find current user's index by uid (preferred) or by nickname
+                const foundIndex = list.findIndex((u) => (user && u.uid && user.uid && u.uid === user.uid) || (nickname && (u.nickname === nickname || u.email === nickname || u.displayName === nickname)));
+                let displayRange = [];
+                if (foundIndex !== -1) {
+                  const start = Math.max(0, foundIndex - 1);
+                  const end = Math.min(list.length - 1, foundIndex + 1);
+                  for (let i = start; i <= end; i++) displayRange.push({ item: list[i], index: i });
+                } else {
+                  // if user not found, show top 3 as fallback
+                  for (let i = 0; i < Math.min(3, list.length); i++) displayRange.push({ item: list[i], index: i });
+                }
+                return displayRange.map(({ item: u, index: idx }) => {
+                  const isCurrent = (foundIndex !== -1 && idx === foundIndex);
+                  return (
+                    <li key={u.uid || idx} className={`leader-row ${isCurrent ? 'current' : ''}`} aria-current={isCurrent ? 'true' : 'false'} style={{ listStyle: 'none', marginBottom: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="leader-left">
+                          <div className={`leader-avatar`}>{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx === 3 ? '🏅' : (idx+1))}</div>
+                          <div>
+                            <div className="leader-name">{u.nickname || u.email || u.displayName || `Utente-${(u.uid || '').slice(0,6)}`}</div>
+                            <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
+                          </div>
+                        </div>
+                        <div className="leader-score">⭐ {u.totalScore || 0}</div>
                       </div>
-                    </div>
-                    <div className="leader-score">⭐ {u.totalScore || 0}</div>
-                  </div>
-                </li>
-              ))}
+                    </li>
+                  );
+                });
+              })()}
             </ol>
           )}
         </div>

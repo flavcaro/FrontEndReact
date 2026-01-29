@@ -10,7 +10,7 @@
 
 export const PUZZLE_DRAWING = {
   id: 'puzzleDrawing',
-  name: '🧩 Puzzle Drawing',
+  name: 'Puzzle Drawing',
   description: 'Disegnate insieme dividendo il canvas!',
   icon: '🧩',
   turnDuration: 90, // Più tempo perché i giocatori devono coordinarsi

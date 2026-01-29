@@ -1,3 +1,22 @@
+
+/* Highlight the current user's row inside the leaderboard modal/preview */
+.leader-row.current {
+  background: linear-gradient(90deg, rgba(255,249,236,0.95), rgba(255,243,224,0.95));
+  border: 1px solid rgba(245,158,11,0.14);
+  box-shadow: 0 12px 36px rgba(245,158,11,0.08);
+  border-radius: 12px;
+  padding: 8px;
+}
+.leader-row.current .leader-name {
+  color: #92400e;
+  font-weight: 900;
+}
+.leader-row.current .leader-score {
+  background: linear-gradient(90deg,#fff7ed,#fff1d6);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+}
 /* ===========================================
    SKETCHUP HOME - STILE GARTIC PHONE
    Design giocoso, dinamico, full-page
@@ -269,12 +288,12 @@
 
 .home-row-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1.8fr 1fr; /* increase central (modes) column for better balance */
+  grid-template-columns: 1.6fr 2.4fr 1.6fr; /* make side columns more proportional to central modes column */
   grid-template-rows: auto auto;
   grid-template-areas:
     "hero modes right"
     "hero join  right";
-  gap: 4px 20px; /* row-gap (4px) / column-gap (20px): even tighter vertical spacing */
+  gap: 8px 36px; /* row-gap (8px) / column-gap (36px): balanced spacing */
   align-items: start;
   max-width: 1600px;
   margin: 0 auto;
@@ -359,6 +378,27 @@
   gap: 18px;
   align-items: stretch;
   grid-area: right;
+}
+
+/* Desktop (large screens): scale up hero and right column visual weight to match central table */
+@media (min-width: 1025px) {
+  .home-row-grid { gap: 12px 36px; }
+
+  /* Hero: larger illustration and headings */
+  .hero-column .hero-illustration { width: 220px; height: 220px; }
+  .hero-column .main-emoji { font-size: 180px; }
+  .hero-column .hero-content h2 { font-size: 80px; line-height: 1.02; }
+  .hero-column .hero-content p { font-size: 22px; color: #475569; }
+  .hero-logo { font-size: 64px; }
+
+  /* Right column: increase card sizes so they match central weight */
+  .right-column .join-card, .right-column .nickname-card, .right-column .leaderboard-preview-card {
+    padding: 28px;
+    border-radius: 18px;
+  }
+  .right-column .join-container h3 { font-size: 26px; }
+  .right-column .join-subtitle { font-size: 16px; margin-bottom: 12px; }
+  .right-column .leaderboard-preview-card h3 { font-size: 20px; }
 }
 
 /* LATO SINISTRO - LOGO + TESTO DESCRITTIVO */
@@ -1817,4 +1857,70 @@
   .leaderboard-preview-card { font-size: 15px !important; }
   .leaderboard-preview-card .leader-name { font-size: 16px !important; }
   .leaderboard-preview-card.compact-leaderboard .leader-avatar { width: 90px !important; height: 90px !important; font-size: 30px !important; }
+}
+
+/* Desktop: larger quick-create cards and typography for the central modes column */
+@media (min-width: 769px) {
+  .modes-column .quick-create-title {
+    font-size: 40px;
+    line-height: 1.02;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+  .modes-column .quick-create-subtitle {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #475569;
+    font-weight: 600;
+  }
+  .modes-column .quick-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    grid-auto-rows: 1fr; /* make grid rows equal height */
+    align-items: stretch;
+    align-content: stretch;
+  }
+  .modes-column .quick-button-card {
+    padding: 36px;
+    min-height: 160px;
+    height: 100%; /* stretch to fill grid row */
+    border-radius: 16px;
+    gap: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column; /* ensure vertical stacking so justify-content centers content */
+    justify-content: center;
+  }
+  .modes-column .quick-button-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .modes-column .quick-button-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modes-column .quick-button-content h3 {
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+  }
+  .modes-column .quick-button-content p {
+    font-size: 18px;
+    margin: 0;
+    color: #475569;
+  }
+ 
+}
+
+/* Mid/large desktops: ensure hero titles are readable without affecting mobile */
+@media (min-width: 769px) {
+  .hero-column .hero-content h2 { font-size: 56px; }
+  .hero-column .hero-content p { font-size: 20px; }
+  .hero-logo { font-size: 56px; }
 }
