@@ -336,19 +336,24 @@ export function useGame(roomId, nickname, players) {
   }, [roomId, players]);
 
   /* ---------------- RESTART GAME ---------------- */
-  const restartGame = useCallback(async () => {
+  const restartGame = useCallback(async (acceptedPlayers = []) => {
     try {
       // Recupera la configurazione precedente
       const gameSnap = await get(ref(db, `rooms/${roomId}/game`));
       const previousGame = gameSnap.val();
 
       const gameConfig = {
+        id: previousGame?.gameModeId || 'classica',
+        name: previousGame?.mode || 'Classica',
         difficulty: {
           id: previousGame?.difficultyId || 'medium',
           name: previousGame?.difficulty || 'Medio'
         },
         turnDuration: previousGame?.turnDuration || TURN_DURATION,
-        roundsPerGame: previousGame?.roundsPerPlayer || 1
+        roundsPerGame: previousGame?.roundsPerPlayer || 1,
+        survival: previousGame?.survivalMode || false,
+        startingLives: previousGame?.startingLives || 3,
+        hasChaos: previousGame?.hasChaosEffects || false
       };
 
       // Reset states
@@ -358,7 +363,10 @@ export function useGame(roomId, nickname, players) {
       const user = auth.currentUser;
       if (!user) throw new Error("Utente non autenticato");
 
-      await startNewGame(roomId, players, user.uid, gameConfig);
+      // Filter players to accepted if provided
+      const playersToUse = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
+
+      await startNewGame(roomId, playersToUse, user.uid, gameConfig);
     } catch (error) {
       console.error("Errore riavviando il gioco:", error);
       alert("Errore nel riavvio del gioco: " + error.message);
