@@ -125,10 +125,10 @@ export function usePuzzleGame(roomId, nickname, players) {
     }
 
     try {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      await handlePuzzleGuess(roomId, user.uid, guesserNickname || nickname, timeLeft);
+      // Use the player's DB id (player record key) as guesserId so server-side matching
+      // works for both authenticated and anonymous players.
+      const guesserId = currentPlayerId || null;
+      await handlePuzzleGuess(roomId, guesserId, guesserNickname || nickname, timeLeft);
 
       // Dopo un breve delay, avanza al prossimo round
       setTimeout(async () => {
@@ -138,7 +138,7 @@ export function usePuzzleGame(roomId, nickname, players) {
     } catch (error) {
       console.error("Errore gestendo l'indovinata:", error);
     }
-  }, [roomId, gameState, nickname, isGuesser, timeLeft]);
+  }, [roomId, gameState, nickname, isGuesser, timeLeft, currentPlayerId]);
 
   /* ---------------- RESTART GAME ---------------- */
   const restartGame = useCallback(async (acceptedPlayers = []) => {

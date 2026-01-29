@@ -187,13 +187,18 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
   }
 
   // Assegna punti a TUTTI i disegnatori
-  for (const drawer of gameState.currentDrawers) {
+  // Condividi i punti artista tra i disegnatori (uguale ripartizione)
+  const drawers = Array.isArray(gameState.currentDrawers) ? gameState.currentDrawers : [];
+  const drawersCount = Math.max(1, drawers.length);
+  const totalArtistPoints = scores.artistPoints;
+  const perDrawer = Math.round(totalArtistPoints / drawersCount);
+  for (const drawer of drawers) {
     const drawerData = Object.entries(playersData).find(([id, p]) => p.name === drawer.player.name);
     if (drawerData) {
       const [playerId, playerInfo] = drawerData;
       const currentScore = playerInfo.score || 0;
-      await set(ref(db, `rooms/${roomId}/players/${playerId}/score`), currentScore + scores.artistPoints);
-      console.log(`✅ Assegnati ${scores.artistPoints} punti a ${drawer.player.name}`);
+      await set(ref(db, `rooms/${roomId}/players/${playerId}/score`), currentScore + perDrawer);
+      console.log(`✅ Assegnati ${perDrawer} punti a ${drawer.player.name} (condivisione)`);
     } else {
       console.error(`❌ Disegnatore ${drawer.player.name} non trovato nei players`);
     }
@@ -226,7 +231,7 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
   const drawersNames = gameState.currentDrawers.map(d => d.player.name).join(', ');
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `🎨 Disegnatori (${drawersNames}): +${scores.artistPoints} punti ciascuno!`,
+    message: `🎨 Disegnatori (${drawersNames}): punti condivisi +${totalArtistPoints} (ogni disegnatore +${perDrawer})`,
     timestamp: Date.now(),
     isSystem: true
   });
