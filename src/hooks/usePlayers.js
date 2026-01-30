@@ -300,6 +300,7 @@ export function usePlayers(roomId, nickname) {
                   try {
                     const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
                     const restartData = restartSnap.val();
+                    console.log('[usePlayers] restartVote snapshot during owner cleanup', { roomId, restartData });
                     if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
                       // Found a restart vote in progress or accepted: skip owner removal to let restart flow handle navigation
                       skipOwnerRemoval = true;
@@ -307,6 +308,8 @@ export function usePlayers(roomId, nickname) {
                   } catch (err) {
                     console.warn('Error while checking restartVote during owner cleanup', err);
                   }
+
+                  console.log('[usePlayers] skipOwnerRemoval?', { roomId, skipOwnerRemoval });
 
                   if (!skipOwnerRemoval) {
                     if (gameData?.active) {
@@ -318,6 +321,7 @@ export function usePlayers(roomId, nickname) {
                     }
 
                     // Remove current owner
+                    console.log('[usePlayers] removing owner node for room', roomId);
                     await remove(ref(db, `rooms/${roomId}/owner`));
 
                     // Assign new owner to the oldest remaining player (by joinedAt)
@@ -330,6 +334,7 @@ export function usePlayers(roomId, nickname) {
 
                     if (remainingPlayerList.length > 0) {
                       const newOwner = remainingPlayerList[0];
+                      console.log('[usePlayers] assigning new owner', { roomId, newOwnerId: newOwner.id, newOwnerName: newOwner.name });
                       await set(ref(db, `rooms/${roomId}/owner`), {
                         playerId: newOwner.id,
                         nickname: newOwner.name,
@@ -342,6 +347,7 @@ export function usePlayers(roomId, nickname) {
                   } else {
                     // Skip owner removal: announce that the creator is restarting the room and keep owner node intact
                     try {
+                      console.log('[usePlayers] skipping owner removal due to restartVote', { roomId });
                       await sendSystemMessage(roomId, `⚠️ Il creatore sta riavviando la partita, attendere...`);
                     } catch (e) { /* ignore */ }
                   }

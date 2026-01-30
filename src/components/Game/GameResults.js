@@ -6,7 +6,7 @@ import { startRestartVote, castRestartVote, listenRestartVote, endRestartVote } 
 import { endGameByOwnerLeaving } from '../../services/gameService';
 import SimplePopup from './SimplePopup';
 
-export default function GameResults({ roomId, players = [], finalNickname, finalResults, onRestart, minYesVotes = 2 }) {
+export default function GameResults({ roomId, players = [], finalNickname, finalResults, onRestart, minYesVotes = 2, playerId: propPlayerId }) {
   const navigate = useNavigate();
 
 
@@ -15,9 +15,11 @@ export default function GameResults({ roomId, players = [], finalNickname, final
   const [restartVote, setRestartVote] = useState(null);
   const [hasCast, setHasCast] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [thumbFeedback, setThumbFeedback] = useState(null); // 'yes' | 'no' | null
 
+  // Prefer explicit `playerId` prop (from `usePlayers`) — fallback to name-based lookup
   const currentPlayer = players.find(p => p.name === finalNickname);
-  const currentPlayerId = currentPlayer?.id;
+  const currentPlayerId = propPlayerId || currentPlayer?.id;
 
   
 
@@ -25,6 +27,9 @@ export default function GameResults({ roomId, players = [], finalNickname, final
   useEffect(() => {
     if (!roomId) return;
     const unsub = listenRestartVote(roomId, (data) => {
+      try {
+        console.log('[GameResults] restartVote update', { roomId, data, currentPlayerId, playersCount: players.length });
+      } catch (e) { /* ignore logging errors */ }
       setRestartVote(data || null);
       // Update hasCast according to the stored votes for this player
       if (data?.status === 'open') {
@@ -35,7 +40,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
       }
     });
     return () => unsub && unsub();
-  }, [roomId, currentPlayerId]);
+  }, [roomId, currentPlayerId, players.length]);
 
   // If votes reach a decision, conclude locally
   useEffect(() => {
@@ -238,6 +243,11 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     try {
       await castRestartVote(roomId, currentPlayerId, choice);
       setHasCast(true);
+      // Quick visual feedback for the clicked thumb
+      try {
+        setThumbFeedback(choice);
+        setTimeout(() => setThumbFeedback(null), 260);
+      } catch (e) { /* ignore */ }
       // Vote cast; do NOT remove player automatically on 'no' — just register vote
     } catch (err) {
       console.error('castRestartVote error', err);
@@ -313,6 +323,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                         return (
                           <>
                             <div
+                              className={`thumb-vote ${thumbFeedback === 'yes' ? 'pulse' : ''}`}
                               onClick={() => (!hasCast && handleVote('yes'))}
                               role="button"
                               tabIndex={0}
@@ -329,12 +340,10 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                             >
                               <div style={{ fontSize: 44 }}>👍</div>
                               <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'yes').length} voti</div>
-                              {!hasCast && (!restartVote.votes || restartVote.votes[currentPlayerId] === 'pending') && (
-                                <button onClick={() => handleVote('yes')} style={{ marginTop: 12, padding: '8px 12px', width: '70%', borderRadius: 8, cursor: 'pointer' }}>Gioco</button>
-                              )}
                             </div>
 
                             <div
+                              className={`thumb-vote ${thumbFeedback === 'no' ? 'pulse' : ''}`}
                               onClick={() => (!hasCast && handleVote('no'))}
                               role="button"
                               tabIndex={0}
@@ -351,9 +360,6 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                             >
                               <div style={{ fontSize: 44 }}>👎</div>
                               <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'no').length} voti</div>
-                              {!hasCast && (!restartVote.votes || restartVote.votes[currentPlayerId] === 'pending') && (
-                                <button onClick={() => handleVote('no')} style={{ marginTop: 12, padding: '8px 12px', width: '70%', borderRadius: 8, cursor: 'pointer' }}>Esco</button>
-                              )}
                             </div>
                           </>
                         );

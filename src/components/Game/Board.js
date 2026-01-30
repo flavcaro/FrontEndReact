@@ -48,7 +48,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     } catch (e) { return 320; }
   });
 
-  const { players, finalNickname, cannotJoinReason, isOwner } =
+  const { players, finalNickname, cannotJoinReason, isOwner, playerId } =
     usePlayers(roomId, nickname);
 
   const {
@@ -347,6 +347,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
               finalNickname={finalNickname}
               finalResults={finalResults}
               onRestart={restartGame}
+              playerId={playerId}
             />
           )}
         </div>

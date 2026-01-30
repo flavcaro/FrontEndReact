@@ -19,7 +19,7 @@ import { useChat } from "../../hooks/useChat";
  * Il canvas è diviso in 3 sezioni, ogni giocatore disegna nella propria sezione
  */
 const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
-  const { players, finalNickname, cannotJoinReason, isOwner } = usePlayers(roomId, nickname);
+  const { players, finalNickname, cannotJoinReason, isOwner, playerId } = usePlayers(roomId, nickname);
 
   const {
     gameState,
@@ -255,6 +255,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
               finalResults={finalResults}
               onRestart={restartGame}
               minYesVotes={4}
+              playerId={playerId}
             />
           )}
         </div>
