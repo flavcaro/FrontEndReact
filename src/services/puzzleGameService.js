@@ -1,4 +1,4 @@
-import { ref, set, push, remove, get, update } from "firebase/database";
+import { ref, set, push, remove, get, update, runTransaction } from "firebase/database";
 import { db } from "../firebase";
 // WORDS_BY_DIFFICULTY removed; we rely on remote API for random words
 import { getRandomWord as getRandomWordFromAPI } from "./wordService";
@@ -154,12 +154,22 @@ export const startPuzzleGame = async (roomId, players, userId, gameConfig) => {
  */
 export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft) => {
   const gameRef = ref(db, `rooms/${roomId}/game`);
-  const gameSnap = await get(gameRef);
-  const gameState = gameSnap.val();
 
-  if (!gameState || gameState.guessedInCurrentRound) {
-    return; // Già indovinato in questo round
+  // Use a transaction to ensure only one client proceeds to award points
+  const txResult = await runTransaction(gameRef, (current) => {
+    if (!current) return; // no game state
+    if (current.guessedInCurrentRound) return; // abort - already guessed
+    // mark guessed to prevent concurrent handlers
+    current.guessedInCurrentRound = true;
+    return current;
+  }, { applyLocally: false });
+
+  if (!txResult.committed) {
+    // another client already processed the guess
+    return;
   }
+
+  const gameState = txResult.snapshot.val();
 
   // Verifica che il giocatore sia effettivamente un guesser
   const guessers = gameState.currentGuessers || (gameState.currentGuesser ? [gameState.currentGuesser] : []);
@@ -213,8 +223,8 @@ export const handlePuzzleGuess = async (roomId, guesserId, guesserName, timeLeft
     updatedPlayersWhoGuessed.push(guesserId);
   }
   
+  // Update playersWhoGuessed and counts (guessedInCurrentRound was set by transaction)
   await update(gameRef, {
-    guessedInCurrentRound: true,
     playersWhoGuessed: updatedPlayersWhoGuessed,
     playersWhoGuessedCounts
   });
@@ -335,6 +345,11 @@ export const advancePuzzleRound = async (roomId) => {
   // Annuncia i nuovi ruoli
   const drawersNames = newRoles.drawers.map(d => d.player.name).join(', ');
   const guessersNames = newRoles.guessers.map(g => g.name).join(', ');
+  // Clear chat between rounds to keep the puzzle area clean, then announce
+  await remove(ref(db, `rooms/${roomId}/chat`));
+  // Small delay to ensure clients receive the removal event before new messages
+  await new Promise(resolve => setTimeout(resolve, 100));
+
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
     message: `🔄 Round ${nextRound}/${gameState.totalRounds}`,

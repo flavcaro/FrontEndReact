@@ -59,6 +59,15 @@ export default function ChatSidebar({
   // Helper function to determine message style based on type
   const getMessageStyle = (msg) => {
     if (msg.isSystem) {
+      // Disegnatori - punti condivisi (stile blu)
+      if (msg.message.includes('Disegnatori') && msg.message.includes('punti')) {
+        return {
+          background: '#e0f2fe',
+          borderLeft: '3px solid #0284c7',
+          color: '#075985',
+          fontWeight: 600
+        };
+      }
       // Player joined message
       if (msg.message.includes('è entrato') || msg.message.includes('👋')) {
         return {

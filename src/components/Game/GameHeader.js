@@ -14,6 +14,7 @@ export default function GameHeader({
   isOwner,
   onStartGame,
   onClearBoard
+  , onAlmostUp
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -94,6 +95,43 @@ export default function GameHeader({
 
   // Lazy import modal component (local) to confirm leaving
   const SimplePopup = require('./SimplePopup').default;
+
+  const almostFiredRef = useRef(false);
+
+  // Play a short beep using WebAudio (no external file)
+  const playBeep = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, 300);
+    } catch (e) {
+      // fail silently if AudioContext blocked
+      console.error('beep failed', e);
+    }
+  };
+
+  // Trigger beep/pulse once when timeLeft crosses the near-expiry threshold
+  useEffect(() => {
+    if (typeof timeLeft !== 'number') return;
+    const threshold = 5;
+    if (timeLeft <= threshold && !almostFiredRef.current) {
+      almostFiredRef.current = true;
+      playBeep();
+      if (typeof onAlmostUp === 'function') {
+        try { onAlmostUp(); } catch (e) { console.error('onAlmostUp error', e); }
+      }
+    }
+    if (timeLeft > threshold) almostFiredRef.current = false;
+  }, [timeLeft, onAlmostUp]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -346,7 +384,7 @@ export default function GameHeader({
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
+              </svg>
             Pulisci
           </button>
         )}

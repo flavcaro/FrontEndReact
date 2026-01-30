@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { TURN_DURATION } from '../constants/gameConfig';
 
-export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft) {
+export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft, onAlmostUp, almostThreshold = 5) {
   const timerRef = useRef(null);
+  const almostFiredRef = useRef(false);
 
   useEffect(() => {
     if (timerRef.current) {
@@ -20,13 +21,21 @@ export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft) {
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
+        const next = prev - 1;
+
+        // Trigger almost-up callback once when threshold crossed
+        if (typeof onAlmostUp === 'function' && !almostFiredRef.current && next <= almostThreshold) {
+          try { onAlmostUp(); } catch (e) { console.error('onAlmostUp error', e); }
+          almostFiredRef.current = true;
+        }
+
+        if (next <= 0) {
           clearInterval(timerRef.current);
           timerRef.current = null;
           onTimeUp();
           return 0;
         }
-        return prev - 1;
+        return next;
       });
     }, 1000);
 
@@ -35,9 +44,10 @@ export function useGameTimer(gameState, showResults, onTimeUp, setTimeLeft) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
+      almostFiredRef.current = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState?.active, gameState?.round, gameState?.turnStartedAt, gameState?.turnDuration, showResults, onTimeUp, setTimeLeft]);
+  }, [gameState?.active, gameState?.round, gameState?.turnStartedAt, gameState?.turnDuration, showResults, onTimeUp, setTimeLeft, onAlmostUp, almostThreshold]);
 
   return timerRef;
 }
