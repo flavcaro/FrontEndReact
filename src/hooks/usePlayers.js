@@ -37,6 +37,7 @@ export function usePlayers(roomId, nickname) {
   const [players, setPlayers] = useState([]);
   const [finalNickname, setFinalNickname] = useState(nickname);
   const [isRoomFull, setIsRoomFull] = useState(false);
+  const [cannotJoinReason, setCannotJoinReason] = useState(null); // New state for join restrictions
   const [playerId, setPlayerId] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const playerRefRef = useRef(null);
@@ -99,8 +100,20 @@ export function usePlayers(roomId, nickname) {
           console.log('🆕 [usePlayers] Nuova sessione, creo nuovo player');
         }
 
+        // Check if game is active (to prevent mid-game joins)
+        const gameRef = ref(db, `rooms/${roomId}/game`);
+        const gameSnap = await get(gameRef);
+        const gameState = gameSnap.val();
+
+        if (!existingSessionEntry && gameState?.active) {
+          setCannotJoinReason('Game in progress');
+          isAddingPlayer.current = false;
+          return;
+        }
+
         if (!existingSessionEntry && playersList.length >= MAX_PLAYERS) {
           setIsRoomFull(true);
+          setCannotJoinReason('Room full');
           isAddingPlayer.current = false;
           return;
         }
@@ -404,5 +417,5 @@ export function usePlayers(roomId, nickname) {
     return unsubscribe;
   }, [roomId, playerId]);
 
-  return { players, finalNickname, isRoomFull, playerId, isOwner };
+  return { players, finalNickname, isRoomFull, cannotJoinReason, playerId, isOwner };
 }

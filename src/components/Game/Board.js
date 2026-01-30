@@ -48,7 +48,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     } catch (e) { return 320; }
   });
 
-  const { players, finalNickname, isOwner } =
+  const { players, finalNickname, cannotJoinReason, isOwner } =
     usePlayers(roomId, nickname);
 
   const {
@@ -142,6 +142,18 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
   
   
+
+  /* =========================
+     CANNOT JOIN REASON
+  ========================= */
+  useEffect(() => {
+    if (cannotJoinReason) {
+      setPopup({
+        open: true,
+        message: `Cannot join: ${cannotJoinReason}. Please wait for the game to end or try reconnecting if you were previously in the room.`,
+      });
+    }
+  }, [cannotJoinReason]);
 
   /* =========================
      WARN ON REFRESH
