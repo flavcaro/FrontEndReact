@@ -97,6 +97,7 @@ export default function GameHeader({
   const SimplePopup = require('./SimplePopup').default;
 
   const almostFiredRef = useRef(false);
+  const lastCountdownRef = useRef(null);
 
   // Play a short beep using WebAudio (no external file)
   const playBeep = () => {
@@ -104,18 +105,40 @@ export default function GameHeader({
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = 'sine';
+      // Use triangle for a softer tone
+      o.type = 'triangle';
       o.frequency.setValueAtTime(880, ctx.currentTime);
+      // gentle envelope
       g.gain.setValueAtTime(0.0001, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+      g.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, 300);
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, 220);
     } catch (e) {
       // fail silently if AudioContext blocked
       console.error('beep failed', e);
+    }
+  };
+
+  // Play a countdown beep with configurable frequency/duration
+  const playCountdownBeep = (freq = 600, duration = 150) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration/1000));
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, duration + 20);
+    } catch (e) {
+      console.error('countdown beep failed', e);
     }
   };
 
@@ -123,6 +146,7 @@ export default function GameHeader({
   useEffect(() => {
     if (typeof timeLeft !== 'number') return;
     const threshold = 5;
+    // Single gentle alert when crossing the near-expiry threshold
     if (timeLeft <= threshold && !almostFiredRef.current) {
       almostFiredRef.current = true;
       playBeep();
@@ -131,6 +155,19 @@ export default function GameHeader({
       }
     }
     if (timeLeft > threshold) almostFiredRef.current = false;
+
+    // Countdown beeps for 3,2,1 — ensure each second triggers once
+    if (timeLeft > 0 && timeLeft <= 3) {
+      if (!lastCountdownRef.current) lastCountdownRef.current = null;
+      if (lastCountdownRef.current !== timeLeft) {
+        // Map seconds to frequencies for pleasant ascending pitch
+        const map = { 3: 650, 2: 820, 1: 1000 };
+        playCountdownBeep(map[timeLeft] || 700, 140);
+        lastCountdownRef.current = timeLeft;
+      }
+    } else {
+      lastCountdownRef.current = null;
+    }
   }, [timeLeft, onAlmostUp]);
 
   useEffect(() => {
@@ -208,12 +245,12 @@ export default function GameHeader({
           <div className="game-info desktop-only"> 
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
             </div>
 
             <div className="difficulty-info">
               <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+              <div className="difficulty-badge secondary">{difficulty}</div>
             </div>
 
             <div className="round-info">
@@ -297,11 +334,11 @@ export default function GameHeader({
           <div className="mobile-game-info-inner">
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
             </div>
             <div className="difficulty-info">
               <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+              <div className="difficulty-badge secondary">{difficulty}</div>
             </div>
             <div className="round-info">
               <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>

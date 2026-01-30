@@ -15,6 +15,17 @@
   .header-right { display: flex; gap: 8px; align-items: center; }
 }
 
+/* Intermediate responsive: show mobile info popover and hide desktop-only
+   for narrower desktop/tablet widths so game-mode/difficulty remain accessible.
+*/
+@media (max-width: 900px) {
+  .mobile-info-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px; font-size: 16px; background: transparent; border: none; color: inherit; }
+  .mobile-game-info-popover { display: none; position: absolute; top: 56px; right: 8px; left: 8px; margin: 0 auto; max-width: 360px; z-index: 1300; }
+  .mobile-game-info-popover.open { display: block; }
+  .mobile-game-info-inner { background: #fff; color: #0f172a; padding: 10px; border-radius: 10px; box-shadow: 0 14px 40px rgba(0,0,0,0.16); }
+  .desktop-only { display: none; }
+}
+
 /* Mobile header compacting */
 @media (max-width: 480px) {
   .home-header { padding: 8px 10px !important; gap: 8px; height: 56px; align-items: center; }

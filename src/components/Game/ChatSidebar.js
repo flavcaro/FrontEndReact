@@ -12,7 +12,8 @@ export default function ChatSidebar({
   timeLeft,
   isArtist, 
   hasGuessed,
-  onGuessCorrect
+  onGuessCorrect,
+  style
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [players, setPlayers] = useState([]);
@@ -150,7 +151,7 @@ export default function ChatSidebar({
   };
 
   return (
-    <aside className="chat-sidebar">
+    <aside className="chat-sidebar" style={style}>
       <div className="sidebar-header">
         <h3>💬 Chat</h3>
       </div>

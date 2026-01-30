@@ -1,7 +1,7 @@
 import React from 'react';
 import { MAX_PLAYERS } from '../../constants/gameConfig';
 
-export default function PlayersSidebar({ players, gameState, nickname, roomId }) {
+export default function PlayersSidebar({ players, gameState, nickname, roomId, style }) {
   // Try to include the room name in the share URL if available in localStorage
   let shareUrl = `${window.location.origin}/room/${roomId}`;
   let roomName = '';
@@ -22,7 +22,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId })
   }
 
   return (
-    <aside className="players-sidebar">
+    <aside className="players-sidebar" style={style}>
       <div className="sidebar-header">
         <h3>👥 Giocatori</h3>
         <span className="players-badge">{players.length}/{MAX_PLAYERS}</span>

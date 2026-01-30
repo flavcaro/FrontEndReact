@@ -26,6 +26,26 @@ export default function Board({ roomId, nickname, gameConfig }) {
       return true;
     }
   });
+  const [playersSidebarWidth, setPlayersSidebarWidth] = useState(() => {
+    try {
+      const w = window.innerWidth;
+      if (w > 1400) return 480;
+      if (w > 1200) return 240;
+      if (w > 1000) return 200;
+      if (w > 800) return 180;
+      return 160;
+    } catch (e) { return 240; }
+  });
+  const [chatSidebarWidth, setChatSidebarWidth] = useState(() => {
+    try {
+      const w = window.innerWidth;
+      if (w > 1400) return 560;
+      if (w > 1200) return 240;
+      if (w > 1000) return 240;
+      if (w > 800) return 200;
+      return 180;
+    } catch (e) { return 320; }
+  });
 
   const { players, finalNickname, isOwner } =
     usePlayers(roomId, nickname);
@@ -127,7 +147,25 @@ export default function Board({ roomId, nickname, gameConfig }) {
   ========================= */
   useEffect(() => {
     const onResize = () => {
-      setIsPinned(window.innerWidth >= 900);
+      const w = window.innerWidth;
+      setIsPinned(w >= 900);
+      // compute sidebar widths
+      if (w > 1400) {
+        setPlayersSidebarWidth(480);
+        setChatSidebarWidth(560);
+      } else if (w > 1200) {
+        setPlayersSidebarWidth(240);
+        setChatSidebarWidth(240);
+      } else if (w > 1000) {
+        setPlayersSidebarWidth(200);
+        setChatSidebarWidth(240);
+      } else if (w > 800) {
+        setPlayersSidebarWidth(180);
+        setChatSidebarWidth(200);
+      } else {
+        setPlayersSidebarWidth(160);
+        setChatSidebarWidth(180);
+      }
     };
 
     window.addEventListener('resize', onResize);
@@ -174,6 +212,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           gameState={gameState}
           nickname={finalNickname}
           roomId={roomId}
+          style={{ width: `${playersSidebarWidth}px` }}
         />
 
         <div
@@ -282,6 +321,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
+          style={{ width: `${chatSidebarWidth}px` }}
         />
       </div>
     </>

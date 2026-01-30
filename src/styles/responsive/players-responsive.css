@@ -341,3 +341,14 @@
 @media (min-width: 1400px) {
   .players-sidebar { width: 480px !important; }
 }
+
+/* Override large-desktop sizing on narrower viewports to ensure shrinking.
+   Use board-container-scoped selectors and !important to override earlier
+   min-width rules imported earlier in the responsive cascade. */
+@media (max-width: 1200px) {
+  .board-container .players-sidebar { width: 200px !important; }
+}
+
+@media (max-width: 1000px) {
+  .board-container .players-sidebar { width: 180px !important; }
+}

@@ -151,6 +151,20 @@
   }
 }
 
+/* Intermediate breakpoint: slightly smaller windows */
+@media (max-width: 1200px) {
+  .players-sidebar {
+    width: 200px;
+  }
+}
+
+/* Narrow desktop / large tablet */
+@media (max-width: 1000px) {
+  .players-sidebar {
+    width: 180px;
+  }
+}
+
 /* High Resolution Vertical */
 @media (min-height: 1440px) {
   .players-list {
