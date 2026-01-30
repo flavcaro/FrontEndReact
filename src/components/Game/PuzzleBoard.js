@@ -6,6 +6,7 @@ import GameHeader from "./GameHeader";
 import PuzzleCanvas from "./PuzzleCanvas";
 import GameResults from "./GameResults";
 import Palette from "./Palette";
+import SimplePopup from "./SimplePopup";
 
 import { usePlayers } from "../../hooks/usePlayers";
 import { usePuzzleGame } from "../../hooks/usePuzzleGame";
@@ -18,7 +19,7 @@ import { useChat } from "../../hooks/useChat";
  * Il canvas è diviso in 3 sezioni, ogni giocatore disegna nella propria sezione
  */
 const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
-  const { players, finalNickname, isOwner } = usePlayers(roomId, nickname);
+  const { players, finalNickname, cannotJoinReason, isOwner } = usePlayers(roomId, nickname);
 
   const {
     gameState,
@@ -45,10 +46,21 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   const [selectedColor, setSelectedColor] = useState("#1e293b");
   const [selectedInstrument, setSelectedInstrument] = useState("pencil");
   const [brushSize, setBrushSize] = useState(4);
+  const [popup, setPopup] = useState({ open: false, message: "" });
 
   const handleStartGame = () => {
     startGame(gameConfig);
   };
+
+  // Handle cannot join reason
+  React.useEffect(() => {
+    if (cannotJoinReason) {
+      setPopup({
+        open: true,
+        message: `Cannot join: ${cannotJoinReason}. Please wait for the game to end or try reconnecting if you were previously in the room.`,
+      });
+    }
+  }, [cannotJoinReason]);
 
   // Compute effective sections robustly: prefer gameState, then gameConfig, then default.
   const rawSections = gameState?.puzzleSections ?? gameConfig?.puzzleSections ?? PUZZLE_DRAWING.sections;
@@ -82,6 +94,12 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   return (
     <>
+      <SimplePopup
+        open={popup.open}
+        message={popup.message}
+        onClose={() => setPopup({ open: false, message: "" })}
+      />
+
       <div
         className="board-container"
         style={{ position: 'fixed', inset: 0, display: 'flex', overflow: 'hidden', alignItems: 'stretch', width: '100%' }}
