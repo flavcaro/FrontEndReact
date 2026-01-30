@@ -98,22 +98,28 @@ export default function Board({ roomId, nickname, gameConfig }) {
   ========================= */
   useEffect(() => {
     if (
-      gameState?.ended &&
+      gameState?.gameEnded &&
       (gameState.endReason === "owner_left" ||
         gameState.endReason === "not_enough_players")
     ) {
+      const ownerName = gameState.endActorName || null;
       setTimeout(() => {
         setPopup({
           open: true,
           message:
-            "La partita è terminata: " +
-            (gameState.endReason === "owner_left"
-              ? "il creatore ha abbandonato."
-              : "non ci sono abbastanza giocatori.")
+            gameState.endReason === "owner_left"
+              ? (ownerName ? `Giocatore "${ownerName}" è uscito, verrai reindirizzato alla home` : 'Il creatore ha abbandonato. Verrai reindirizzato alla home')
+              : 'La partita è terminata: non ci sono abbastanza giocatori. Verrai reindirizzato alla home'
         });
       }, 100);
+
+      // Redirect everyone to home after short delay
+      setTimeout(() => {
+        try { navigate('/home', { replace: true }); } catch (e) { console.error(e); }
+      }, 3000);
     }
-  }, [gameState]);
+  }, [gameState, navigate]);
+  
 
   /* =========================
      WARN ON REFRESH

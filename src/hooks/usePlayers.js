@@ -271,13 +271,14 @@ export function usePlayers(roomId, nickname) {
     return () => {
       if (playerRefRef.current && playerNicknameRef.current) {
         const checkOwnerAndRemove = async () => {
+          console.log('[usePlayers] cleanup triggered for', { player: playerNicknameRef.current, playerRef: playerRefRef.current, sessionId: currentSessionId });
           try {
             const playerName = playerNicknameRef.current;
             // Always remove player and send leave message
             await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
             const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
             const ownerData = ownerSnapshot.val();
-            if (ownerData?.sessionId === currentSessionId) {
+                if (ownerData?.sessionId === currentSessionId) {
               // Owner is leaving: end game and remove owner node
               const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
               const gameData = gameSnapshot.val();
@@ -285,7 +286,8 @@ export function usePlayers(roomId, nickname) {
                 const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
                 const playersData = playersSnapshot.val() || {};
                 const playersList = Object.values(playersData);
-                await endGameByOwnerLeaving(roomId, playersList);
+                // Pass the leaving owner's name so end state includes it
+                await endGameByOwnerLeaving(roomId, playersList, playerName);
               }
               
               // Remove current owner
@@ -310,7 +312,8 @@ export function usePlayers(roomId, nickname) {
                 await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
               }
             }
-            // Remove player from list
+            // Remove player from list (wait briefly so clients receive system messages)
+            await new Promise((res) => setTimeout(res, 1000));
             await remove(playerRefRef.current);
           } catch (err) {
             console.error("Error removing player:", err);

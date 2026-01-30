@@ -46,6 +46,7 @@ export default function ChatSidebar({
       setInputMessage("");
     } else {
       // Invia il messaggio normale in chat
+      console.log('[ChatSidebar] sending chat message', { roomId, user: nickname, message: msg });
       await push(ref(db, `rooms/${roomId}/chat`), {
         user: nickname,
         message: msg,

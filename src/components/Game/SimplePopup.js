@@ -14,14 +14,9 @@ export default function SimplePopup({
   cancelText = "Annulla",
   showCancel = false
 }) {
-  // Backward compatibility: if only open/message/onClose are provided
-  const isSimpleMode = !emoji && !title && !onConfirm && !onCancel && !showCancel;
-  
-  if (!open && isSimpleMode) return null;
-  
-  // Per PuzzleBoard: mostra il popup se non c'è 'open' prop o se showStartPopup è true
-  const shouldShow = isSimpleMode ? open : true;
-  if (!shouldShow) return null;
+  // Only render when `open` is truthy. This ensures confirm-style popups
+  // (with onConfirm/onCancel/showCancel) are shown only when requested.
+  if (!open) return null;
 
   const node = (
     <div className="simple-popup-overlay" onClick={onClose}>

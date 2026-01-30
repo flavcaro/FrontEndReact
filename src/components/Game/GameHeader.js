@@ -90,11 +90,6 @@ export default function GameHeader({
   const malusRef = useRef(null);
   const malusAutoTimeoutRef = useRef(null);
   const [mobileInfoOpen, setMobileInfoOpen] = useState(false);
-  const [leaveModalOpen, setLeaveModalOpen] = useState(false);
-  const [leaveModalMessage, setLeaveModalMessage] = useState('');
-
-  // Lazy import modal component (local) to confirm leaving
-  const SimplePopup = require('./SimplePopup').default;
 
   const almostFiredRef = useRef(false);
   const lastCountdownRef = useRef(null);
@@ -201,24 +196,8 @@ export default function GameHeader({
   }, [gameState?.active, isArtist, gameState?.chaosEffects]);
 
   const handleLeaveRoom = () => {
-    if (gameState?.active) {
-      const confirmMessage = isOwner 
-        ? 'Sei il creatore della stanza! Se esci, la partita terminerà per tutti. Sei sicuro?' 
-        : 'Sei sicuro di voler uscire? La partita è in corso!';
-      setLeaveModalMessage(confirmMessage);
-      setLeaveModalOpen(true);
-      return;
-    }
+    // Directly navigate back to home. Exit confirmation is shown only from results.
     navigate('/home', { replace: true });
-  };
-
-  const confirmLeave = () => {
-    setLeaveModalOpen(false);
-    navigate('/home', { replace: true });
-  };
-
-  const cancelLeave = () => {
-    setLeaveModalOpen(false);
   };
 
   return (
@@ -374,20 +353,7 @@ export default function GameHeader({
         </div>
       </div>
 
-      {/* Leave confirmation modal */}
-      {leaveModalOpen && (
-        <SimplePopup
-          open={leaveModalOpen}
-          message={leaveModalMessage}
-          title={isOwner ? 'Esci dalla stanza (creatore)' : 'Esci dalla stanza'}
-          emoji={isOwner ? '👑' : '🚪'}
-          onConfirm={confirmLeave}
-          onCancel={cancelLeave}
-          confirmText="Esci"
-          cancelText="Annulla"
-          showCancel={true}
-        />
-      )}
+      
 
       {/* Azioni */}
       <div className="header-actions">

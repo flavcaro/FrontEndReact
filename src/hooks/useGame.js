@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
+import { generateRoomCode } from '../utils/roomUtils';
 import { db, auth } from "../firebase";
 import { TURN_DURATION, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
@@ -366,7 +367,35 @@ export function useGame(roomId, nickname, players) {
       // Filter players to accepted if provided
       const playersToUse = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
 
-      await startNewGame(roomId, playersToUse, user.uid, gameConfig);
+      // Create a new room so the restarted game uses a fresh room id while keeping the same owner
+      // Preserve owner from previous game when possible
+      const ownerId = previousGame?.ownerId || user.uid;
+
+      // Create a new room id using human-friendly 6-char code
+      let newRoomId = generateRoomCode();
+      // Ensure uniqueness: try up to 5 times
+      for (let i = 0; i < 5; i++) {
+        const existsSnap = await get(ref(db, `rooms/${newRoomId}`));
+        if (!existsSnap.exists()) break;
+        newRoomId = generateRoomCode();
+      }
+      // Reserve the room meta node so other clients know it exists
+      await set(ref(db, `rooms/${newRoomId}/meta`), { createdAt: Date.now(), ownerId });
+
+      // Copy players into the new room (scores will be reset by startNewGame)
+      const playerSetPromises = playersToUse.map(p => set(ref(db, `rooms/${newRoomId}/players/${p.id}`), {
+        name: p.name,
+        userId: p.userId || null,
+        id: p.id
+      }));
+      await Promise.all(playerSetPromises);
+      // startNewGame will initialize the game state
+
+      // Start the new game in the newly created room with the preserved owner
+      await startNewGame(newRoomId, playersToUse, ownerId, gameConfig);
+
+      // Return the new room id so callers may navigate clients
+      return newRoomId;
     } catch (error) {
       console.error("Errore riavviando il gioco:", error);
       alert("Errore nel riavvio del gioco: " + error.message);
