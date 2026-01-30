@@ -279,38 +279,59 @@ export function usePlayers(roomId, nickname) {
             const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
             const ownerData = ownerSnapshot.val();
                 if (ownerData?.sessionId === currentSessionId) {
-              // Owner is leaving: end game and remove owner node
-              const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
-              const gameData = gameSnapshot.val();
-              if (gameData?.active) {
-                const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-                const playersData = playersSnapshot.val() || {};
-                const playersList = Object.values(playersData);
-                // Pass the leaving owner's name so end state includes it
-                await endGameByOwnerLeaving(roomId, playersList, playerName);
-              }
-              
-              // Remove current owner
-              await remove(ref(db, `rooms/${roomId}/owner`));
-              
-              // Assign new owner to the oldest remaining player (by joinedAt)
-              const remainingPlayersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-              const remainingPlayers = remainingPlayersSnapshot.val() || {};
-              const remainingPlayerList = Object.entries(remainingPlayers)
-                .map(([id, data]) => ({ id, ...data }))
-                .filter(player => player.sessionId !== currentSessionId) // Exclude the leaving player
-                .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0)); // Sort by join time
-              
-              if (remainingPlayerList.length > 0) {
-                const newOwner = remainingPlayerList[0];
-                await set(ref(db, `rooms/${roomId}/owner`), {
-                  playerId: newOwner.id,
-                  nickname: newOwner.name,
-                  sessionId: newOwner.sessionId,
-                  createdAt: Date.now()
-                });
-                await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
-              }
+                  // Owner is leaving. If a restartVote is active/accepted, avoid ending the game
+                  // to prevent redirecting everyone to home while restart flow completes.
+                  const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
+                  const gameData = gameSnapshot.val();
+                  let skipOwnerRemoval = false;
+                  try {
+                    const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+                    const restartData = restartSnap.val();
+                    if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+                      // Found a restart vote in progress or accepted: skip owner removal to let restart flow handle navigation
+                      skipOwnerRemoval = true;
+                    }
+                  } catch (err) {
+                    console.warn('Error while checking restartVote during owner cleanup', err);
+                  }
+
+                  if (!skipOwnerRemoval) {
+                    if (gameData?.active) {
+                      const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                      const playersData = playersSnapshot.val() || {};
+                      const playersList = Object.values(playersData);
+                      // Pass the leaving owner's name so end state includes it
+                      await endGameByOwnerLeaving(roomId, playersList, playerName);
+                    }
+
+                    // Remove current owner
+                    await remove(ref(db, `rooms/${roomId}/owner`));
+
+                    // Assign new owner to the oldest remaining player (by joinedAt)
+                    const remainingPlayersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                    const remainingPlayers = remainingPlayersSnapshot.val() || {};
+                    const remainingPlayerList = Object.entries(remainingPlayers)
+                      .map(([id, data]) => ({ id, ...data }))
+                      .filter(player => player.sessionId !== currentSessionId) // Exclude the leaving player
+                      .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0)); // Sort by join time
+
+                    if (remainingPlayerList.length > 0) {
+                      const newOwner = remainingPlayerList[0];
+                      await set(ref(db, `rooms/${roomId}/owner`), {
+                        playerId: newOwner.id,
+                        nickname: newOwner.name,
+                        // Firebase rejects 'undefined' values; use null when sessionId is missing
+                        sessionId: typeof newOwner.sessionId !== 'undefined' ? newOwner.sessionId : null,
+                        createdAt: Date.now()
+                      });
+                      await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
+                    }
+                  } else {
+                    // Skip owner removal: announce that the creator is restarting the room and keep owner node intact
+                    try {
+                      await sendSystemMessage(roomId, `⚠️ Il creatore sta riavviando la partita, attendere...`);
+                    } catch (e) { /* ignore */ }
+                  }
             }
             // Remove player from list (wait briefly so clients receive system messages)
             await new Promise((res) => setTimeout(res, 1000));

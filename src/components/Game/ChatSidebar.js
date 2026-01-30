@@ -62,7 +62,8 @@ export default function ChatSidebar({
   const getMessageStyle = (msg) => {
     if (msg.isSystem) {
       // Disegnatori - punti condivisi (stile blu)
-      if (msg.message.includes('Disegnatori') && msg.message.includes('punti')) {
+      // Match both explicit "Disegnatori" messages and messages like "🎨 <name> riceve X punti!"
+      if ((msg.message.includes('Disegnatori') && msg.message.includes('punti')) || (msg.message.includes('riceve') && msg.message.includes('punti')) || (msg.message.includes('🎨') && msg.message.includes('punti'))) {
         return {
           background: '#e0f2fe',
           borderLeft: '3px solid #0284c7',

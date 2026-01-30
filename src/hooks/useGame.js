@@ -89,7 +89,7 @@ export function useGame(roomId, nickname, players) {
           endForOwnerLeave();
           return;
         }
-
+        
         unsubPlayers = onValue(playersRef, snap => {
           try {
             const list = Object.values(snap.val() || {});
@@ -107,24 +107,36 @@ export function useGame(roomId, nickname, players) {
     });
 
     async function endForOwnerLeave() {
-      await set(ref(db, `rooms/${roomId}/game`), {
-        ...gameState,
-        active: false,
-        gameEnded: true,
-        endReason: "owner_left",
-        endedAt: Date.now(),
-        finalScores: players.map(p => ({
-          id: p.id,
-          name: p.name,
-          score: p.score || 0,
-          userId: p.userId || null
-        }))
-      });
+      try {
+        // If a restartVote is in progress or accepted, skip ending the game here
+        const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+        const restartData = restartSnap.val();
+        if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+          console.log('[useGame] owner left detected but restartVote in progress, skipping endForOwnerLeave');
+          return;
+        }
 
-      await sendSystemMessage(
-        roomId,
-        "⚠️ Il creatore della stanza ha abbandonato. Partita terminata!"
-      );
+        await set(ref(db, `rooms/${roomId}/game`), {
+          ...gameState,
+          active: false,
+          gameEnded: true,
+          endReason: "owner_left",
+          endedAt: Date.now(),
+          finalScores: players.map(p => ({
+            id: p.id,
+            name: p.name,
+            score: p.score || 0,
+            userId: p.userId || null
+          }))
+        });
+
+        await sendSystemMessage(
+          roomId,
+          "⚠️ Il creatore della stanza ha abbandonato. Partita terminata!"
+        );
+      } catch (err) {
+        console.error('[useGame] error in endForOwnerLeave guard:', err);
+      }
     }
 
     return () => {
@@ -389,10 +401,27 @@ export function useGame(roomId, nickname, players) {
         id: p.id
       }));
       await Promise.all(playerSetPromises);
-      // startNewGame will initialize the game state
+      // Mark the new room as being created to signal other clients (helps debugging)
+      try {
+        await set(ref(db, `rooms/${newRoomId}/creating`), true);
+      } catch (err) {
+        console.error('[restartGame] failed to mark new room creating', err);
+      }
 
       // Start the new game in the newly created room with the preserved owner
-      await startNewGame(newRoomId, playersToUse, ownerId, gameConfig);
+      try {
+        await startNewGame(newRoomId, playersToUse, ownerId, gameConfig);
+
+        // Only after successful start, publish newRoomId so other clients navigate
+        try {
+          await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId);
+        } catch (err) {
+          console.error('[restartGame] failed to publish newRoomId after startNewGame', err);
+        }
+      } finally {
+        // Clear the creating flag
+        try { await set(ref(db, `rooms/${newRoomId}/creating`), null); } catch (e) { /* ignore */ }
+      }
 
       // Return the new room id so callers may navigate clients
       return newRoomId;

@@ -45,6 +45,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
         if (restartVote?.status === 'accepted') {
           const acceptedPlayers = restartVote.acceptedPlayers || [];
           try {
+            console.log('[restart] accepted detected', { roomId, acceptedPlayers, restartVote });
             // If a newRoomId was already written by the initiator, use it
             if (restartVote.newRoomId) {
               const encoded = encodeURIComponent(finalNickname || '');
@@ -54,7 +55,25 @@ export default function GameResults({ roomId, players = [], finalNickname, final
               return;
             }
 
-            // Only the initiator creates the new room to avoid race conditions
+            // Non-initiators: wait briefly for initiator to publish newRoomId
+            if (restartVote.initiatorId !== currentPlayerId) {
+              const start = Date.now();
+              let foundNew = null;
+              while (Date.now() - start < 8000) {
+                const snap = await get(ref(db, `rooms/${roomId}/restartVote/newRoomId`));
+                if (snap.exists()) { foundNew = snap.val(); break; }
+                await new Promise((r) => setTimeout(r, 500));
+              }
+              if (foundNew) {
+                const encoded = encodeURIComponent(finalNickname || '');
+                await new Promise((res) => setTimeout(res, 2000));
+                navigate(`/room/${foundNew}/play?nick=${encoded}`);
+                return;
+              }
+              // If after waiting the newRoomId was not published, fall through to optional fallback
+            }
+
+            // Only the initiator (or fallback) creates the new room to avoid race conditions
             if (onRestart && restartVote.initiatorId === currentPlayerId) {
               const newRoomId = await onRestart(acceptedPlayers);
               if (newRoomId) {
@@ -64,6 +83,20 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                 // Give users a short moment to see the result before navigating
                 await new Promise((res) => setTimeout(res, 2000));
                 navigate(`/room/${newRoomId}/play?nick=${encoded}`);
+                return;
+              }
+            }
+
+            // Fallback: if we're not the initiator but we have an onRestart handler, attempt to create a room
+            if (onRestart && restartVote.initiatorId !== currentPlayerId) {
+              console.warn('[restart] fallback: initiator did not publish newRoomId in time, creating new room as fallback');
+              const newRoomId = await onRestart(acceptedPlayers);
+              if (newRoomId) {
+                try { await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId); } catch (err) { console.error(err); }
+                const encoded = encodeURIComponent(finalNickname || '');
+                await new Promise((res) => setTimeout(res, 2000));
+                navigate(`/room/${newRoomId}/play?nick=${encoded}`);
+                return;
               }
             }
           } catch (e) {

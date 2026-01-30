@@ -180,11 +180,13 @@ export default function Home() {
       difficulty: { id: opts.difficulty || 'medium', name: opts.difficulty === 'easy' ? 'Facile' : opts.difficulty === 'hard' ? 'Difficile' : 'Media' },
       survivalMode: gameMode.survivalMode || false,
       startingLives: gameMode.startingLives || null,
-      hasChaosEffects: gameMode.hasChaosEffects || false,
-      // Aggiungi configurazione sezioni e cicli per Puzzle Drawing
-      puzzleSections: selectedModeId === 'puzzleDrawing' ? (opts.sections || 3) : undefined,
-      puzzleCycles: selectedModeId === 'puzzleDrawing' ? (opts.cycles || 1) : undefined
+      hasChaosEffects: gameMode.hasChaosEffects || false
     };
+    // Aggiungi configurazione sezioni e cicli per Puzzle Drawing solo se rilevante
+    if (selectedModeId === 'puzzleDrawing') {
+      cfg.puzzleSections = typeof opts.sections !== 'undefined' ? opts.sections : 3;
+      cfg.puzzleCycles = typeof opts.cycles !== 'undefined' ? opts.cycles : 1;
+    }
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
     
     // Salva la configurazione in Firebase per tutti i giocatori
@@ -345,7 +347,6 @@ export default function Home() {
               <span className="btn-label">Classifica</span>
             </button>
             <button className="logout-btn" onClick={handleLogout}>
-              <span className="btn-ico">🚪</span>
               <span className="btn-label">Logout</span>
             </button>
           </div>

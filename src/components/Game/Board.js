@@ -14,6 +14,7 @@ import { usePlayers } from "../../hooks/usePlayers";
 import { useGame } from "../../hooks/useGame";
 import { useChat } from "../../hooks/useChat";
 import { useDrawing } from "../../hooks/useDrawing";
+import { listenRestartVote } from '../../services/restartService';
 
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
@@ -93,6 +94,16 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
   const [popup, setPopup] = useState({ open: false, message: "" });
 
+  // Listen for restartVote so we can avoid redirecting to home while restart is in progress
+  useEffect(() => {
+    if (!roomId) return;
+    const unsub = listenRestartVote(roomId, (data) => {
+      // store latest on window for the game end effect to read synchronously
+      try { window.__restartVoteCache = data || null; } catch (e) { /* ignore */ }
+    });
+    return () => unsub && unsub();
+  }, [roomId]);
+
   /* =========================
      FINE PARTITA
   ========================= */
@@ -113,12 +124,23 @@ export default function Board({ roomId, nickname, gameConfig }) {
         });
       }, 100);
 
+      // If there's an active restartVote in progress or accepted, do not redirect to home here;
+      // GameResults will handle navigation to the new room when ready.
+      // Listen state is provided below; check it via restartVoteRef on the window (set by listener).
+      const restartVote = window.__restartVoteCache;
+      if (restartVote && (restartVote.status === 'open' || restartVote.status === 'accepted')) {
+        // skip redirect: waiting for restart flow
+        return;
+      }
+
       // Redirect everyone to home after short delay
       setTimeout(() => {
         try { navigate('/home', { replace: true }); } catch (e) { console.error(e); }
       }, 3000);
     }
   }, [gameState, navigate]);
+
+  
   
 
   /* =========================
