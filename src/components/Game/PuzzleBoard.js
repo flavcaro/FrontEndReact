@@ -236,6 +236,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
               finalNickname={finalNickname}
               finalResults={finalResults}
               onRestart={restartGame}
+              minYesVotes={4}
             />
           )}
         </div>

@@ -4,7 +4,7 @@ import { ref, remove as dbRemove } from 'firebase/database';
 import { db } from '../../firebase';
 import { startRestartVote, castRestartVote, listenRestartVote, endRestartVote } from '../../services/restartService';
 
-export default function GameResults({ roomId, players = [], finalNickname, finalResults, onRestart }) {
+export default function GameResults({ roomId, players = [], finalNickname, finalResults, onRestart, minYesVotes = 2 }) {
   const navigate = useNavigate();
 
 
@@ -18,6 +18,10 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     if (!roomId) return;
     const unsub = listenRestartVote(roomId, (data) => {
       setRestartVote(data || null);
+      // Reset hasCast when a new vote starts
+      if (data?.status === 'open') {
+        setHasCast(false);
+      }
     });
     return () => unsub && unsub();
   }, [roomId]);
@@ -35,22 +39,27 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     }
 
     const votes = restartVote.votes || {};
-    const yesCount = Object.values(votes).filter(v => v === 'yes').length;
-    const totalCast = Object.values(votes).filter(v => v !== 'pending').length;
+    const currentPlayerIds = new Set(players.map(p => p.id));
+    const relevantVotes = Object.entries(votes).filter(([id]) => currentPlayerIds.has(id));
+    const yesCount = relevantVotes.filter(([, v]) => v === 'yes').length;
+    const totalCast = relevantVotes.length;
     const totalPlayers = players.length;
 
-    // If at least 2 yes -> accept vote
-    if (yesCount >= 2) {
+    // If at least minYesVotes yes -> accept vote
+    if (yesCount >= minYesVotes) {
       const accepted = Object.entries(votes).filter(([, v]) => v === 'yes').map(([id]) => id);
       endRestartVote(roomId, 'accepted', accepted).catch(err => console.error(err));
       return;
     }
 
-    // If everyone voted and not enough yes -> reject
-    if (totalCast === totalPlayers && yesCount < 2) {
+    // If everyone voted and not enough yes -> reject and kick all players
+    if (totalCast === totalPlayers && yesCount < minYesVotes) {
+      // Kick all players from the room
+      const removePromises = players.map(p => dbRemove(ref(db, `rooms/${roomId}/players/${p.id}`)));
+      Promise.all(removePromises).catch(err => console.error('Error removing players:', err));
       endRestartVote(roomId, 'rejected', []).catch(err => console.error(err));
     }
-  }, [restartVote, players, roomId, onRestart]);
+  }, [restartVote, players, roomId, onRestart, minYesVotes]);
 
   const handleExit = () => {
     navigate('/home', { replace: true });
