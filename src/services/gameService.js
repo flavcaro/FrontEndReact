@@ -155,7 +155,7 @@ export const endGame = async (roomId, players) => {
   return finalScores;
 };
 
-export const endGameByOwnerLeaving = async (roomId, players) => {
+export const endGameByOwnerLeaving = async (roomId, players, ownerName = null) => {
   const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
   const playersData = playersSnapshot.val() || {};
   
@@ -173,12 +173,15 @@ export const endGameByOwnerLeaving = async (roomId, players) => {
     gameEnded: true,
     finalScores,
     endedAt: Date.now(),
-    endReason: 'owner_left'
+    endReason: 'owner_left',
+    endActorName: ownerName || null
   });
 
+  // Push a clear system message including the owner's name so clients can show a specific alert
+  const ownerText = ownerName ? `Giocatore "${ownerName}" ha abbandonato. Verrai reindirizzato alla home.` : `Il creatore della stanza ha abbandonato. Verrai reindirizzato alla home.`;
   await push(ref(db, `rooms/${roomId}/chat`), {
     user: "Sistema",
-    message: `⚠️ Il creatore della stanza è uscito. Partita terminata! Vincitore: ${finalScores[0]?.name || 'Nessuno'} con ${finalScores[0]?.score || 0} punti!`,
+    message: ownerText,
     timestamp: Date.now(),
     isSystem: true
   });

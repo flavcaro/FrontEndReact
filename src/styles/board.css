@@ -15,6 +15,18 @@
   max-height: 100vh; /* Prevent overflow beyond viewport */
 }
 
+/* Ensure header and sidebars layer above the canvas reliably */
+.board-container { position: relative; }
+.board-header {
+  position: sticky;
+  top: 0;
+  z-index: 1600; /* above sidebars and canvas */
+}
+.players-sidebar, .chat-sidebar {
+  position: relative;
+  z-index: 1400; /* below header but above canvas */
+}
+
 /* =========================
    CONTENUTO BOARD
 ========================= */
@@ -195,35 +207,31 @@
   position: relative; /* allow popover positioning inside game-info */
 }
 
+/* Make header info boxes responsive: allow shrinking and show ellipsis when needed */
+.board-header .game-info {
+  flex: 1 1 auto;
+  min-width: 0; /* allow contents to shrink below their intrinsic width */
+}
+.board-header .game-info > div {
+  min-width: 0; /* prevents overflow in flex items */
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mode-badge, .difficulty-badge, .round-display {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-info-section { min-width: 0; }
+
 .game-mode-info, .difficulty-info, .round-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-
-/* Desktop: arrange mode / difficulty / rounds horizontally and center-align labels
-   Force rule at common desktop breakpoint (>=769px) and make it specific to avoid overrides. */
-@media (min-width: 769px) {
-  .board-header .game-info {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 20px !important;
-  }
-  .board-header .game-info > div {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 8px !important;
-  }
-  .board-header .game-info .room-label { margin: 0 !important; font-size: 12px !important; color: #64748b !important; }
-  .board-header .game-mode-info .mode-badge,
-  .board-header .difficulty-info .difficulty-badge,
-  .board-header .round-info .round-display { margin-left: 6px !important; }
-  .board-header .game-mode-info, .board-header .difficulty-info, .board-header .round-info { align-items: center !important; }
-}
-
 .mode-badge, .difficulty-badge {
   font-size: 18px;
   font-weight: 800;
@@ -543,23 +551,7 @@
 /* Place header actions (waiting message, timer, leave button) on the same
    horizontal line as the game-info on desktop by absolutely positioning
    them inside the header. Keep responsive behavior intact for small screens. */
-@media (min-width: 769px) {
-  .board-header { position: relative; }
-  .board-header .header-main { padding-right: 380px; /* reserve more space for larger actions */ }
-  .board-header .header-actions {
-    position: absolute;
-    right: 32px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    z-index: 1100;
-    /* increase tappable target and typography on desktop */
-    font-size: 18px !important;
-  }
-  .board-header .header-actions > * { font-size: 18px !important; }
-}
+/* Responsive header-actions moved to src/styles/responsive/board-responsive.css */
 
 /* TIMER */
 
@@ -572,6 +564,17 @@
   border-radius: 10px;
   border: 1px solid rgba(99, 102, 241, 0.2);
   white-space: nowrap;
+}
+
+.timer-pulse {
+  animation: timerPulse 850ms ease-in-out infinite;
+  box-shadow: 0 8px 26px rgba(99,102,241,0.14), 0 0 0 6px rgba(99,102,241,0.06);
+}
+
+@keyframes timerPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 /* WAITING MESSAGES */
@@ -654,10 +657,4 @@
 }
 
 /* Extra desktop scaling: make action targets, timer and waiting message more prominent */
-@media (min-width: 1024px) {
-  .board-header .header-actions { right: 40px; }
-  .board-header .header-actions > * { font-size: 20px !important; padding: 10px 12px !important; }
-  .btn-leave { font-size: 18px !important; padding: 10px 14px !important; border-radius: 10px !important; }
-  .timer-display { font-size: 24px !important; padding: 10px 16px !important; }
-  .waiting-message { font-size: 20px !important; padding: 10px 14px !important; }
-}
+/* Responsive header scaling moved to src/styles/responsive/board-responsive.css */

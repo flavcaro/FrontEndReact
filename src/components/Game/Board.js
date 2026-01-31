@@ -14,6 +14,7 @@ import { usePlayers } from "../../hooks/usePlayers";
 import { useGame } from "../../hooks/useGame";
 import { useChat } from "../../hooks/useChat";
 import { useDrawing } from "../../hooks/useDrawing";
+import { listenRestartVote } from '../../services/restartService';
 
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
@@ -26,8 +27,28 @@ export default function Board({ roomId, nickname, gameConfig }) {
       return true;
     }
   });
+  const [playersSidebarWidth, setPlayersSidebarWidth] = useState(() => {
+    try {
+      const w = window.innerWidth;
+      if (w > 1400) return 480;
+      if (w > 1200) return 240;
+      if (w > 1000) return 200;
+      if (w > 800) return 180;
+      return 160;
+    } catch (e) { return 240; }
+  });
+  const [chatSidebarWidth, setChatSidebarWidth] = useState(() => {
+    try {
+      const w = window.innerWidth;
+      if (w > 1400) return 560;
+      if (w > 1200) return 240;
+      if (w > 1000) return 240;
+      if (w > 800) return 200;
+      return 180;
+    } catch (e) { return 320; }
+  });
 
-  const { players, finalNickname, isOwner } =
+  const { players, finalNickname, cannotJoinReason, isOwner, playerId } =
     usePlayers(roomId, nickname);
 
   const {
@@ -73,27 +94,66 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
   const [popup, setPopup] = useState({ open: false, message: "" });
 
+  // Listen for restartVote so we can avoid redirecting to home while restart is in progress
+  useEffect(() => {
+    if (!roomId) return;
+    const unsub = listenRestartVote(roomId, (data) => {
+      // store latest on window for the game end effect to read synchronously
+      try { window.__restartVoteCache = data || null; } catch (e) { /* ignore */ }
+    });
+    return () => unsub && unsub();
+  }, [roomId]);
+
   /* =========================
      FINE PARTITA
   ========================= */
   useEffect(() => {
     if (
-      gameState?.ended &&
+      gameState?.gameEnded &&
       (gameState.endReason === "owner_left" ||
         gameState.endReason === "not_enough_players")
     ) {
+      const ownerName = gameState.endActorName || null;
       setTimeout(() => {
         setPopup({
           open: true,
           message:
-            "La partita è terminata: " +
-            (gameState.endReason === "owner_left"
-              ? "il creatore ha abbandonato."
-              : "non ci sono abbastanza giocatori.")
+            gameState.endReason === "owner_left"
+              ? (ownerName ? `Giocatore "${ownerName}" è uscito, verrai reindirizzato alla home` : 'Il creatore ha abbandonato. Verrai reindirizzato alla home')
+              : 'La partita è terminata: non ci sono abbastanza giocatori. Verrai reindirizzato alla home'
         });
       }, 100);
+
+      // If there's an active restartVote in progress or accepted, do not redirect to home here;
+      // GameResults will handle navigation to the new room when ready.
+      // Listen state is provided below; check it via restartVoteRef on the window (set by listener).
+      const restartVote = window.__restartVoteCache;
+      if (restartVote && (restartVote.status === 'open' || restartVote.status === 'accepted')) {
+        // skip redirect: waiting for restart flow
+        return;
+      }
+
+      // Redirect everyone to home after short delay
+      setTimeout(() => {
+        try { navigate('/home', { replace: true }); } catch (e) { console.error(e); }
+      }, 3000);
     }
-  }, [gameState]);
+  }, [gameState, navigate]);
+
+  
+  
+
+  /* =========================
+     CANNOT JOIN REASON
+  ========================= */
+  useEffect(() => {
+    if (cannotJoinReason) {
+      setPopup({
+        open: true,
+        message: `Cannot join: ${cannotJoinReason}. Please wait for the game to end or try reconnecting if you were previously in the room.`,
+      });
+    }
+  }, [cannotJoinReason]);
 
   /* =========================
      WARN ON REFRESH
@@ -127,7 +187,25 @@ export default function Board({ roomId, nickname, gameConfig }) {
   ========================= */
   useEffect(() => {
     const onResize = () => {
-      setIsPinned(window.innerWidth >= 900);
+      const w = window.innerWidth;
+      setIsPinned(w >= 900);
+      // compute sidebar widths
+      if (w > 1400) {
+        setPlayersSidebarWidth(480);
+        setChatSidebarWidth(560);
+      } else if (w > 1200) {
+        setPlayersSidebarWidth(240);
+        setChatSidebarWidth(240);
+      } else if (w > 1000) {
+        setPlayersSidebarWidth(200);
+        setChatSidebarWidth(240);
+      } else if (w > 800) {
+        setPlayersSidebarWidth(180);
+        setChatSidebarWidth(200);
+      } else {
+        setPlayersSidebarWidth(160);
+        setChatSidebarWidth(180);
+      }
     };
 
     window.addEventListener('resize', onResize);
@@ -174,6 +252,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           gameState={gameState}
           nickname={finalNickname}
           roomId={roomId}
+          style={{ width: `${playersSidebarWidth}px` }}
         />
 
         <div
@@ -268,6 +347,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
               finalNickname={finalNickname}
               finalResults={finalResults}
               onRestart={restartGame}
+              playerId={playerId}
             />
           )}
         </div>
@@ -282,6 +362,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
+          style={{ width: `${chatSidebarWidth}px` }}
         />
       </div>
     </>

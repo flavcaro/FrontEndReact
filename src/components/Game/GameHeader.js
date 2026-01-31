@@ -14,6 +14,7 @@ export default function GameHeader({
   isOwner,
   onStartGame,
   onClearBoard
+  , onAlmostUp
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -89,11 +90,80 @@ export default function GameHeader({
   const malusRef = useRef(null);
   const malusAutoTimeoutRef = useRef(null);
   const [mobileInfoOpen, setMobileInfoOpen] = useState(false);
-  const [leaveModalOpen, setLeaveModalOpen] = useState(false);
-  const [leaveModalMessage, setLeaveModalMessage] = useState('');
 
-  // Lazy import modal component (local) to confirm leaving
-  const SimplePopup = require('./SimplePopup').default;
+  const almostFiredRef = useRef(false);
+  const lastCountdownRef = useRef(null);
+
+  // Play a short beep using WebAudio (no external file)
+  const playBeep = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      // Use triangle for a softer tone
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      // gentle envelope
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, 220);
+    } catch (e) {
+      // fail silently if AudioContext blocked
+      console.error('beep failed', e);
+    }
+  };
+
+  // Play a countdown beep with configurable frequency/duration
+  const playCountdownBeep = (freq = 600, duration = 150) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration/1000));
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, duration + 20);
+    } catch (e) {
+      console.error('countdown beep failed', e);
+    }
+  };
+
+  // Trigger beep/pulse once when timeLeft crosses the near-expiry threshold
+  useEffect(() => {
+    if (typeof timeLeft !== 'number') return;
+    const threshold = 5;
+    // Single gentle alert when crossing the near-expiry threshold
+    if (timeLeft <= threshold && !almostFiredRef.current) {
+      almostFiredRef.current = true;
+      playBeep();
+      if (typeof onAlmostUp === 'function') {
+        try { onAlmostUp(); } catch (e) { console.error('onAlmostUp error', e); }
+      }
+    }
+    if (timeLeft > threshold) almostFiredRef.current = false;
+
+    // Countdown beeps for 3,2,1 — ensure each second triggers once
+    if (timeLeft > 0 && timeLeft <= 3) {
+      if (!lastCountdownRef.current) lastCountdownRef.current = null;
+      if (lastCountdownRef.current !== timeLeft) {
+        // Map seconds to frequencies for pleasant ascending pitch
+        const map = { 3: 650, 2: 820, 1: 1000 };
+        playCountdownBeep(map[timeLeft] || 700, 140);
+        lastCountdownRef.current = timeLeft;
+      }
+    } else {
+      lastCountdownRef.current = null;
+    }
+  }, [timeLeft, onAlmostUp]);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -126,24 +196,8 @@ export default function GameHeader({
   }, [gameState?.active, isArtist, gameState?.chaosEffects]);
 
   const handleLeaveRoom = () => {
-    if (gameState?.active) {
-      const confirmMessage = isOwner 
-        ? 'Sei il creatore della stanza! Se esci, la partita terminerà per tutti. Sei sicuro?' 
-        : 'Sei sicuro di voler uscire? La partita è in corso!';
-      setLeaveModalMessage(confirmMessage);
-      setLeaveModalOpen(true);
-      return;
-    }
+    // Directly navigate back to home. Exit confirmation is shown only from results.
     navigate('/home', { replace: true });
-  };
-
-  const confirmLeave = () => {
-    setLeaveModalOpen(false);
-    navigate('/home', { replace: true });
-  };
-
-  const cancelLeave = () => {
-    setLeaveModalOpen(false);
   };
 
   return (
@@ -170,12 +224,12 @@ export default function GameHeader({
           <div className="game-info desktop-only"> 
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
             </div>
 
             <div className="difficulty-info">
               <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+              <div className="difficulty-badge secondary">{difficulty}</div>
             </div>
 
             <div className="round-info">
@@ -259,11 +313,11 @@ export default function GameHeader({
           <div className="mobile-game-info-inner">
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>🎨 {gameMode}</div>
+              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
             </div>
             <div className="difficulty-info">
               <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">🎯 {difficulty}</div>
+              <div className="difficulty-badge secondary">{difficulty}</div>
             </div>
             <div className="round-info">
               <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
@@ -299,20 +353,7 @@ export default function GameHeader({
         </div>
       </div>
 
-      {/* Leave confirmation modal */}
-      {leaveModalOpen && (
-        <SimplePopup
-          open={leaveModalOpen}
-          message={leaveModalMessage}
-          title={isOwner ? 'Esci dalla stanza (creatore)' : 'Esci dalla stanza'}
-          emoji={isOwner ? '👑' : '🚪'}
-          onConfirm={confirmLeave}
-          onCancel={cancelLeave}
-          confirmText="Esci"
-          cancelText="Annulla"
-          showCancel={true}
-        />
-      )}
+      
 
       {/* Azioni */}
       <div className="header-actions">
@@ -346,7 +387,7 @@ export default function GameHeader({
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
+              </svg>
             Pulisci
           </button>
         )}

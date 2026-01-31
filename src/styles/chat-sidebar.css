@@ -103,6 +103,20 @@
   }
 }
 
+/* Intermediate breakpoint: slightly smaller windows */
+@media (max-width: 1200px) {
+  .chat-sidebar {
+    width: 240px;
+  }
+}
+
+/* Narrow desktop / large tablet */
+@media (max-width: 1000px) {
+  .chat-sidebar {
+    width: 200px;
+  }
+}
+
 /* Responsive - Tablets Portrait */
 @media (max-width: 1024px) and (orientation: portrait) {
   .chat-sidebar {

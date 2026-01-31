@@ -35,7 +35,9 @@ export const listenRestartVote = (roomId, cb) => {
 export const endRestartVote = async (roomId, result, acceptedPlayers = []) => {
   await update(ref(db, `rooms/${roomId}/restartVote`), { status: result, acceptedPlayers });
   // keep result visible for a short time for clients, then remove
+  console.log('[restartService] endRestartVote', { roomId, result, acceptedPlayers });
+  // keep result visible for longer to allow clients to read newRoomId and navigate
   setTimeout(() => {
     remove(ref(db, `rooms/${roomId}/restartVote`)).catch(() => {});
-  }, 30000);
+  }, 120000); // 2 minutes
 };

@@ -12,7 +12,8 @@ export default function ChatSidebar({
   timeLeft,
   isArtist, 
   hasGuessed,
-  onGuessCorrect
+  onGuessCorrect,
+  style
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [players, setPlayers] = useState([]);
@@ -45,6 +46,7 @@ export default function ChatSidebar({
       setInputMessage("");
     } else {
       // Invia il messaggio normale in chat
+      console.log('[ChatSidebar] sending chat message', { roomId, user: nickname, message: msg });
       await push(ref(db, `rooms/${roomId}/chat`), {
         user: nickname,
         message: msg,
@@ -59,6 +61,16 @@ export default function ChatSidebar({
   // Helper function to determine message style based on type
   const getMessageStyle = (msg) => {
     if (msg.isSystem) {
+      // Disegnatori - punti condivisi (stile blu)
+      // Match both explicit "Disegnatori" messages and messages like "🎨 <name> riceve X punti!"
+      if ((msg.message.includes('Disegnatori') && msg.message.includes('punti')) || (msg.message.includes('riceve') && msg.message.includes('punti')) || (msg.message.includes('🎨') && msg.message.includes('punti'))) {
+        return {
+          background: '#e0f2fe',
+          borderLeft: '3px solid #0284c7',
+          color: '#075985',
+          fontWeight: 600
+        };
+      }
       // Player joined message
       if (msg.message.includes('è entrato') || msg.message.includes('👋')) {
         return {
@@ -141,7 +153,7 @@ export default function ChatSidebar({
   };
 
   return (
-    <aside className="chat-sidebar">
+    <aside className="chat-sidebar" style={style}>
       <div className="sidebar-header">
         <h3>💬 Chat</h3>
       </div>

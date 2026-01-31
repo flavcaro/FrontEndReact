@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
+import { generateRoomCode } from '../utils/roomUtils';
 import { db, auth } from "../firebase";
 import { TURN_DURATION, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
@@ -80,55 +81,113 @@ export function useGame(roomId, nickname, players) {
     const playersRef = ref(db, `rooms/${roomId}/players`);
 
     let unsubPlayers;
+    let ownerMissingTimer = null;
 
     const unsubOwner = onValue(ownerRef, ownerSnap => {
       try {
         const owner = ownerSnap.val();
-        if (!owner) {
-          endForOwnerLeave();
+        console.log('[useGame] ownerRef update', { roomId, owner });
+
+        // If owner exists again, cancel any pending end-for-owner timer
+        if (owner) {
+          if (ownerMissingTimer) {
+            clearTimeout(ownerMissingTimer);
+            ownerMissingTimer = null;
+            console.log('[useGame] owner returned, cancelled pending endForOwnerLeave');
+          }
+
+          unsubPlayers = onValue(playersRef, snap => {
+            try {
+              const list = Object.values(snap.val() || {});
+              const stillHere = list.some(
+                p => p.sessionId === owner.sessionId
+              );
+              if (!stillHere) {
+                console.log('[useGame] owner session not present among players -> scheduling endForOwnerLeave');
+                if (ownerMissingTimer) clearTimeout(ownerMissingTimer);
+                ownerMissingTimer = setTimeout(async () => {
+                  try {
+                    const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+                    const restartData = restartSnap.val();
+                    console.log('[useGame] delayed owner-missing check restartVote', { roomId, restartData });
+                    if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+                      console.log('[useGame] owner missing but restartVote in progress, skipping endForOwnerLeave');
+                      return;
+                    }
+                    endForOwnerLeave();
+                  } catch (err) {
+                    console.error('[useGame] error during delayed owner-missing check', err);
+                    endForOwnerLeave();
+                  }
+                }, 1200);
+              }
+            } catch (error) {
+              console.error('Error in owner leave players listener:', error);
+            }
+          });
           return;
         }
 
-        unsubPlayers = onValue(playersRef, snap => {
+        // Owner node missing entirely: schedule a short delay before ending
+        console.log('[useGame] owner node missing -> scheduling endForOwnerLeave');
+        if (ownerMissingTimer) clearTimeout(ownerMissingTimer);
+        ownerMissingTimer = setTimeout(async () => {
           try {
-            const list = Object.values(snap.val() || {});
-            const stillHere = list.some(
-              p => p.sessionId === owner.sessionId
-            );
-            if (!stillHere) endForOwnerLeave();
-          } catch (error) {
-            console.error('Error in owner leave players listener:', error);
+            const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+            const restartData = restartSnap.val();
+            console.log('[useGame] delayed owner-node-missing check restartVote', { roomId, restartData });
+            if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+              console.log('[useGame] owner node missing but restartVote in progress, skipping endForOwnerLeave');
+              return;
+            }
+            endForOwnerLeave();
+          } catch (err) {
+            console.error('[useGame] error during delayed owner-node-missing check', err);
+            endForOwnerLeave();
           }
-        });
+        }, 1200);
       } catch (error) {
         console.error('Error in owner leave listener:', error);
       }
     });
 
     async function endForOwnerLeave() {
-      await set(ref(db, `rooms/${roomId}/game`), {
-        ...gameState,
-        active: false,
-        gameEnded: true,
-        endReason: "owner_left",
-        endedAt: Date.now(),
-        finalScores: players.map(p => ({
-          id: p.id,
-          name: p.name,
-          score: p.score || 0,
-          userId: p.userId || null
-        }))
-      });
+      try {
+        // If a restartVote is in progress or accepted, skip ending the game here
+        const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+        const restartData = restartSnap.val();
+        if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+          console.log('[useGame] owner left detected but restartVote in progress, skipping endForOwnerLeave');
+          return;
+        }
 
-      await sendSystemMessage(
-        roomId,
-        "⚠️ Il creatore della stanza ha abbandonato. Partita terminata!"
-      );
+        await set(ref(db, `rooms/${roomId}/game`), {
+          ...gameState,
+          active: false,
+          gameEnded: true,
+          endReason: "owner_left",
+          endedAt: Date.now(),
+          finalScores: players.map(p => ({
+            id: p.id,
+            name: p.name,
+            score: p.score || 0,
+            userId: p.userId || null
+          }))
+        });
+
+        await sendSystemMessage(
+          roomId,
+          "⚠️ Il creatore della stanza ha abbandonato. Partita terminata!"
+        );
+      } catch (err) {
+        console.error('[useGame] error in endForOwnerLeave guard:', err);
+      }
     }
 
     return () => {
       unsubOwner?.();
       unsubPlayers?.();
+      if (ownerMissingTimer) clearTimeout(ownerMissingTimer);
     };
   }, [roomId, gameState, players]);
 
@@ -366,7 +425,55 @@ export function useGame(roomId, nickname, players) {
       // Filter players to accepted if provided
       const playersToUse = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
 
-      await startNewGame(roomId, playersToUse, user.uid, gameConfig);
+      // Create a new room so the restarted game uses a fresh room id while keeping the same owner
+      // Preserve owner from previous game when possible
+      const ownerId = previousGame?.ownerId || user.uid;
+
+      // Create a new room id using human-friendly 6-char code
+      let newRoomId = generateRoomCode();
+      // Ensure uniqueness: try up to 5 times
+      for (let i = 0; i < 5; i++) {
+        const existsSnap = await get(ref(db, `rooms/${newRoomId}`));
+        if (!existsSnap.exists()) break;
+        newRoomId = generateRoomCode();
+      }
+      // Reserve the room meta node so other clients know it exists
+      await set(ref(db, `rooms/${newRoomId}/meta`), { createdAt: Date.now(), ownerId });
+
+      // Copy players into the new room (scores will be reset by startNewGame)
+      const playerSetPromises = playersToUse.map(p => set(ref(db, `rooms/${newRoomId}/players/${p.id}`), {
+        name: p.name,
+        userId: p.userId || null,
+        id: p.id
+      }));
+      await Promise.all(playerSetPromises);
+      // Mark the new room as being created to signal other clients (helps debugging)
+      try {
+        await set(ref(db, `rooms/${newRoomId}/creating`), true);
+      } catch (err) {
+        console.error('[restartGame] failed to mark new room creating', err);
+      }
+
+      // Start the new game in the newly created room with the preserved owner
+      try {
+        console.log('[restartGame] starting new game in', { newRoomId, ownerId, playersCount: playersToUse.length });
+        await startNewGame(newRoomId, playersToUse, ownerId, gameConfig);
+
+        // Only after successful start, publish newRoomId so other clients navigate
+        try {
+          console.log('[restartGame] publishing newRoomId to old room', { roomId, newRoomId });
+          await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId);
+          console.log('[restartGame] published newRoomId successfully', { roomId, newRoomId });
+        } catch (err) {
+          console.error('[restartGame] failed to publish newRoomId after startNewGame', err);
+        }
+      } finally {
+        // Clear the creating flag
+        try { await set(ref(db, `rooms/${newRoomId}/creating`), null); } catch (e) { /* ignore */ }
+      }
+
+      // Return the new room id so callers may navigate clients
+      return newRoomId;
     } catch (error) {
       console.error("Errore riavviando il gioco:", error);
       alert("Errore nel riavvio del gioco: " + error.message);

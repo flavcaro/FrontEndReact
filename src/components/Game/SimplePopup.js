@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import "./SimplePopup.css";
 
 export default function SimplePopup({ 
@@ -13,18 +14,13 @@ export default function SimplePopup({
   cancelText = "Annulla",
   showCancel = false
 }) {
-  // Backward compatibility: if only open/message/onClose are provided
-  const isSimpleMode = !emoji && !title && !onConfirm && !onCancel && !showCancel;
-  
-  if (!open && isSimpleMode) return null;
-  
-  // Per PuzzleBoard: mostra il popup se non c'è 'open' prop o se showStartPopup è true
-  const shouldShow = isSimpleMode ? open : true;
-  if (!shouldShow) return null;
+  // Only render when `open` is truthy. This ensures confirm-style popups
+  // (with onConfirm/onCancel/showCancel) are shown only when requested.
+  if (!open) return null;
 
-  return (
-    <div className="simple-popup-overlay">
-      <div className="simple-popup">
+  const node = (
+    <div className="simple-popup-overlay" onClick={onClose}>
+      <div className="simple-popup" onClick={(e) => e.stopPropagation()}>
         {emoji && <div style={{ fontSize: '48px', marginBottom: '16px' }}>{emoji}</div>}
         {title && <h2 style={{ margin: '0 0 16px 0', fontSize: '24px', fontWeight: '700' }}>{title}</h2>}
         <div className="simple-popup-message">{message}</div>
@@ -58,4 +54,12 @@ export default function SimplePopup({
       </div>
     </div>
   );
+
+  // Render portal to body so popup is outside any stacking context of the canvas
+  try {
+    return createPortal(node, document.body);
+  } catch (e) {
+    // Fallback to inline render if portal fails (e.g., during SSR)
+    return node;
+  }
 }

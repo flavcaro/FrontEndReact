@@ -158,8 +158,8 @@ export function usePuzzleGame(roomId, nickname, players) {
       const user = auth.currentUser;
       if (!user) throw new Error("Utente non autenticato");
 
-      // Filter players to accepted if provided
-      const playersToUse = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
+      // Use all current players for restart (acceptedPlayers filtering not needed for puzzle drawing)
+      const playersToUse = players;
 
       await startPuzzleGame(roomId, playersToUse, user.uid, gameConfig);
     } catch (error) {
