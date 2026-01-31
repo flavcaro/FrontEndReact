@@ -56,6 +56,13 @@ export function usePuzzleGame(roomId, nickname, players) {
         const data = snapshot.val();
         setGameState(data);
 
+        // Clear finalResults when a new game starts (so GameResults popup closes for all players)
+        if (data?.active && !data?.gameEnded) {
+          setFinalResults(null);
+          setShowResults(false);
+          return;
+        }
+
         if (!data?.gameEnded || !data?.finalScores) return;
 
         setFinalResults(data.finalScores);
@@ -81,7 +88,7 @@ export function usePuzzleGame(roomId, nickname, players) {
     if (!gameState?.active || gameState?.gameEnded) return;
 
     console.log('⏰ Timer scaduto, avanzando al prossimo round...');
-    
+
     try {
       await advancePuzzleRound(roomId);
     } catch (error) {
