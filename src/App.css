@@ -9,6 +9,7 @@
 @import './styles/buttons.css';
 @import './styles/forms.css';
 @import './styles/results.css';
+@import './styles/players-modal.css';
 
 /* Import responsive CSS bundle (aggregates all responsive modules) */
 @import './styles/responsive/responsive.css';

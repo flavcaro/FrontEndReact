@@ -9,6 +9,8 @@ import Canvas from "./Canvas";
 import PuzzleBoard from "./PuzzleBoard";
 import GameResults from "./GameResults";
 import Palette from "./Palette";
+import PlayersModal from "./PlayersModal";
+import PlayerNotification from "./PlayerNotification";
 import Button from "../common/Button"; // Assicurati di avere questo import!
 
 import { usePlayers } from "../../hooks/usePlayers";
@@ -21,6 +23,14 @@ export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
 
   // --- LOGICA DI LAYOUT E RESIZE (Mantenuta Originale) ---
+  const [isMobile, setIsMobile] = useState(() => {
+    try {
+      return window.innerWidth <= 768;
+    } catch (e) {
+      return false;
+    }
+  });
+
   const [isPinned, setIsPinned] = useState(() => {
     try {
       return window.innerWidth >= 900;
@@ -95,6 +105,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
   );
 
   const [popup, setPopup] = useState({ open: false, message: "" });
+  const [showPlayersModal, setShowPlayersModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [prevPlayersCount, setPrevPlayersCount] = useState(0);
 
   // --- LISTENERS E EFFETTI ---
 
@@ -148,10 +161,51 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [gameState]);
 
+  // Track player join/leave for notifications
+  useEffect(() => {
+    if (!players || players.length === 0) return;
+
+    // Initialize on first load
+    if (prevPlayersCount === 0) {
+      setPrevPlayersCount(players.length);
+      return;
+    }
+
+    // Player joined
+    if (players.length > prevPlayersCount) {
+      const newPlayer = players[players.length - 1];
+      if (newPlayer && newPlayer.name !== finalNickname) {
+        const notifId = Date.now();
+        setNotifications(prev => [...prev, {
+          id: notifId,
+          message: `${newPlayer.name} è entrato nella partita`,
+          type: 'join'
+        }]);
+      }
+    }
+    // Player left
+    else if (players.length < prevPlayersCount) {
+      // We don't know which player left, just show generic message
+      const notifId = Date.now();
+      setNotifications(prev => [...prev, {
+        id: notifId,
+        message: 'Un giocatore ha lasciato la partita',
+        type: 'leave'
+      }]);
+    }
+
+    setPrevPlayersCount(players.length);
+  }, [players, prevPlayersCount, finalNickname]);
+
+  const removeNotification = (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
   // Resize Listener (Ripristinato logica originale)
   useEffect(() => {
     const onResize = () => {
       const w = window.innerWidth;
+      setIsMobile(w <= 768);
       setIsPinned(w >= 900);
       if (w > 1400) {
         setPlayersSidebarWidth(480);
@@ -204,7 +258,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
   if (isChecking) {
     return (
       <div style={{ position: 'fixed', inset: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-        <h2 style={{color: '#64748b', fontSize: '1.2rem'}}>Verifica accesso alla stanza...</h2>
+        <h2 style={{ color: '#64748b', fontSize: '1.2rem' }}>Verifica accesso alla stanza...</h2>
       </div>
     );
   }
@@ -261,12 +315,14 @@ export default function Board({ roomId, nickname, gameConfig }) {
           position: isPinned ? 'fixed' : 'static',
           inset: isPinned ? 0 : 'auto',
           display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
           overflow: 'hidden',
           alignItems: 'stretch',
           width: '100%'
         }}
       >
         <PlayersSidebar
+          className="players-sidebar-desktop-only"
           players={players}
           gameState={gameState}
           nickname={finalNickname}
@@ -293,32 +349,33 @@ export default function Board({ roomId, nickname, gameConfig }) {
             onChangeColor={setSelectedColor}
             selectedInstrument={selectedInstrument}
             onChangeInstrument={setSelectedInstrument}
+            onShowPlayers={() => setShowPlayersModal(true)}
           />
 
           {/* Lives Display - Solo in modalità sopravvivenza */}
           {gameState?.survivalMode && gameState?.playerLives && (
             <div className="lives-display">
               <div className="lives-title">❤️ Vite Giocatori</div>
-                  {typeof survivalThresholdValue !== 'undefined' && (
-                    <div className="lives-subtitle">
-                      Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
-                    </div>
-                  )}
+              {typeof survivalThresholdValue !== 'undefined' && (
+                <div className="lives-subtitle">
+                  Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
+                </div>
+              )}
               <div className="lives-container">
                 {players.map((player) => {
                   const lives = gameState.playerLives[player.name] || 0;
                   const isEliminated = lives === 0;
-                  
+
                   return (
-                    <div 
-                      key={player.id} 
+                    <div
+                      key={player.id}
                       className={`player-lives ${isEliminated ? 'eliminated' : ''} ${player.name === finalNickname ? 'current-player' : ''}`}
                     >
                       <div className="player-name">{player.name}</div>
                       <div className="hearts-container">
                         {Array.from({ length: gameState.startingLives || 3 }, (_, i) => (
-                          <span 
-                            key={i} 
+                          <span
+                            key={i}
                             className={`heart ${i < lives ? 'filled' : 'empty'}`}
                           >
                             {i < lives ? '❤️' : '🤍'}
@@ -381,8 +438,30 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
-          style={{ width: `${chatSidebarWidth}px` }}
+          style={isMobile ? {} : { width: `${chatSidebarWidth}px` }}
         />
+      </div>
+
+      {/* Players Modal */}
+      <PlayersModal
+        isOpen={showPlayersModal}
+        onClose={() => setShowPlayersModal(false)}
+        players={players}
+        gameState={gameState}
+        nickname={finalNickname}
+        roomId={roomId}
+      />
+
+      {/* Join/Leave Notifications */}
+      <div className="notifications-container">
+        {notifications.map((notif) => (
+          <PlayerNotification
+            key={notif.id}
+            message={notif.message}
+            type={notif.type}
+            onDismiss={() => removeNotification(notif.id)}
+          />
+        ))}
       </div>
     </>
   );

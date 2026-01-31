@@ -3,18 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { MIN_PLAYERS, GAME_MODES } from '../../constants/gameConfig';
 import { PUZZLE_DRAWING } from '../../constants/gameModes/puzzleDrawing';
 
-export default function GameHeader({ 
-  roomId, 
-  gameState, 
+export default function GameHeader({
+  roomId,
+  gameState,
   gameConfig,
-  isArtist, 
-  hasGuessed, 
-  timeLeft, 
+  isArtist,
+  hasGuessed,
+  timeLeft,
   players,
   isOwner,
   onStartGame,
-  onClearBoard
-  , onAlmostUp
+  onClearBoard,
+  onAlmostUp,
+  onShowPlayers
 }) {
   const navigate = useNavigate();
   const currentRound = gameState?.round || 0;
@@ -59,7 +60,7 @@ export default function GameHeader({
   if (puzzleDetected) gameMode = PUZZLE_DRAWING.name;
 
   const difficulty = gameState?.difficulty || gameConfig?.difficulty?.name || 'Medio';
-  
+
   // Per Puzzle Drawing, mostra i cicli invece dei rounds a testa
   const getRoundsPerPlayerDisplay = () => {
     if (puzzleDetected) {
@@ -67,11 +68,11 @@ export default function GameHeader({
     }
     return gameState?.roundsPerPlayer || gameConfig?.roundsPerGame || gameConfig?.rounds || gameConfig?.roundsPerPlayer || 3;
   };
-  
+
   const roundsPerPlayer = getRoundsPerPlayerDisplay();
-  
+
   const playersCount = players?.length || 0;
-  
+
   // Determina il minimo di giocatori richiesti in base alla modalità
   const getMinPlayersForMode = () => {
     if (puzzleDetected) {
@@ -79,7 +80,7 @@ export default function GameHeader({
     }
     return MIN_PLAYERS; // 2 giocatori per le altre modalità
   };
-  
+
   const minPlayersRequired = getMinPlayersForMode();
   const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && isOwner;
 
@@ -110,7 +111,7 @@ export default function GameHeader({
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, 220);
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) { } }, 220);
     } catch (e) {
       // fail silently if AudioContext blocked
       console.error('beep failed', e);
@@ -127,11 +128,11 @@ export default function GameHeader({
       o.frequency.setValueAtTime(freq, ctx.currentTime);
       g.gain.setValueAtTime(0.0001, ctx.currentTime);
       g.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration/1000));
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration / 1000));
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) {} }, duration + 20);
+      setTimeout(() => { try { o.stop(); ctx.close(); } catch (e) { } }, duration + 20);
     } catch (e) {
       console.error('countdown beep failed', e);
     }
@@ -220,8 +221,18 @@ export default function GameHeader({
             ℹ️
           </button>
 
+          {/* mobile players toggle */}
+          <button
+            type="button"
+            className="mobile-players-btn"
+            onClick={onShowPlayers}
+            title="Vedi giocatori"
+          >
+            👥
+          </button>
+
           {/* Render game-info normally (desktop) */}
-          <div className="game-info desktop-only"> 
+          <div className="game-info desktop-only">
             <div className="game-mode-info">
               <div className="room-label">Modalità</div>
               <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
@@ -276,31 +287,31 @@ export default function GameHeader({
                   </button>
                   <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
                     <div className="malus-popover-inner">
-                        {gameState.chaosEffects.map((m, idx) => {
-                          const renderParams = () => {
-                            if (!m.params || typeof m.params !== 'object') return null;
-                            return Object.entries(m.params).map(([k, v]) => {
-                              const pretty = (val) => {
-                                if (val === null || val === undefined) return String(val);
-                                if (typeof val === 'object') {
-                                  try { return JSON.stringify(val); } catch (e) { return String(val); }
-                                }
-                                return String(val);
-                              };
-                              return `${k}: ${pretty(v)}`;
-                            }).join(' • ');
-                          };
+                      {gameState.chaosEffects.map((m, idx) => {
+                        const renderParams = () => {
+                          if (!m.params || typeof m.params !== 'object') return null;
+                          return Object.entries(m.params).map(([k, v]) => {
+                            const pretty = (val) => {
+                              if (val === null || val === undefined) return String(val);
+                              if (typeof val === 'object') {
+                                try { return JSON.stringify(val); } catch (e) { return String(val); }
+                              }
+                              return String(val);
+                            };
+                            return `${k}: ${pretty(v)}`;
+                          }).join(' • ');
+                        };
 
-                          return (
-                            <div key={m.id || idx} className="malus-popover-item">
-                              <div className="effect-name">{m.name}</div>
-                              {m.params && typeof m.params === 'object' && (
-                                <div className="effect-params">{renderParams()}</div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                        return (
+                          <div key={m.id || idx} className="malus-popover-item">
+                            <div className="effect-name">{m.name}</div>
+                            {m.params && typeof m.params === 'object' && (
+                              <div className="effect-params">{renderParams()}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -353,14 +364,14 @@ export default function GameHeader({
         </div>
       </div>
 
-      
+
 
       {/* Azioni */}
       <div className="header-actions">
         {gameState?.active && (
           <div className="timer-display">⏱️ {timeLeft}s</div>
         )}
-        
+
         {canStartGame && (
           <button onClick={onStartGame} className="btn-start">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -381,13 +392,13 @@ export default function GameHeader({
             ⏳ In attesa di altri giocatori ({playersCount}/{minPlayersRequired})
           </div>
         )}
-        
+
         {isArtist && gameState?.active && (
           <button onClick={onClearBoard} className="btn-clear">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
+            </svg>
             Pulisci
           </button>
         )}

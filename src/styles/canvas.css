@@ -1,12 +1,13 @@
 /* =========================
    GLOBAL
 ========================= */
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-  margin: 0;
-  padding: 0;
-  height: 100%;
+html,
+body {
+   overflow-x: hidden;
+   max-width: 100vw;
+   margin: 0;
+   padding: 0;
+   height: 100%;
 }
 
 /* =========================
@@ -15,14 +16,16 @@ html, body {
 .canvas-wrapper {
    /* Occupare lo spazio centrale tra le sidebar ma senza creare grandi margini
        verticali — il wrapper ora cresce orizzontalmente e può usare più altezza. */
-   flex: 1 1 auto; /* permetti al centro di espandersi */
+   flex: 1 1 auto;
+   /* permetti al centro di espandersi */
    display: flex;
    justify-content: center;
    align-items: center;
    background: #f8fafc;
    box-sizing: border-box;
    overflow: hidden;
-   padding: 8px; /* padding ridotto */
+   padding: 8px;
+   /* padding ridotto */
    width: 100%;
    /* Allow canvas to grow responsively; don't force a large subtraction that
       makes the canvas shrink excessively on narrower windows */
@@ -45,26 +48,26 @@ html, body {
    height: auto;
    background: var(--surface);
    border-radius: var(--card-radius);
-   border: 1px solid rgba(15,23,42,0.06);
+   border: 1px solid rgba(15, 23, 42, 0.06);
    box-shadow: var(--shadow-strong);
-  cursor: crosshair;
+   cursor: crosshair;
    max-width: 100%;
    max-height: 100%;
    min-width: 220px;
    min-height: 140px;
-  /* Migliora il comportamento touch su mobile */
-  touch-action: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
+   /* Migliora il comportamento touch su mobile */
+   touch-action: none;
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   user-select: none;
 }
 
 /* Inner stage container: visible border and max-height clamp */
 .canvas-stage-inner {
-   border: 1px solid rgba(15,23,42,0.08);
+   border: 1px solid rgba(15, 23, 42, 0.08);
    border-radius: var(--card-radius);
    background: var(--surface);
-   box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+   box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
    overflow: hidden;
    display: flex;
    align-items: center;
@@ -76,8 +79,8 @@ html, body {
 }
 
 /* Ensure the actual <canvas> element scales to fit the inner stage and never overflows */
-.canvas-stage-inner > .puzzle-canvas,
-.canvas-stage-inner > canvas.puzzle-canvas {
+.canvas-stage-inner>.puzzle-canvas,
+.canvas-stage-inner>canvas.puzzle-canvas {
    /* Let the canvas scale responsively within the inner stage without overflow.
        Keep intrinsic pixel buffer large for DPR, but constrain displayed size. */
    /* Fill the inner stage so the visible canvas matches the container size */
@@ -89,71 +92,147 @@ html, body {
    align-self: center;
 }
 
-/* Ensure wrapper adapts to available space without forcing full height */
-.canvas-wrapper {
-   height: auto;
-   min-height: 160px;
-}
+/* height and min-height defined in main .canvas-wrapper rule above */
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 1400px) { .canvas-wrapper { padding: 20px; } }
+@media (max-width: 1400px) {
+   .canvas-wrapper {
+      padding: 20px;
+   }
+}
+
 /* On large screens reserve space for sidebars but only when plenty of width available */
 @media (min-width: 1600px) {
-   .canvas-wrapper { max-width: calc(100% - 560px); }
+   .canvas-wrapper {
+      max-width: calc(100% - 560px);
+   }
 }
-@media (max-width: 1024px) { .canvas-wrapper { padding: 16px; } }
-@media (max-width: 768px)  { .canvas-wrapper { padding: 12px; } }
-@media (max-width: 480px)  { .canvas-wrapper { padding: 8px; } }
-@media (max-width: 375px)  { .canvas-wrapper { padding: 6px; } }
+
+@media (max-width: 1024px) {
+   .canvas-wrapper {
+      padding: 16px;
+   }
+}
+
+@media (max-width: 768px) {
+   .canvas-wrapper {
+      padding: 12px;
+   }
+}
+
+@media (max-width: 480px) {
+   .canvas-wrapper {
+      padding: 8px;
+   }
+}
+
+@media (max-width: 375px) {
+   .canvas-wrapper {
+      padding: 6px;
+   }
+}
 
 /* =========================
    CHAOS EFFECTS ANIMATIONS
 ========================= */
 @keyframes tremble {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  50% { transform: translateX(2px); }
-  75% { transform: translateX(-1px); }
-  100% { transform: translateX(0); }
+   0% {
+      transform: translateX(0);
+   }
+
+   25% {
+      transform: translateX(-2px);
+   }
+
+   50% {
+      transform: translateX(2px);
+   }
+
+   75% {
+      transform: translateX(-1px);
+   }
+
+   100% {
+      transform: translateX(0);
+   }
 }
 
-@media (max-height: 600px) and (orientation: landscape) { .canvas-wrapper { padding: 8px; } }
-@media (max-height: 450px) and (orientation: landscape) { .canvas-wrapper { padding: 4px; } }
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) { .canvas-wrapper { padding: 12px; } }
-
-@media (min-width: 1920px) { .canvas-wrapper { padding: 20px; } }
-@media (min-width: 2560px) { .canvas-wrapper { padding: 16px; } }
-@media (min-width: 3440px) { .canvas-wrapper { padding: 12px; } }
-@media (min-width: 2560px) and (min-height: 1440px) { .canvas-wrapper { padding: 12px; } }
-
-/* Mobile: make canvas bigger and use most of the vertical space between header and chat/players sections */
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-height: 600px) and (orientation: landscape) {
    .canvas-wrapper {
-      padding: 6px;
-      width: calc(100vw - 24px);
-      max-width: none;
-      /* Reserve space for top/bottom stacked sidebars/header/chat (approx) */
-      max-height: calc(100vh - 200px);
-   }
-   .canvas-stage {
-      border-radius: 12px;
+      padding: 8px;
    }
 }
 
-@media (max-width: 480px) and (orientation: portrait) {
+@media (max-height: 450px) and (orientation: landscape) {
+   .canvas-wrapper {
+      padding: 4px;
+   }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+   .canvas-wrapper {
+      padding: 12px;
+   }
+}
+
+@media (min-width: 1920px) {
+   .canvas-wrapper {
+      padding: 20px;
+   }
+}
+
+@media (min-width: 2560px) {
+   .canvas-wrapper {
+      padding: 16px;
+   }
+}
+
+@media (min-width: 3440px) {
+   .canvas-wrapper {
+      padding: 12px;
+   }
+}
+
+@media (min-width: 2560px) and (min-height: 1440px) {
+   .canvas-wrapper {
+      padding: 12px;
+   }
+}
+
+/* Mobile: make canvas bigger and use most of the vertical space between header and chat */
+/* Layout: header ~100px, chat ~200-300px = ~400px reserved max */
+@media (max-width: 768px) and (orientation: portrait) {
    .canvas-wrapper {
       padding: 4px;
       width: calc(100vw - 16px);
-      max-height: calc(100vh - 160px);
+      max-width: none;
+      max-height: calc(100dvh - 350px);
+      min-height: 160px;
+   }
+
+   .canvas-stage {
+      border-radius: 10px;
    }
 }
 
+/* Small phones: header ~50px, chat ~90px, players ~50px = ~190px reserved */
+@media (max-width: 480px) and (orientation: portrait) {
+   .canvas-wrapper {
+      padding: 2px;
+      width: calc(100vw - 8px);
+      max-height: calc(100dvh - 200px);
+      min-height: 140px;
+   }
+}
+
+/* Extra small phones: header ~44px, chat ~80px, players ~44px = ~168px reserved */
 @media (max-width: 375px) and (orientation: portrait) {
    .canvas-wrapper {
       padding: 2px;
-      width: calc(100vw - 12px);
-      max-height: calc(100vh - 140px);
+      width: calc(100vw - 4px);
+      max-height: calc(100dvh - 180px);
+      min-height: 120px;
    }
 }

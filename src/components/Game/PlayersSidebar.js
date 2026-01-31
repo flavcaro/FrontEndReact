@@ -1,7 +1,7 @@
 import React from 'react';
 import { MAX_PLAYERS } from '../../constants/gameConfig';
 
-export default function PlayersSidebar({ players, gameState, nickname, roomId, style }) {
+export default function PlayersSidebar({ players, gameState, nickname, roomId, style, className }) {
   // Try to include the room name in the share URL if available in localStorage
   let shareUrl = `${window.location.origin}/room/${roomId}`;
   let roomName = '';
@@ -9,7 +9,7 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId, s
     const stored = localStorage.getItem(`room_${roomId}_mode`);
     if (stored) {
       const cfg = JSON.parse(stored);
-        if (cfg && cfg.name) {
+      if (cfg && cfg.name) {
         // Remove emoji and non-alphanumeric punctuation so we display a clean room name
         const nameOnly = cfg.name.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
         const cleaned = nameOnly.replace(/[^\p{L}\p{N}\s\-_.]/gu, '').trim();
@@ -22,23 +22,23 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId, s
   }
 
   return (
-    <aside className="players-sidebar" style={style}>
+    <aside className={`players-sidebar ${className || ''}`} style={style}>
       <div className="sidebar-header">
         <h3>👥 Giocatori</h3>
         <span className="players-badge">{players.length}/{MAX_PLAYERS}</span>
       </div>
-      
+
       <ul className="players-list">
         {players.map((p) => (
-          <li 
-            key={p.id} 
+          <li
+            key={p.id}
             className={p.name === nickname ? 'player-current' : ''}
             style={{
               border: p.name === gameState?.currentArtist ? '2px solid #22c55e' : 'none',
               background: p.name === gameState?.currentArtist ? '#dcfce7' : undefined
             }}
           >
-            <div 
+            <div
               className="player-avatar"
               style={{
                 background: `linear-gradient(135deg, ${p.color || '#667eea'}, ${adjustBrightness(p.color || '#667eea', -20)})`,
