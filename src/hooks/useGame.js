@@ -368,8 +368,18 @@ export function useGame(roomId, nickname, players) {
 
     await awardArtistPoints();
 
-    // Survival mode penalties
-    await applySurvivalPenalties(roomId, gameState, players, sendSystemMessage, db, set, ref, get);
+    // Survival mode penalties - check if game should end
+    const survivalResult = await applySurvivalPenalties(roomId, gameState, players, sendSystemMessage, db, set, ref, get);
+
+    // If survival mode determined a winner (only one player left alive), end the game
+    if (survivalResult?.shouldEndGame) {
+      setTimeout(async () => {
+        await set(ref(db, `rooms/${roomId}/game/showResults`), false);
+        setShowResults(false);
+        await endGame(roomId, players);
+      }, 5000);
+      return;
+    }
 
     setTimeout(async () => {
       // Reset showResults globale
