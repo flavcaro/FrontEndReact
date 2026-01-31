@@ -6,6 +6,7 @@
 @import './styles/canvas.css';
 @import './styles/players-sidebar.css';
 @import './styles/chat-sidebar.css';
+@import './styles/chat-mobile.css';
 @import './styles/buttons.css';
 @import './styles/forms.css';
 @import './styles/results.css';

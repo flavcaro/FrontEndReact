@@ -1,63 +1,235 @@
 /* Modal and custom-create responsive rules */
 
 @media (max-width: 520px) {
-  .modal-content { width: calc(100% - 24px) !important; margin: 8px !important; max-height: 92vh; padding: 0 !important; }
-  .modal-body { padding: 12px !important; }
+  .modal-content {
+    width: calc(100% - 24px) !important;
+    margin: 8px !important;
+    max-height: 92vh;
+    padding: 0 !important;
+  }
+
+  .modal-body {
+    padding: 12px !important;
+  }
+
   /* allow the modal body to scroll when content is tall on small screens */
-  .modal-body { max-height: calc(92vh - 72px) !important; overflow: auto !important; -webkit-overflow-scrolling: touch !important; }
-  .custom-create .rounds-box { width: 100% !important; max-width: none !important; }
-  .custom-create .options-row > div { width: 100% !important; }
-  .modal-header { padding: 12px 14px !important; }
-  .modal-illustration { width: 56px !important; height: 56px !important; font-size: 24px !important; border-radius: 10px !important; }
-  .modal-mode-icon { width: 52px !important; height: 52px !important; font-size: 28px !important; }
-  .custom-create .option-btn { display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; gap: 8px !important; padding: 8px 10px !important; font-size: 13px !important; min-height: 36px !important; border-radius: 10px !important; white-space: nowrap !important; box-sizing: border-box !important; width: 100% !important; }
-  .custom-create .options-row .option-btn span { white-space: normal !important; }
+  .modal-body {
+    max-height: calc(92vh - 72px) !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .custom-create .rounds-box {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .custom-create .options-row>div {
+    width: 100% !important;
+  }
+
+  .modal-header {
+    padding: 12px 14px !important;
+  }
+
+  .modal-illustration {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 24px !important;
+    border-radius: 10px !important;
+  }
+
+  .modal-mode-icon {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 28px !important;
+  }
+
+  .custom-create .option-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+    min-height: 36px !important;
+    border-radius: 10px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .custom-create .options-row .option-btn span {
+    white-space: normal !important;
+  }
 
   /* Make mode buttons behave like option buttons on narrow screens (two per row) */
-  .custom-create .modes-select .mode-btn { width: 100% !important; text-align: left !important; display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; }
+  .custom-create .modes-select .mode-btn {
+    width: calc(50% - 4px) !important;
+    text-align: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 8px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+  }
 
   /* Layout: durata + rounds as two columns, each with vertical stacked options */
-  .custom-create .duration-rounds-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; align-items: start !important; }
+  .custom-create .duration-rounds-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
   .custom-create .duration-col .vertical-options,
-  .custom-create .rounds-col .vertical-options { display: flex !important; flex-direction: column !important; gap: 8px !important; }
-  .custom-create .rounds-box { width: auto !important; }
+  .custom-create .rounds-col .vertical-options {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .custom-create .rounds-box {
+    width: auto !important;
+  }
 
   /* Difficulty grid: 2 per row, third on next line */
-  .custom-create .difficulty-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-  .custom-create .difficulty-grid .option-btn { width: 100% !important; }
+  .custom-create .difficulty-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .custom-create .difficulty-grid .option-btn {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: 361px) and (max-width: 520px) {
-  .custom-create .options-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; align-items: start !important; }
-  .custom-create .option-btn { width: 100% !important; text-align: left !important; }
+  .custom-create .options-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    align-items: start !important;
+  }
+
+  .custom-create .option-btn {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
   /* Place duration and rounds side-by-side and make their inner options horizontal */
-  .custom-create .duration-rounds-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; align-items: start !important; }
+  .custom-create .duration-rounds-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
   .custom-create .duration-col .vertical-options,
-  .custom-create .rounds-col .vertical-options { display: flex !important; flex-direction: row !important; gap: 8px !important; flex-wrap: wrap !important; }
+  .custom-create .rounds-col .vertical-options {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
 }
 
 @media (max-width: 360px) {
-  .custom-create .options-row { display: flex !important; flex-direction: column !important; gap: 8px !important; align-items: stretch !important; }
-  .custom-create .option-btn { width: 100% !important; }
-  .custom-create .difficulty-grid { grid-template-columns: 1fr !important; }
-  .custom-create .duration-rounds-row { grid-template-columns: 1fr !important; }
+  .custom-create .options-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  .custom-create .option-btn {
+    width: 100% !important;
+  }
+
+  .custom-create .difficulty-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .custom-create .duration-rounds-row {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 420px) {
-  .modal-overlay { align-items: flex-start !important; padding-top: 14px !important; }
-  .modal-content { width: calc(100% - 20px) !important; margin: 8px !important; max-height: 88vh !important; border-radius: 10px !important; padding: 0 !important; box-shadow: 0 14px 40px rgba(0,0,0,0.24) !important; overflow: hidden !important; }
-  .modal-header { padding: 10px 12px !important; }
-  .modal-body { padding: 10px 12px !important; }
-  .modal-illustration { width: 48px !important; height: 48px !important; font-size: 20px !important; }
-  .modal-mode-icon { width: 46px !important; height: 46px !important; font-size: 22px !important; }
-  .difficulty-help, .modal-header p, .modal-mode-content p { font-size: 12px !important; }
-  .modal-modes-grid, .modal-mode-card { width: 100% !important; box-sizing: border-box !important; }
+  .modal-overlay {
+    align-items: flex-start !important;
+    padding-top: 14px !important;
+  }
+
+  .modal-content {
+    width: calc(100% - 20px) !important;
+    margin: 8px !important;
+    max-height: 88vh !important;
+    border-radius: 10px !important;
+    padding: 0 !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24) !important;
+    overflow: hidden !important;
+  }
+
+  .modal-header {
+    padding: 10px 12px !important;
+  }
+
+  .modal-body {
+    padding: 10px 12px !important;
+  }
+
+  .modal-illustration {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 20px !important;
+  }
+
+  .modal-mode-icon {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 22px !important;
+  }
+
+  .difficulty-help,
+  .modal-header p,
+  .modal-mode-content p {
+    font-size: 12px !important;
+  }
+
+  .modal-modes-grid,
+  .modal-mode-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 @media (max-width: 480px) {
-  .modal-content { max-width: 420px !important; width: calc(100% - 28px) !important; padding: 6px !important; }
-  .modal-header h2 { font-size: 16px !important; margin: 0; }
-  .modal-body { font-size: 13px !important; padding: 10px !important; }
-  .modal-illustration { width:44px !important; height:44px !important; font-size:18px !important; }
-  .modal-close { padding: 6px !important; }
+  .modal-content {
+    max-width: 420px !important;
+    width: calc(100% - 28px) !important;
+    padding: 6px !important;
+  }
+
+  .modal-header h2 {
+    font-size: 16px !important;
+    margin: 0;
+  }
+
+  .modal-body {
+    font-size: 13px !important;
+    padding: 10px !important;
+  }
+
+  .modal-illustration {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 18px !important;
+  }
+
+  .modal-close {
+    padding: 6px !important;
+  }
 }

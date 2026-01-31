@@ -187,12 +187,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    font-size: 16px;
-    background: transparent;
+    padding: 12px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 20px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     border: none;
+    border-radius: 12px !important;
     color: inherit;
     cursor: pointer;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-info-btn:active,
+  .mobile-players-btn:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(0.95);
   }
 
   .mobile-game-info-popover {

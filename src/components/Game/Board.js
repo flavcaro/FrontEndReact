@@ -429,6 +429,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
         </div>
 
         <ChatSidebar
+          className={isMobile ? 'chat-mobile-fullwidth' : ''}
           roomId={roomId}
           nickname={finalNickname}
           messages={messages}

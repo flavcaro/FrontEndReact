@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ref, set, onValue, get, remove } from "firebase/database";
-import { generateRoomCode } from '../utils/roomUtils';
 import { db, auth } from "../firebase";
 import { TURN_DURATION, getSurvivalDifficulty, applySurvivalPenalties } from "../constants/gameConfig";
 import { calculatePoints, calculateArtistBonus } from "../utils/gameScoring";
@@ -437,13 +436,6 @@ export function useGame(roomId, nickname, players) {
 
       const user = auth.currentUser;
       if (!user) throw new Error("Utente non autenticato");
-
-      // Filter players to accepted if provided
-      const playersToUse = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
-
-      // Create a new room so the restarted game uses a fresh room id while keeping the same owner
-      // Preserve owner from previous game when possible
-      const ownerId = previousGame?.ownerId || user.uid;
 
       // Restart in-place: remove players who rejected, reassign owner if needed, then start a fresh game in same room
       // Filter players list according to acceptedPlayers (if provided)

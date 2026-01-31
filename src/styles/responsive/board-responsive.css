@@ -429,13 +429,33 @@
 
   /* Adjust board-center to account for fixed chat */
   .board-center {
-    padding-bottom: 180px !important;
-    /* Reserve space for fixed chat */
+    padding-bottom: 45vh !important;
+    /* Reserve space for fixed chat (40vh max-height + some buffer) */
   }
 
   /* Force column layout on mobile */
   .board-container {
     flex-direction: column !important;
+  }
+
+  /* Fix header buttons positioning on mobile */
+  .board-center>div:first-child {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    padding: 8px 12px !important;
+    margin-bottom: 8px !important;
+    border-radius: 0 0 12px 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Ensure waiting message and buttons are visible and properly sized */
+  .waiting-message,
+  .btn-leave {
+    position: relative !important;
+    z-index: 101 !important;
   }
 }
 

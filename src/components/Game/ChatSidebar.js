@@ -3,17 +3,18 @@ import { push, ref, onValue } from "firebase/database";
 import { db } from "../../firebase";
 import { getColorForNickname } from "../../utils/nicknameUtils";
 
-export default function ChatSidebar({ 
-  roomId, 
-  nickname, 
-  messages, 
-  messagesEndRef, 
-  gameState, 
+export default function ChatSidebar({
+  roomId,
+  nickname,
+  messages,
+  messagesEndRef,
+  gameState,
   timeLeft,
-  isArtist, 
+  isArtist,
   hasGuessed,
   onGuessCorrect,
-  style
+  style,
+  className
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [players, setPlayers] = useState([]);
@@ -153,7 +154,7 @@ export default function ChatSidebar({
   };
 
   return (
-    <aside className="chat-sidebar" style={style}>
+    <aside className={`chat-sidebar ${className || ''}`} style={style}>
       <div className="sidebar-header">
         <h3>💬 Chat</h3>
       </div>
@@ -162,15 +163,15 @@ export default function ChatSidebar({
         {messages.map((msg) => {
           const messageStyle = getMessageStyle(msg);
           const classNames = `chat-message ${msg.isSystem ? 'system' : ''}`;
-          
+
           return (
-            <div 
-              key={msg.id} 
+            <div
+              key={msg.id}
               className={classNames}
               style={messageStyle}
             >
               {!msg.isSystem && (
-                <div 
+                <div
                   className="chat-user"
                   style={{
                     color: getColorForNickname(msg.user, players)
@@ -192,10 +193,10 @@ export default function ChatSidebar({
           placeholder={
             (typeof timeLeft === 'number' && timeLeft <= 0)
               ? "Tempo scaduto"
-              : isArtist 
-                ? "Stai disegnando..." 
-                : hasGuessed 
-                  ? "Hai già indovinato!" 
+              : isArtist
+                ? "Stai disegnando..."
+                : hasGuessed
+                  ? "Hai già indovinato!"
                   : "Scrivi la tua risposta..."
           }
           value={inputMessage}
@@ -203,7 +204,7 @@ export default function ChatSidebar({
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           disabled={!gameState?.active || isArtist || hasGuessed || (typeof timeLeft === 'number' && timeLeft <= 0)}
         />
-        <button 
+        <button
           onClick={sendMessage}
           disabled={!gameState?.active || isArtist || hasGuessed || (typeof timeLeft === 'number' && timeLeft <= 0)}
         >
