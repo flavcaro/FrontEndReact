@@ -19,29 +19,13 @@ export default function Canvas({
 
       const container = containerRef.current;
       const clientWidth = container.clientWidth;
-
-      // Calculate available vertical space in the viewport.
-      // Subtract header/chat/players heights when layout stacks them (portrait / narrow screens).
       const vh = window.innerHeight || document.documentElement.clientHeight;
-      const header = document.querySelector('.board-header');
-      const chat = document.querySelector('.chat-sidebar');
-      const players = document.querySelector('.players-sidebar');
-      const lives = document.querySelector('.lives-display');
 
-      const headerH = header && header.offsetParent !== null ? header.getBoundingClientRect().height : 0;
-      const chatH = chat && chat.offsetParent !== null ? chat.getBoundingClientRect().height : 0;
-      const playersH = players && players.offsetParent !== null ? players.getBoundingClientRect().height : 0;
-      const livesH = lives && lives.offsetParent !== null ? lives.getBoundingClientRect().height : 0;
-
-      const isPortrait = window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
-
-      // If portrait or narrow, chat and players are stacked vertically and should be subtracted.
-      // Also always subtract any visible lives-display (top area inside center column).
-      const subtract = isPortrait || window.innerWidth <= 1024
-        ? (headerH + chatH + playersH + livesH + 12)
-        : (headerH + livesH + 12);
-
-      const availableHeight = Math.max(160, Math.floor(vh - subtract));
+      // Calculate available vertical space from the container itself.
+      // Important: layout (CSS) controls header/chat/players sizing — the canvas
+      // should simply use the space its parent provides to avoid double layout
+      // calculations that cause jumps on resize (especially on mobile/Safari).
+      const availableHeight = Math.max(160, Math.floor(container.clientHeight));
 
       // Respect both viewport width and height constraints so canvas scales proportionally
       const vw = window.innerWidth || document.documentElement.clientWidth;
@@ -390,6 +374,7 @@ export default function Canvas({
           </Stage>
         )}
       </div>
+
     </div>
   );
 }

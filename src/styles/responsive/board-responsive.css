@@ -109,6 +109,25 @@
   .board-container .chat-sidebar { width: 200px; }
 }
 
+/* Additional shrink steps for sidebars on narrower viewports to keep canvas area usable */
+@media (max-width: 900px) {
+  .board-container .players-sidebar { width: 150px; }
+  .board-container .chat-sidebar { width: 180px; }
+  .board-header .header-main { padding-right: 220px; }
+}
+
+@media (max-width: 800px) {
+  .board-container .players-sidebar { width: 130px; }
+  .board-container .chat-sidebar { width: 150px; }
+  .board-header .header-main { padding-right: 160px; }
+}
+
+@media (max-width: 600px) {
+  .board-container .players-sidebar { width: 120px; }
+  .board-container .chat-sidebar { width: 140px; }
+  .board-header .header-main { padding-right: 120px; }
+}
+
 
 @media (max-width: 1200px) {
   .board-center {
@@ -181,7 +200,7 @@
   .board-container {
     flex-direction: column !important;
     position: static !important;
-    height: 100vh !important;
+    height: 100dvh !important;
     overflow: hidden !important;
   }
 
@@ -199,8 +218,8 @@
     position: relative !important;
     width: 100% !important;
     order: 2 !important;
-    height: 22vh !important;
-    max-height: 22vh !important;
+    height: auto !important;
+    max-height: 30% !important;
     min-height: 120px !important;
     overflow-y: auto !important;
     border-left: none !important;
@@ -212,9 +231,9 @@
     position: relative !important;
     width: 100% !important;
     order: 3 !important;
-    height: 80px !important;
-    max-height: 80px !important;
-    min-height: 80px !important;
+    height: auto !important;
+    max-height: 96px !important;
+    min-height: 64px !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     border-right: none !important;

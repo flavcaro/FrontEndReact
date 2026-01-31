@@ -6,7 +6,7 @@
   .board-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 
@@ -69,9 +69,9 @@
     right: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 22vh !important;
-    max-height: 22vh !important;
-    min-height: 140px !important;
+    height: auto !important;
+    max-height: 30% !important;
+    min-height: 120px !important;
     order: 2;
     border-left: none !important;
     border-top: 2px solid #e2e8f0 !important;
@@ -101,8 +101,8 @@
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: 80px !important;
-    min-height: 80px !important;
+    max-height: 96px !important;
+    min-height: 64px !important;
     order: 3;
     border-right: none !important;
     border-top: 2px solid #e2e8f0 !important;

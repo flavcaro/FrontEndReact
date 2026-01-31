@@ -240,9 +240,15 @@
   .chat-text { font-size: 18px !important; }
 }
 
-/* Desktop enhancements */
+/* Desktop enhancements: use proportional flex-basis for chat sidebar */
 @media (min-width: 1024px) {
-  .chat-sidebar { width: 600px !important; }
+  .board-container > .chat-sidebar {
+    flex: 0 0 22% !important;
+    flex-basis: 22% !important;
+    min-width: 240px !important;
+    max-width: 600px !important;
+    box-sizing: border-box !important;
+  }
   .chat-messages { padding: 22px !important; }
   .chat-message { padding: 16px 20px !important; }
   .chat-user { font-size: 18px !important; font-weight: 400 !important; }
@@ -255,14 +261,23 @@
 }
 
 @media (min-width: 1400px) {
-  .chat-sidebar { width: 560px !important; }
+  .board-container > .chat-sidebar { flex-basis: 20% !important; min-width: 260px !important; max-width: 720px !important; }
 }
 
 /* Ensure chat sidebar reduces on narrower viewports despite desktop min-width rules */
 @media (max-width: 1200px) {
-  .board-container .chat-sidebar { width: 240px !important; }
+  .board-container .chat-sidebar { width: 160px !important; }
 }
 
 @media (max-width: 1000px) {
+  .board-container .chat-sidebar { width: 140px !important; }
+}
+
+/* Reduce chat sidebar progressively on larger viewports too */
+@media (max-width: 1600px) {
+  .board-container .chat-sidebar { width: 240px !important; }
+}
+
+@media (max-width: 1400px) {
   .board-container .chat-sidebar { width: 200px !important; }
 }

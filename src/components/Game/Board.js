@@ -228,6 +228,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return <PuzzleBoard roomId={roomId} nickname={nickname} gameConfig={gameConfig} />;
   }
 
+  
+
   return (
     <>
       <SimplePopup

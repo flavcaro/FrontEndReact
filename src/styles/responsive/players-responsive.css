@@ -314,11 +314,15 @@
   }
 }
 
-/* Desktop: ensure large sidebars, roomy invite input and prominent avatars */
+/* Desktop: use proportional flex-based sidebars to avoid mixing fixed widths */
 @media (min-width: 1024px) {
-  .players-sidebar {
-    width: 420px !important;
+  .board-container > .players-sidebar {
+    flex: 0 0 18% !important;
+    flex-basis: 18% !important;
+    min-width: 180px !important;
+    max-width: 420px !important;
     padding: 22px !important;
+    box-sizing: border-box !important;
   }
 
   .players-sidebar .player-item .avatar,
@@ -339,16 +343,29 @@
 }
 
 @media (min-width: 1400px) {
-  .players-sidebar { width: 480px !important; }
+  .board-container > .players-sidebar {
+    flex-basis: 20% !important;
+    min-width: 200px !important;
+    max-width: 480px !important;
+  }
 }
 
 /* Override large-desktop sizing on narrower viewports to ensure shrinking.
    Use board-container-scoped selectors and !important to override earlier
    min-width rules imported earlier in the responsive cascade. */
 @media (max-width: 1200px) {
-  .board-container .players-sidebar { width: 200px !important; }
+  .board-container .players-sidebar { width: 160px !important; }
 }
 
 @media (max-width: 1000px) {
-  .board-container .players-sidebar { width: 180px !important; }
+  .board-container .players-sidebar { width: 140px !important; }
+}
+
+/* Reduce sidebars progressively on slightly larger viewports as well */
+@media (max-width: 1600px) {
+  .board-container .players-sidebar { width: 240px !important; }
+}
+
+@media (max-width: 1400px) {
+  .board-container .players-sidebar { width: 200px !important; }
 }
