@@ -1,0 +1,126 @@
+/* home.animations.css — Animations and background elements */
+
+/* ===========================================
+   ANIMAZIONI
+   =========================================== */
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 8px 32px rgba(34, 197, 94, 0.6); }
+  100% { box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4); }
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-25px) rotate(-15deg); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(20deg); }
+}
+
+@keyframes float4 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(-10deg); }
+}
+
+/* ===========================================
+   BACKGROUND ELEMENTS
+   =========================================== */
+
+.bg-elements {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: drift 20s ease-in-out infinite;
+  mix-blend-mode: screen;
+  filter: blur(6px) saturate(120%);
+}
+
+.shape-1 {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 150px;
+  height: 150px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 5s;
+}
+
+.shape-3 {
+  width: 100px;
+  height: 100px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 10s;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-20px) translateX(20px); }
+  50% { transform: translateY(-10px) translateX(-10px); }
+  75% { transform: translateY(10px) translateX(15px); }
+}
+
+/* hero title gradient + slow shift */
+.hero-content h1 {
+  /* Softer gradient: white -> pale blue -> lavender (no yellow) */
+  background: linear-gradient(90deg, #ffffff 0%, #cfe8ff 45%, #e9d5ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 150% 150%;
+  animation: heroShift 12s ease-in-out infinite;
+}
+
+@keyframes heroShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* reduce motion on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .quick-button-card .quick-button-icon,
+  .quick-button-card:hover .quick-button-icon,
+  .join-card:hover,
+  .nickname-card:hover,
+  .hero-content h1 {
+    transition: none !important;
+    transform: none !important;
+  }
+  .bg-shape { filter: blur(4px); }
+}

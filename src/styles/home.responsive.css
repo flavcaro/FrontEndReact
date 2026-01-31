@@ -1,0 +1,378 @@
+/* home.responsive.css — Responsive and scale-up overrides */
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+  .home-top-row { padding: 28px 16px; margin-top: 48px; min-height: calc(100vh - 120px); }
+  .home-row-grid { grid-template-columns: 1fr; gap: 18px; }
+
+  .main-emoji {
+    font-size: 80px;
+  }
+
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .hero-text-side {
+    order: 1;
+  }
+
+  .hero-actions-side {
+    order: 2;
+  }
+
+  .hero-logo {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .quick-create-section {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .quick-create-title {
+    font-size: 20px;
+  }
+
+  .quick-buttons-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .quick-button-card {
+    padding: 16px;
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .quick-button-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  .create-btn {
+    font-size: 18px !important;
+    padding: 16px 32px !important;
+  }
+
+  .join-section {
+    padding: 20px 16px 12px;
+  }
+
+  .join-card {
+    padding: 24px 20px;
+  }
+
+  .join-container h3 {
+    font-size: 24px;
+  }
+
+  .join-subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .join-inputs {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nickname-section {
+    padding: 20px 20px 40px;
+  }
+
+  .nickname-card {
+    padding: 20px;
+  }
+
+  .nickname-inputs {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .float-1, .float-2, .float-3, .float-4 {
+    display: none;
+  }
+}
+
+/* Custom modal form styles */
+.custom-create {
+  padding: 18px 22px;
+}
+.custom-create h3 {
+  font-size: 20px;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+}
+.custom-create .lobby-label {
+  display: block;
+  font-size: 15px;
+  color: #334155;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.mode-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+  background: #ffffff;
+  cursor: pointer;
+  color: #0f172a;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(2,6,23,0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.mode-btn:hover { transform: translateY(-2px); }
+.mode-btn.active {
+  background: linear-gradient(90deg, #7c3aed, #6366f1);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 12px 30px rgba(99,102,241,0.15);
+}
+.custom-create .lobby-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+  background: #fff;
+  box-sizing: border-box;
+}
+.custom-create select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+  background: #fff;
+}
+
+.option-btn {
+  background: #f8fafc;
+  border: 1px solid #e6eefc;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+}
+.option-btn span { opacity: 0.95; }
+.option-btn.active {
+  background: linear-gradient(90deg, #06b6d4, #7c3aed);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 12px 30px rgba(124,58,237,0.12);
+}
+
+.custom-create .duration-rounds-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.custom-create .duration-rounds-row .rounds-box {
+  flex: 0 0 160px;
+  width: 160px;
+}
+/* Push rounds box to the right on wider screens so it doesn't stick to the duration controls */
+@media (min-width: 521px) {
+  .custom-create .duration-rounds-row { display: flex; align-items: center; gap: 32px; }
+  /* Let duration column size to its content instead of stretching, so rounds stays close */
+  .custom-create .duration-rounds-row .duration-col { flex: 0 1 auto; }
+  /* Keep rounds visually close to duration; small gap and constrained width to avoid overflow */
+  .custom-create .duration-rounds-row .rounds-box {
+    margin-left: 32px; /* increased gap from duration controls */
+    flex: 0 0 160px;
+    max-width: 200px;
+    box-sizing: border-box;
+  }
+  /* Align inner option buttons horizontally next to duration on tablet+ and desktop */
+  .custom-create .duration-col .vertical-options,
+  .custom-create .rounds-col .vertical-options {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+}
+.difficulty-help { color: #64748b; font-size: 13px; }
+.modal-content .custom-create + hr {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border-color: #eef2ff;
+}
+
+@media (max-width: 480px) {
+  .mode-btn { padding: 8px 10px; font-size: 14px; }
+  .custom-create { padding: 14px; }
+}
+
+/* Modal base rules moved to home.base.css; responsive overrides remain in
+   src/styles/responsive/modal-responsive.css */
+
+/* If you need to restore previous content, see
+   src/styles/_backup/home.css.full.bak created before this change. */
+
+.modal-content .leader-meta {
+  font-size: 15px;
+  color: #64748b;
+}
+.modal-content .leader-score {
+  font-weight: 800;
+  color: #111827;
+  min-width: 84px;
+  text-align: right;
+  font-size: 20px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#fff7ed,#fff1d6);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Lightweight preview tweaks (home compact card already styled above) */
+.leaderboard-preview-card ol li {
+  transition: background 120ms ease;
+}
+.leaderboard-preview-card .leader-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+}
+
+/* Responsive adjustments for modal leaderboard */
+@media (max-width: 520px) {
+  .modal-content { padding: 12px; }
+  .modal-content .leader-name { max-width: 160px; font-size: 16px; }
+  .modal-content .leader-avatar { width: 48px; height: 48px; font-size: 18px; border-radius: 10px; }
+  .modal-content .leaderboard-list li { padding: 10px 12px; }
+  .modal-content .leader-score { font-size: 16px; min-width: 64px; padding: 6px 8px; }
+}
+
+/* =========================
+   SCALE-UP OVERRIDES (desktop-first)
+   Ensures larger sizes across wide screens without altering many existing rules
+   ========================= */
+@media (min-width: 1024px) {
+  .quick-button-icon { width: 80px !important; height: 80px !important; font-size: 44px !important; }
+  .hero-content h1 { font-size: 56px !important; }
+  .main-emoji { font-size: 140px !important; }
+  .join-card .lobby-input, .nickname-card .lobby-input { font-size: 20px !important; padding: 14px 16px !important; }
+  .leaderboard-preview-card .leader-avatar { width: 64px !important; height: 64px !important; font-size: 20px !important; }
+  .leaderboard-preview-card .leader-name { font-size: 18px !important; }
+  .leaderboard-preview-card .leader-score { font-size: 18px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-avatar { width: 84px !important; height: 84px !important; font-size: 28px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-name { font-size: 20px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-score { font-size: 20px !important; }
+  .inline-create-btn { font-size: 24px !important; padding: 16px 36px !important; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .quick-button-icon { width: 72px !important; height: 72px !important; font-size: 40px !important; }
+  .hero-content h1 { font-size: 48px !important; }
+  .main-emoji { font-size: 110px !important; }
+  .leaderboard-preview-card .leader-avatar { width: 56px !important; height: 56px !important; font-size: 18px !important; }
+  .leaderboard-preview-card .leader-name { font-size: 16px !important; }
+}
+
+/* OVERRIDES: increase header and leaderboard sizes for better readability */
+.home-header .user-name { font-size: 22px !important; }
+.home-header .level-badge, .home-header .xp-badge { font-size: 20px !important; padding: 10px 16px !important; }
+.home-header .header-profile-btn, .home-header .header-leaderboard-btn, .home-header .logout-btn { font-size: 18px !important; padding: 12px 16px !important; }
+
+.leaderboard-preview-card { font-size: 16px !important; padding: 14px 16px !important; }
+.leaderboard-preview-card .header-title { font-size: 16px !important; }
+.leaderboard-preview-card .leader-name { font-size: 18px !important; }
+.leaderboard-preview-card .leader-meta { font-size: 14px !important; }
+.leaderboard-preview-card .leader-score { font-size: 18px !important; }
+
+@media (max-width: 768px) {
+  .home-header .user-name { font-size: 18px !important; }
+  .home-header .level-badge, .home-header .xp-badge { font-size: 16px !important; }
+  .home-header .header-profile-btn, .home-header .header-leaderboard-btn, .home-header .logout-btn { font-size: 15px !important; }
+  .leaderboard-preview-card { font-size: 15px !important; }
+  .leaderboard-preview-card .leader-name { font-size: 16px !important; }
+  .leaderboard-preview-card.compact-leaderboard .leader-avatar { width: 90px !important; height: 90px !important; font-size: 30px !important; }
+}
+
+/* Desktop: larger quick-create cards and typography for the central modes column */
+@media (min-width: 769px) {
+  .modes-column .quick-create-title {
+    font-size: 40px;
+    line-height: 1.02;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+  .modes-column .quick-create-subtitle {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #475569;
+    font-weight: 600;
+  }
+  .modes-column .quick-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    grid-auto-rows: 1fr; /* make grid rows equal height */
+    align-items: stretch;
+    align-content: stretch;
+  }
+  .modes-column .quick-button-card {
+    padding: 36px;
+    min-height: 160px;
+    height: 100%; /* stretch to fill grid row */
+    border-radius: 16px;
+    gap: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column; /* ensure vertical stacking so justify-content centers content */
+    justify-content: center;
+  }
+  .modes-column .quick-button-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .modes-column .quick-button-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modes-column .quick-button-content h3 {
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+  }
+  .modes-column .quick-button-content p {
+    font-size: 18px;
+    margin: 0;
+    color: #475569;
+  }
+ 
+}
+
+/* Mid/large desktops: ensure hero titles are readable without affecting mobile */
+@media (min-width: 769px) {
+  .hero-column .hero-content h2 { font-size: 56px; }
+  .hero-column .hero-content p { font-size: 20px; }
+  .hero-logo { font-size: 56px; }
+}

@@ -30,6 +30,10 @@
 @media (min-width: 361px) and (max-width: 520px) {
   .custom-create .options-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; align-items: start !important; }
   .custom-create .option-btn { width: 100% !important; text-align: left !important; }
+  /* Place duration and rounds side-by-side and make their inner options horizontal */
+  .custom-create .duration-rounds-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; align-items: start !important; }
+  .custom-create .duration-col .vertical-options,
+  .custom-create .rounds-col .vertical-options { display: flex !important; flex-direction: row !important; gap: 8px !important; flex-wrap: wrap !important; }
 }
 
 @media (max-width: 360px) {

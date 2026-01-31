@@ -1,0 +1,398 @@
+/* home.base.css — core (non-responsive) styles extracted from original home.css */
+
+/* Highlight the current user's row inside the leaderboard modal/preview */
+.leader-row.current {
+  background: linear-gradient(90deg, rgba(255,249,236,0.95), rgba(255,243,224,0.95));
+  border: 1px solid rgba(245,158,11,0.14);
+  box-shadow: 0 12px 36px rgba(245,158,11,0.08);
+  border-radius: 12px;
+  padding: 8px;
+}
+.leader-row.current .leader-name {
+  color: #92400e;
+  font-weight: 900;
+}
+.leader-row.current .leader-score {
+  background: linear-gradient(90deg,#fff7ed,#fff1d6);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+}
+/* ===========================================
+   SKETCHUP HOME - STILE GARTIC PHONE
+   Design giocoso, dinamico, full-page
+   =========================================== */
+
+.home {
+  min-height: 100vh;
+  background: var(--brand-gradient);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+  /* responsive base font that scales between mobile and desktop */
+  font-size: clamp(16px, 1.6vw + 12px, 28px);
+  /* keep content below the fixed header on all viewports */
+  padding-top: 110px;
+}
+
+/* ===========================================
+   HEADER MINIMAL
+   =========================================== */
+
+.home-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px; /* restored more compact header spacing */
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Tidy header buttons and spacing */
+.home-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-header .logo .logo-icon { font-size: 36px; }
+.home-header .logo .logo-text { font-size: 32px; font-weight: 800; color: #fff; }
+
+.header-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.header-right .user-stats-header { margin-right: 8px; }
+
+.header-profile-btn, .header-leaderboard-btn, .logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+}
+
+.header-profile-btn:hover, .header-leaderboard-btn:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 10px 28px rgba(2,6,23,0.12);
+}
+
+/* Accent the logout button while keeping proportions consistent */
+.logout-btn {
+  background: linear-gradient(90deg,#ff7a7a,#ff5a5a);
+  border: none;
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(255,90,90,0.18);
+}
+
+.logout-btn:hover { transform: translateY(-2px); }
+
+/* Logo */
+.logo {
+  font-size: 44px; /* larger logo */
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.34);
+}
+
+.header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Profile button in header */
+.header-profile-btn {
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.18);
+  cursor: pointer;
+}
+.header-profile-btn:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+
+/* Make profile button content not expand to fill available space */
+.lobby-btn.header-profile-btn .btn-text { flex: 0 0 auto; }
+
+/* Slightly smaller icon inside the header button */
+.lobby-btn.header-profile-btn .btn-icon { font-size: 16px; margin-right: 6px; }
+
+.user-name {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.96);
+  margin-left: 14px;
+}
+
+.user-stats-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.level-badge, .xp-badge {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+/* HERO, LAYOUT, QUICK CREATE, JOIN, NICKNAME, MODAL, and other non-responsive rules
+   remain in this base file. For easier maintenance you can further split these files later.
+*/
+
+/* (rest of original non-responsive styles follow) */
+
+/* ===========================================
+   MODALE CREAZIONE PERSONALIZZATA (STYLES)
+   =========================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0; /* shorthand for top/right/bottom/left:0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99999;
+  padding: 20px;
+}
+
+.modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  /* larger default modal for header-triggered modals */
+  max-width: 1100px;
+  width: calc(100% - 120px); /* fit within overlay padding on narrow screens */
+  margin: 0 40px;
+  max-height: 92vh;
+  overflow: auto;
+  overflow-x: hidden; /* prevent horizontal scrollbar inside modal */
+  box-sizing: border-box;
+  box-shadow: 0 36px 100px rgba(0, 0, 0, 0.48);
+  padding: 0;
+}
+
+/* entrance animation for modal */
+.modal-content {
+  animation: popIn 220ms cubic-bezier(.2,.9,.3,1);
+  transform-origin: center top;
+}
+
+.modal-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; /* allow header items to wrap instead of overflowing */
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 26px;
+  color: #111827;
+}
+
+.modal-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.modal-illustration {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: white;
+  background: linear-gradient(135deg, #ff7ab6 0%, #7c3aed 100%);
+  box-shadow: 0 10px 34px rgba(124,58,237,0.2);
+}
+
+.modal-body {
+  padding: 24px 28px 32px 28px;
+  overflow-x: hidden;
+}
+
+/* Responsive adjustments for custom-create form inside modal */
+.custom-create .options-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap; /* allow duration and rounds to stack on small widths */
+}
+
+.custom-create .rounds-box {
+  /* Prefer a flexible box that targets ~160px but can shrink when space is limited */
+  flex: 0 1 160px;
+  width: auto;
+  min-width: 0;
+}
+
+/* Ensure the inner button row can wrap onto multiple lines instead of overflowing */
+.custom-create .rounds-box > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.custom-create .options-row .option-btn {
+  white-space: nowrap;
+  flex: 0 1 auto; /* allow each option button to shrink if needed */
+}
+
+@media (max-width: 520px) {
+  .custom-create .rounds-box { width: 100%; }
+  .custom-create .options-row > div { width: 100%; }
+}
+
+/* Prevent text from being clipped: allow wrapping and proper box-sizing inside modal */
+.modal-content *,
+.modal-content *::before,
+.modal-content *::after {
+  box-sizing: border-box;
+}
+
+.modal-content h2,
+.modal-content p,
+.modal-mode-content h3,
+.modal-mode-content p,
+.modal-body {
+  word-break: break-word;
+  white-space: normal;
+}
+
+.modal-illustration {
+  flex-shrink: 0;
+}
+
+.modal-modes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.modal-mode-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e6eefc;
+}
+
+.modal-mode-icon {
+  font-size: 40px;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 12px;
+}
+
+.modal-mode-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.modal-mode-content p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.modal-mode-actions {
+  margin-top: 8px;
+}
+
+.modal-action-btn {
+  background: #22C55E;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Option selectors */
+.option-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.option-label {
+  font-size: 13px;
+  color: #475569;
+  min-width: 60px;
+}
+
+.option-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.option-btn {
+  background: #f3f4f6;
+  border: 1px solid #e6eefc;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.option-btn.active {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: white;
+  border-color: transparent;
+}
+

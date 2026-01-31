@@ -161,51 +161,6 @@
   flex-shrink: 0;
 }
 
-.btn-restart {
-  /* Use flex to match sibling button sizing when placed inside a flex container */
-  width: auto;
-  flex: 1 1 auto;
-  padding: 16px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-restart:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-/* Exit button - match .btn-restart sizing and provide hover state */
-.btn-exit {
-  width: auto;
-  flex: 1 1 auto;
-  padding: 16px;
-  background: #ef4444; /* red */
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.btn-exit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(190, 50, 50, 0.35);
-  background: #dc2626;
-}
-
 /* Container for action buttons in results card */
 .results-actions {
   display: flex;

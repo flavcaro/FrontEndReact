@@ -583,3 +583,61 @@
   .quick-create-section { margin-top: 0 !important; }
   .home-row-grid > * { margin-bottom: 2px !important; }
 }
+
+/* Moved responsive rules from original src/styles/home.css */
+
+@media (max-width: 900px) {
+  .home-header { padding: 18px 20px; }
+  .home-header .logo .logo-text { display: none; }
+  /* reduce top padding so content doesn't appear beneath a taller fixed header on small viewports */
+  .home { padding-top: 80px; }
+}
+
+/* Responsive stepping: at medium widths show two columns and place join-card full width below */
+@media (max-width: 1200px) {
+  .home-row-grid { grid-template-columns: 1.4fr 1fr; gap: 28px; }
+  .hero-column { order: 1; }
+  .modes-column { order: 2; }
+  .join-column { order: 3; grid-column: 1 / -1; }
+  .home-top-row { padding: 36px 22px 22px; }
+  .hero-content h1, .hero-content h2 { font-size: clamp(28px, 3.2vw + 14px, 48px); }
+  /* ensure content clears the fixed header on medium screens */
+  .home { padding-top: 100px; }
+}
+
+@media (max-width: 1024px) {
+  .home-row-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .hero-column { padding-right: 8px; }
+  .modes-column { padding-left: 8px; }
+  .join-column { grid-column: 1 / -1; }
+  .quick-button-card { padding: 14px; }
+  .join-card, .nickname-card { padding: 18px; }
+  .home-top-row { padding: 32px 20px 20px; }
+  .main-emoji { font-size: clamp(64px, 8vw, 120px); }
+  /* slightly smaller header offset for tablets */
+  .home { padding-top: 88px; }
+}
+
+@media (max-width: 768px) {
+  /* Force stacked layout on small screens to avoid grid-area artifacts */
+  .home-row-grid { display: block !important; grid-template-columns: 1fr; grid-template-areas: none !important; gap: 8px; }
+  /* slightly tighter stacking spacing on small screens */
+  .home-row-grid > * { width: 100% !important; box-sizing: border-box; margin-bottom: 2px !important; }
+  .hero-column, .modes-column, .join-column, .right-column { width: 100% !important; display: block !important; }
+  .home-top-row { padding: 20px 12px 14px; min-height: auto; }
+  .hero-content h1, .hero-content h2 { font-size: clamp(22px, 5vw + 6px, 36px); }
+  .hero-content p { font-size: 15px; }
+  .quick-button-card { padding: 12px; }
+  .join-card, .nickname-card { padding: 12px; }
+  .quick-button-icon { width: 56px; height: 56px; font-size: 28px; }
+  /* ensure header doesn't overlap content on mobile */
+  .home { padding-top: 76px; }
+}
+
+@media (max-width: 420px) {
+  .home-row-grid { gap: 12px; }
+  .inline-create-btn { font-size: 16px !important; padding: 10px 20px !important; }
+  .join-inputs .lobby-input { min-width: 0; width: 100%; }
+  .home { padding-top: 68px; }
+}
+

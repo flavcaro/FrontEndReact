@@ -1,5 +1,5 @@
 
-import '../../styles/palette.css';
+import '../../styles/base.css';
 import React from 'react';
 
 const PALETTE = ['#1e293b','#667eea','#22c55e','#f59e0b','#ef4444','#3b82f6','#ec4899','#14b8a6'];
