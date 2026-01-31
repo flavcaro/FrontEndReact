@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ref, onValue, get } from "firebase/database";
+import { ref, onValue, get, push } from "firebase/database";
 import { db, auth } from "../firebase";
 import { PUZZLE_DRAWING } from "../constants/gameModes/puzzleDrawing";
 import { useGameTimer } from "./useGameTimer";
@@ -56,6 +56,13 @@ export function usePuzzleGame(roomId, nickname, players) {
         const data = snapshot.val();
         setGameState(data);
 
+        // Clear finalResults when a new game starts (so GameResults popup closes for all players)
+        if (data?.active && !data?.gameEnded) {
+          setFinalResults(null);
+          setShowResults(false);
+          return;
+        }
+
         if (!data?.gameEnded || !data?.finalScores) return;
 
         setFinalResults(data.finalScores);
@@ -76,12 +83,49 @@ export function usePuzzleGame(roomId, nickname, players) {
     });
   }, [roomId]);
 
+  /* ---------------- PLAYER COUNT MONITOR ---------------- */
+  // Monitor player count and terminate game if below minimum for Puzzle Drawing
+  useEffect(() => {
+    if (!roomId || !gameState?.active || gameState?.gameEnded) return;
+
+    const playersRef = ref(db, `rooms/${roomId}/players`);
+    return onValue(playersRef, async (snapshot) => {
+      try {
+        const playersData = snapshot.val();
+        if (!playersData) return;
+
+        const playerCount = Object.keys(playersData).length;
+        console.log(`👥 [Puzzle Drawing] Player count: ${playerCount}/${PUZZLE_DRAWING.minPlayers}`);
+
+        // If player count drops below minimum, terminate the game
+        if (playerCount < PUZZLE_DRAWING.minPlayers) {
+          console.warn(`⚠️ [Puzzle Drawing] Player count (${playerCount}) below minimum (${PUZZLE_DRAWING.minPlayers}). Terminating game...`);
+
+          // Send system message
+          await push(ref(db, `rooms/${roomId}/chat`), {
+            user: "Sistema",
+            message: `⚠️ Partita terminata: servono almeno ${PUZZLE_DRAWING.minPlayers} giocatori per continuare!`,
+            timestamp: Date.now(),
+            isSystem: true
+          });
+
+          // Import endPuzzleGame dynamically to avoid circular dependency
+          const { endPuzzleGame } = await import('../services/puzzleGameService');
+          await endPuzzleGame(roomId);
+        }
+      } catch (error) {
+        console.error('Error in player count monitor:', error);
+      }
+    });
+  }, [roomId, gameState?.active, gameState?.gameEnded]);
+
+
   /* ---------------- TIMER ---------------- */
   const handleTimerEnd = useCallback(async () => {
     if (!gameState?.active || gameState?.gameEnded) return;
 
     console.log('⏰ Timer scaduto, avanzando al prossimo round...');
-    
+
     try {
       await advancePuzzleRound(roomId);
     } catch (error) {

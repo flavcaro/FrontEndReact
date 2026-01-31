@@ -25,8 +25,9 @@ export const getSurvivalDifficulty = (round) => {
 };
 
 // Applica penalità per Survival mode
+// Returns { shouldEndGame: boolean, winner: string | null }
 export const applySurvivalPenalties = async (roomId, gameState, players, sendSystemMessage, db, set, ref, get) => {
-  if (!gameState?.survivalMode || !gameState?.playerLives) return;
+  if (!gameState?.survivalMode || !gameState?.playerLives) return { shouldEndGame: false, winner: null };
 
   // Aspetta un momento per assicurarsi che guessedPlayers sia aggiornato
   await new Promise(resolve => setTimeout(resolve, 100));
@@ -42,6 +43,9 @@ export const applySurvivalPenalties = async (roomId, gameState, players, sendSys
     thresholdType: gameState.survivalThreshold?.type || gameState.survivalThreshold?.thresholdType || SURVIVAL_DEFAULT_THRESHOLD.thresholdType,
     thresholdValue: gameState.survivalThreshold?.value || gameState.survivalThreshold?.thresholdValue || SURVIVAL_DEFAULT_THRESHOLD.thresholdValue
   };
+
+  // Keep track of updated lives locally to check for winner after all penalties
+  const updatedPlayerLives = { ...gameState.playerLives };
 
   for (const player of players) {
     if (player.name === gameState.currentArtist) continue;
@@ -66,9 +70,10 @@ export const applySurvivalPenalties = async (roomId, gameState, players, sendSys
 
     if (!shouldPenalize) continue;
 
-    const currentLives = gameState.playerLives[player.name] || 0;
+    const currentLives = updatedPlayerLives[player.name] || 0;
     if (currentLives > 0) {
       const newLives = currentLives - 1;
+      updatedPlayerLives[player.name] = newLives;
       await set(ref(db, `rooms/${roomId}/game/playerLives/${player.name}`), newLives);
 
       if (newLives === 0) {
@@ -78,4 +83,19 @@ export const applySurvivalPenalties = async (roomId, gameState, players, sendSys
       }
     }
   }
+
+  // Check if only one player remains alive - survival victory!
+  const playersAlive = players.filter(p => (updatedPlayerLives[p.name] || 0) > 0);
+  if (playersAlive.length === 1) {
+    const winner = playersAlive[0].name;
+    await sendSystemMessage(roomId, `🏆 ${winner} è l'ultimo sopravvissuto e vince la partita!`);
+    return { shouldEndGame: true, winner };
+  }
+
+  // Also end game if no players are alive (edge case)
+  if (playersAlive.length === 0) {
+    return { shouldEndGame: true, winner: null };
+  }
+
+  return { shouldEndGame: false, winner: null };
 };
