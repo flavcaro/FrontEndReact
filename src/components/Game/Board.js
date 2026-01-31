@@ -9,6 +9,7 @@ import Canvas from "./Canvas";
 import PuzzleBoard from "./PuzzleBoard";
 import GameResults from "./GameResults";
 import Palette from "./Palette";
+import Button from "../common/Button"; // Assicurati di avere questo import!
 
 import { usePlayers } from "../../hooks/usePlayers";
 import { useGame } from "../../hooks/useGame";
@@ -19,7 +20,7 @@ import { listenRestartVote } from '../../services/restartService';
 export default function Board({ roomId, nickname, gameConfig }) {
   const navigate = useNavigate();
 
-  // Track whether we should pin the board to the viewport.
+  // --- LOGICA DI LAYOUT E RESIZE (Mantenuta Originale) ---
   const [isPinned, setIsPinned] = useState(() => {
     try {
       return window.innerWidth >= 900;
@@ -48,7 +49,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
     } catch (e) { return 320; }
   });
 
-  const { players, finalNickname, cannotJoinReason, isOwner, playerId } =
+  // --- HOOKS ---
+  // FIX: Aggiunto isChecking estratto da usePlayers
+  const { players, finalNickname, cannotJoinReason, isOwner, playerId, isChecking } =
     usePlayers(roomId, nickname);
 
   const {
@@ -63,8 +66,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     showResults
   } = useGame(roomId, finalNickname, players);
 
-
-  // Survival threshold info (may be stored as {type,value} or {thresholdType,thresholdValue})
+  // Survival threshold info 
   const survivalThreshold = gameState?.survivalThreshold;
   const survivalThresholdType = survivalThreshold?.type || survivalThreshold?.thresholdType;
   const survivalThresholdValue = survivalThreshold?.value ?? survivalThreshold?.thresholdValue;
@@ -94,19 +96,18 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
   const [popup, setPopup] = useState({ open: false, message: "" });
 
-  // Listen for restartVote so we can avoid redirecting to home while restart is in progress
+  // --- LISTENERS E EFFETTI ---
+
+  // Listen for restartVote 
   useEffect(() => {
     if (!roomId) return;
     const unsub = listenRestartVote(roomId, (data) => {
-      // store latest on window for the game end effect to read synchronously
       try { window.__restartVoteCache = data || null; } catch (e) { /* ignore */ }
     });
     return () => unsub && unsub();
   }, [roomId]);
 
-  /* =========================
-     FINE PARTITA
-  ========================= */
+  // Fine Partita
   useEffect(() => {
     if (
       gameState?.gameEnded &&
@@ -124,72 +125,34 @@ export default function Board({ roomId, nickname, gameConfig }) {
         });
       }, 100);
 
-      // If there's an active restartVote in progress or accepted, do not redirect to home here;
-      // GameResults will handle navigation to the new room when ready.
-      // Listen state is provided below; check it via restartVoteRef on the window (set by listener).
       const restartVote = window.__restartVoteCache;
       if (restartVote && (restartVote.status === 'open' || restartVote.status === 'accepted')) {
-        // skip redirect: waiting for restart flow
         return;
       }
 
-      // Redirect everyone to home after short delay
       setTimeout(() => {
         try { navigate('/home', { replace: true }); } catch (e) { console.error(e); }
       }, 3000);
     }
   }, [gameState, navigate]);
 
-  
-  
-
-  /* =========================
-     CANNOT JOIN REASON
-  ========================= */
-  useEffect(() => {
-    if (cannotJoinReason) {
-      setPopup({
-        open: true,
-        message: `Cannot join: ${cannotJoinReason}. Please wait for the game to end or try reconnecting if you were previously in the room.`,
-      });
-    }
-  }, [cannotJoinReason]);
-
-  /* =========================
-     WARN ON REFRESH
-  ========================= */
+  // Warn on Refresh
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (gameState?.active) {
         e.preventDefault();
-        e.returnValue =
-          "Sei sicuro di voler uscire? La partita è in corso!";
+        e.returnValue = "Sei sicuro di voler uscire? La partita è in corso!";
       }
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () =>
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [gameState]);
 
-  const handleClosePopup = () => {
-    setPopup({ open: false, message: "" });
-    navigate("/home", { replace: true });
-  };
-
-  const handleStartGame = () => {
-    if (!gameConfig) return;
-    startGame(gameConfig);
-  };
-
-  /* =========================
-     RENDER
-  ========================= */
+  // Resize Listener (Ripristinato logica originale)
   useEffect(() => {
     const onResize = () => {
       const w = window.innerWidth;
       setIsPinned(w >= 900);
-      // compute sidebar widths
       if (w > 1400) {
         setPlayersSidebarWidth(480);
         setChatSidebarWidth(560);
@@ -212,7 +175,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // When the board is pinned (fixed to viewport) prevent body scroll
+  // Body Scroll Lock
   useEffect(() => {
     const prev = document.body.style.overflow;
     if (isPinned) {
@@ -223,12 +186,66 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return () => { document.body.style.overflow = prev || ''; };
   }, [isPinned]);
 
-  // If this room is configured for Puzzle Drawing, render the specialized board.
+  const handleClosePopup = () => {
+    setPopup({ open: false, message: "" });
+    navigate("/home", { replace: true });
+  };
+
+  const handleStartGame = () => {
+    if (!gameConfig) return;
+    startGame(gameConfig);
+  };
+
+  // =================================================================
+  // BLOCHI DI SICUREZZA (Codice Nuovo per fixare i ghost player)
+  // =================================================================
+
+  // 1. Schermata di Caricamento (Blocca tutto finché usePlayers non decide)
+  if (isChecking) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+        <h2 style={{color: '#64748b', fontSize: '1.2rem'}}>Verifica accesso alla stanza...</h2>
+      </div>
+    );
+  }
+
+  // 2. Schermata di Blocco (Se la partita è in corso)
+  if (cannotJoinReason === 'Game in progress') {
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+        <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', textAlign: 'center', maxWidth: '400px' }}>
+          <div style={{ fontSize: '60px', marginBottom: '20px' }}>🚫</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>Partita in Corso</h2>
+          <p style={{ color: '#64748b', marginBottom: '30px' }}>
+            Non puoi unirti a questa stanza perché la partita è già iniziata.
+          </p>
+          <Button onClick={() => navigate('/home')} variant="primary">
+            Torna alla Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Schermata di Blocco (Se la stanza è piena)
+  if (cannotJoinReason === 'Room full') {
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+        <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', textAlign: 'center', maxWidth: '400px' }}>
+          <div style={{ fontSize: '60px', marginBottom: '20px' }}>🌕</div>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>Stanza Piena</h2>
+          <Button onClick={() => navigate('/home')} variant="primary">
+            Torna alla Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect per Puzzle Mode
   if ((gameConfig && gameConfig.id === 'puzzleDrawing') || (gameState && gameState.gameModeId === 'puzzleDrawing')) {
     return <PuzzleBoard roomId={roomId} nickname={nickname} gameConfig={gameConfig} />;
   }
-
-  
 
   return (
     <>
