@@ -49,27 +49,33 @@ export function useGame(roomId, nickname, players) {
           setShowResults(false);
         }
 
+        // Clear finalResults when a new game starts (so GameResults popup closes for all players)
+        if (data?.active && !data?.gameEnded) {
+          setFinalResults(null);
+          return;
+        }
+
         if (!data?.gameEnded || !data?.finalScores) return;
 
-      setFinalResults(data.finalScores);
+        setFinalResults(data.finalScores);
 
-      const earlyEnd =
-        data.endReason === "owner_left" ||
-        data.endReason === "not_enough_players";
+        const earlyEnd =
+          data.endReason === "owner_left" ||
+          data.endReason === "not_enough_players";
 
-      const user = auth.currentUser;
-      if (!earlyEnd && user && !user.isAnonymous) {
-        const myScore = data.finalScores.find(
-          p => p.userId === user.uid
-        );
-        if (myScore) {
-          const isWinner = data.finalScores[0]?.userId === user.uid;
-          await updateGameStats(user.uid, myScore.score, isWinner);
+        const user = auth.currentUser;
+        if (!earlyEnd && user && !user.isAnonymous) {
+          const myScore = data.finalScores.find(
+            p => p.userId === user.uid
+          );
+          if (myScore) {
+            const isWinner = data.finalScores[0]?.userId === user.uid;
+            await updateGameStats(user.uid, myScore.score, isWinner);
+          }
         }
+      } catch (error) {
+        console.error('Error in game state listener:', error);
       }
-    } catch (error) {
-      console.error('Error in game state listener:', error);
-    }
     });
   }, [roomId]);
 
@@ -245,13 +251,13 @@ export function useGame(roomId, nickname, players) {
 
   const nextTurn = useCallback(async () => {
     let difficultyId = gameState?.difficultyId || "medium";
-    
+
     // Survival mode: increasing difficulty
     if (gameState?.survivalMode) {
       const round = (gameState?.round || 0) + 1;
       difficultyId = getSurvivalDifficulty(round);
     }
-    
+
     const playerOrder =
       gameState?.playerOrder || players.map(p => p.name);
     const roundsPerPlayer = gameState?.roundsPerPlayer || 6;
@@ -271,7 +277,7 @@ export function useGame(roomId, nickname, players) {
 
     // Controlla quante volte il prossimo artista ha già disegnato
     const nextArtistCount = currentCounts[nextArtist] || 0;
-    
+
     // Se il prossimo artista ha già disegnato abbastanza volte, cerca il prossimo disponibile
     // oppure termina il gioco se tutti hanno finito
     if (nextArtistCount >= roundsPerPlayer) {
@@ -429,51 +435,85 @@ export function useGame(roomId, nickname, players) {
       // Preserve owner from previous game when possible
       const ownerId = previousGame?.ownerId || user.uid;
 
-      // Create a new room id using human-friendly 6-char code
-      let newRoomId = generateRoomCode();
-      // Ensure uniqueness: try up to 5 times
-      for (let i = 0; i < 5; i++) {
-        const existsSnap = await get(ref(db, `rooms/${newRoomId}`));
-        if (!existsSnap.exists()) break;
-        newRoomId = generateRoomCode();
-      }
-      // Reserve the room meta node so other clients know it exists
-      await set(ref(db, `rooms/${newRoomId}/meta`), { createdAt: Date.now(), ownerId });
+      // Restart in-place: remove players who rejected, reassign owner if needed, then start a fresh game in same room
+      // Filter players list according to acceptedPlayers (if provided)
+      const playersToKeep = acceptedPlayers.length > 0 ? players.filter(p => acceptedPlayers.includes(p.id)) : players;
 
-      // Copy players into the new room (scores will be reset by startNewGame)
-      const playerSetPromises = playersToUse.map(p => set(ref(db, `rooms/${newRoomId}/players/${p.id}`), {
-        name: p.name,
-        userId: p.userId || null,
-        id: p.id
-      }));
-      await Promise.all(playerSetPromises);
-      // Mark the new room as being created to signal other clients (helps debugging)
+      // Remove players who voted NO (not accepted)
+      const playersToRemove = players.filter(p => !playersToKeep.some(k => k.id === p.id));
       try {
-        await set(ref(db, `rooms/${newRoomId}/creating`), true);
-      } catch (err) {
-        console.error('[restartGame] failed to mark new room creating', err);
-      }
-
-      // Start the new game in the newly created room with the preserved owner
-      try {
-        console.log('[restartGame] starting new game in', { newRoomId, ownerId, playersCount: playersToUse.length });
-        await startNewGame(newRoomId, playersToUse, ownerId, gameConfig);
-
-        // Only after successful start, publish newRoomId so other clients navigate
-        try {
-          console.log('[restartGame] publishing newRoomId to old room', { roomId, newRoomId });
-          await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId);
-          console.log('[restartGame] published newRoomId successfully', { roomId, newRoomId });
-        } catch (err) {
-          console.error('[restartGame] failed to publish newRoomId after startNewGame', err);
+        for (const p of playersToRemove) {
+          try {
+            await sendSystemMessage(roomId, `🚪 ${p.name} ha lasciato la stanza (non ha accettato il riavvio)`);
+            await remove(ref(db, `rooms/${roomId}/players/${p.id}`));
+          } catch (err) {
+            console.warn('[restartGame] failed to remove player during restart', p, err);
+          }
         }
-      } finally {
-        // Clear the creating flag
-        try { await set(ref(db, `rooms/${newRoomId}/creating`), null); } catch (e) { /* ignore */ }
+      } catch (err) {
+        console.warn('[restartGame] error removing rejected players', err);
       }
 
-      // Return the new room id so callers may navigate clients
-      return newRoomId;
+      // Ensure owner: if previous owner is kept, preserve them; otherwise assign new owner from kept players
+      try {
+        const prevOwner = players.find(p => p.isOwner);
+        let newOwnerPlayer = null;
+        if (prevOwner && playersToKeep.some(p => p.id === prevOwner.id)) {
+          newOwnerPlayer = prevOwner;
+        } else if (playersToKeep.length > 0) {
+          // choose the oldest by joinedAt if available, otherwise first
+          newOwnerPlayer = playersToKeep.slice().sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0))[0];
+        }
+
+        if (newOwnerPlayer) {
+          const ownerUserId = newOwnerPlayer.userId || user.uid;
+          await set(ref(db, `rooms/${roomId}/owner`), {
+            playerId: newOwnerPlayer.id,
+            nickname: newOwnerPlayer.name,
+            sessionId: newOwnerPlayer.sessionId || null,
+            createdAt: Date.now()
+          });
+          // Start the game as the chosen owner (pass ownerUserId to startNewGame)
+          console.log('[restartGame] starting new in-place game', { roomId, ownerId: ownerUserId, playersCount: playersToKeep.length });
+          await startNewGame(roomId, playersToKeep, ownerUserId, gameConfig);
+          // Signal to other clients that an in-place restart completed
+          try {
+            await set(ref(db, `rooms/${roomId}/restartVote/inPlaceRestart`), Date.now());
+          } catch (err) {
+            console.warn('[restartGame] failed to write inPlaceRestart flag', err);
+          }
+          // Clean up the restartVote node immediately to prevent false auto-restarts in subsequent games
+          try {
+            // Small delay to ensure clients have read inPlaceRestart flag before removal
+            setTimeout(async () => {
+              try {
+                await remove(ref(db, `rooms/${roomId}/restartVote`));
+                console.log('[restartGame] removed restartVote node');
+              } catch (err) {
+                console.warn('[restartGame] failed to remove restartVote node', err);
+              }
+            }, 2000);
+          } catch (err) {
+            console.warn('[restartGame] error scheduling restartVote cleanup', err);
+          }
+        } else {
+          console.warn('[restartGame] no players remain to start the game');
+          // End game if no players remain
+          await set(ref(db, `rooms/${roomId}/game`), {
+            active: false,
+            gameEnded: true,
+            endReason: 'not_enough_players',
+            endedAt: Date.now(),
+            finalScores: []
+          });
+        }
+      } catch (err) {
+        console.error('[restartGame] failed to start in-place game', err);
+        throw err;
+      }
+
+      // Return current room id to indicate in-place restart completed
+      return roomId;
     } catch (error) {
       console.error("Errore riavviando il gioco:", error);
       alert("Errore nel riavvio del gioco: " + error.message);
