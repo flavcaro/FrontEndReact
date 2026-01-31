@@ -20,9 +20,6 @@ const getSessionId = () => {
   return sessionId;
 };
 
-// Global flag per room+session per evitare duplicazioni tra rendering multipli
-const addingPlayersMap = new Map();
-
 // Helper function to send system message
 const sendSystemMessage = async (roomId, message) => {
   await push(ref(db, `rooms/${roomId}/chat`), {
@@ -37,32 +34,34 @@ export function usePlayers(roomId, nickname) {
   const [players, setPlayers] = useState([]);
   const [finalNickname, setFinalNickname] = useState(nickname);
   const [isRoomFull, setIsRoomFull] = useState(false);
-  const [cannotJoinReason, setCannotJoinReason] = useState(null); // New state for join restrictions
+  const [cannotJoinReason, setCannotJoinReason] = useState(null);
   const [playerId, setPlayerId] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
+  
+  // STATO NUOVO: Gestisce il caricamento iniziale per evitare "ghost players"
+  const [isChecking, setIsChecking] = useState(true);
+
   const playerRefRef = useRef(null);
   const isAddingPlayer = useRef(false);
   const sessionId = useRef(getSessionId());
   const playerNicknameRef = useRef(null);
-  const disconnectSetup = useRef(false); // Track if disconnect is setup
+  const disconnectSetup = useRef(false);
   const ownerRef = useRef(null);
 
   // Add or update player with disconnect handling
   useEffect(() => {
     const currentSessionId = sessionId.current;
-    const mapKey = `${roomId}_${currentSessionId}`;
     
     const addOrUpdatePlayer = async () => {
-      // Check global map per evitare chiamate duplicate anche tra rendering
-      if (isAddingPlayer.current || addingPlayersMap.get(mapKey)) {
-        console.log('⚠️ [usePlayers] Già in fase di aggiunta (global check), skip');
+      // Controllo locale (non globale) per evitare race conditions nello stesso render
+      if (isAddingPlayer.current) {
         return;
       }
       
       isAddingPlayer.current = true;
-      addingPlayersMap.set(mapKey, true);
+      setCannotJoinReason(null);
 
-      // Resolve effective nickname: prop -> localStorage -> auth.displayName -> empty
+      // Resolve effective nickname
       const user = auth.currentUser;
       const storedNick = typeof window !== 'undefined' ? localStorage.getItem('nickname') : null;
       const resolvedNickname = (nickname && nickname.toString().trim())
@@ -71,74 +70,62 @@ export function usePlayers(roomId, nickname) {
           ? storedNick.toString().trim()
           : (user && !user.isAnonymous && user.displayName ? user.displayName.toString().trim() : '');
 
-      // set an initial finalNickname so UI can show the intended name earlier
-      if (resolvedNickname) setFinalNickname(resolvedNickname);
-
-      console.log('👤 [usePlayers] Aggiunta/Aggiornamento player:', { nickname: resolvedNickname, sessionId: currentSessionId });
       try {
         // Get all existing players
         const playersRef = ref(db, `rooms/${roomId}/players`);
         const snapshot = await get(playersRef);
         const existingPlayers = snapshot.val() || {};
         
-        console.log('📋 [usePlayers] Players esistenti:', Object.keys(existingPlayers).length);
-        
-        // Convert to array for nickname checking
+        // Convert to array
         const playersList = Object.entries(existingPlayers).map(([id, player]) => ({
           id,
           ...player
         }));
 
-        // Check if THIS EXACT SESSION already exists (same tab/window reconnecting)
+        // Check if THIS EXACT SESSION already exists
         const existingSessionEntry = Object.entries(existingPlayers).find(
           ([, player]) => player.sessionId === currentSessionId
         );
 
-        if (existingSessionEntry) {
-          console.log('✅ [usePlayers] Sessione esistente trovata, aggiorno:', existingSessionEntry[0]);
-        } else {
-          console.log('🆕 [usePlayers] Nuova sessione, creo nuovo player');
-        }
-
-        // Check if game is active (to prevent mid-game joins)
+        // --- CONTROLLO 1: PARTITA IN CORSO ---
         const gameRef = ref(db, `rooms/${roomId}/game`);
         const gameSnap = await get(gameRef);
         const gameState = gameSnap.val();
 
+        // Se non è un rejoin (è un nuovo utente) E la partita è attiva -> BLOCCA
         if (!existingSessionEntry && gameState?.active) {
+          console.warn('⛔ [usePlayers] Blocco: Partita attiva.');
           setCannotJoinReason('Game in progress');
-          isAddingPlayer.current = false;
-          return;
+          // Non settiamo finalNickname e non creiamo il player
+          return; 
         }
 
+        // --- CONTROLLO 2: STANZA PIENA ---
         if (!existingSessionEntry && playersList.length >= MAX_PLAYERS) {
           setIsRoomFull(true);
           setCannotJoinReason('Room full');
-          isAddingPlayer.current = false;
           return;
         }
 
         let playerReference;
         let playerKey;
-        // Check if there's already an owner to prevent race conditions
         const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
         const hasExistingOwner = ownerSnapshot.exists();
         let playerNickname;
 
         if (existingSessionEntry) {
-          // THIS EXACT SESSION exists (same tab reconnecting) - just update
+          // REJOIN: Aggiorna sessione esistente
           const [existingPlayerId, playerData] = existingSessionEntry;
           playerKey = existingPlayerId;
           playerReference = ref(db, `rooms/${roomId}/players/${playerKey}`);
           playerNickname = playerData.name;
           
-          const user = auth.currentUser;
           await set(playerReference, {
             name: playerData.name,
             originalNickname: nickname,
             sessionId: currentSessionId,
             userId: user && !user.isAnonymous ? user.uid : null,
-            joinedAt: playerData.joinedAt || Date.now(), // Mantieni il joinedAt originale!
+            joinedAt: playerData.joinedAt || Date.now(),
             score: playerData.score || 0,
             color: playerData.color || getPlayerColor(playersList.length),
             connected: true
@@ -146,13 +133,11 @@ export function usePlayers(roomId, nickname) {
           
           setFinalNickname(playerData.name);
         } else {
-          // New session - create new player with unique name if needed
-          // Re-check names right before writing to avoid race conditions where
-          // two clients join with the same nickname at the same time.
+          // NEW JOIN: Crea nuovo player
           let uniqueName = generateUniqueNickname(resolvedNickname, playersList);
-          // user is available above
+          
+          // Doppio controllo per evitare duplicati
           try {
-            // refresh players list from server
             const latestSnap = await get(playersRef);
             const latestPlayersObj = latestSnap.val() || {};
             const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
@@ -163,18 +148,12 @@ export function usePlayers(roomId, nickname) {
           
           if (!uniqueName) {
             console.error("Failed to generate unique nickname");
-            isAddingPlayer.current = false;
             return;
-          }
-
-          if (resolvedNickname && uniqueName !== resolvedNickname) {
-            console.log(`Nickname "${resolvedNickname}" già in uso. Cambiato in "${uniqueName}"`);
           }
 
           playerNickname = uniqueName;
 
-          // Attempt to create the player; if name collision happens due to concurrent writes,
-          // retry a few times with updated list.
+          // Tentativo di scrittura con retry
           const MAX_RETRIES = 3;
           let created = false;
           let attempts = 0;
@@ -184,7 +163,6 @@ export function usePlayers(roomId, nickname) {
             playerKey = newRef.key;
             playerReference = newRef;
             try {
-              // Ensure we write the chosen uniqueName
               await set(playerReference, {
                 name: uniqueName,
                 originalNickname: resolvedNickname,
@@ -197,20 +175,20 @@ export function usePlayers(roomId, nickname) {
               });
               created = true;
             } catch (err) {
-              console.warn('Failed to create player entry, retrying', err);
-              // refresh uniqueName and retry
-              const latestSnap = await get(playersRef);
-              const latestPlayersObj = latestSnap.val() || {};
-              const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
-              uniqueName = generateUniqueNickname(resolvedNickname, latestPlayersList);
+               // Riprova con nome aggiornato
+               const latestSnap = await get(playersRef);
+               const latestPlayersObj = latestSnap.val() || {};
+               const latestPlayersList = Object.entries(latestPlayersObj).map(([id, player]) => ({ id, ...player }));
+               uniqueName = generateUniqueNickname(resolvedNickname, latestPlayersList);
             }
           }
+          
           if (!created) {
-            console.error('Unable to create player after retries');
-            isAddingPlayer.current = false;
-            return;
+             console.error('Unable to create player after retries');
+             return;
           }
           
+          // Set finale per sicurezza
           await set(playerReference, {
             name: uniqueName,
             originalNickname: resolvedNickname,
@@ -223,11 +201,8 @@ export function usePlayers(roomId, nickname) {
           });
           
           setFinalNickname(uniqueName);
-
-          // Send join message
           await sendSystemMessage(roomId, `👋 ${uniqueName} è entrato nella stanza`);
 
-          // Store room ownership in separate location
           if (!hasExistingOwner) {
             await set(ref(db, `rooms/${roomId}/owner`), {
               playerId: playerKey,
@@ -238,12 +213,12 @@ export function usePlayers(roomId, nickname) {
           }
         }
 
-        // Store nickname for cleanup
         playerNicknameRef.current = playerNickname;
         playerRefRef.current = playerReference;
         setPlayerId(playerKey);
 
-        // If the game is in survival mode, ensure this player's lives are initialized
+        // --- GESTIONE VITE (SURVIVAL MODE) ---
+        // (Questa parte mancava nella versione semplificata precedente)
         try {
           const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
           const gameData = gameSnapshot.val() || {};
@@ -259,100 +234,88 @@ export function usePlayers(roomId, nickname) {
           console.error('Error ensuring player lives:', err);
         }
 
-        // Set up disconnect handler ONLY ONCE
+        // Setup Disconnect Handler
         if (!disconnectSetup.current) {
           disconnectSetup.current = true;
-          
           const disconnectHandler = onDisconnect(playerReference);
-          
-          // Always remove player on disconnect
           await disconnectHandler.remove();
           console.log('Player disconnect handler set up');
         }
 
-        // Non rimuovere dalla map - mantieni per evitare duplicati futuri
       } catch (error) {
         console.error("Error adding/updating player:", error);
       } finally {
         isAddingPlayer.current = false;
+        // FONDAMENTALE: Sblocca l'interfaccia (toglie la schermata bianca)
+        setIsChecking(false);
       }
     };
 
     addOrUpdatePlayer();
 
-    // Cleanup on unmount - always remove player and handle owner logic
+    // CLEANUP: Quando il componente viene smontato (navigazione o chiusura)
     return () => {
       if (playerRefRef.current && playerNicknameRef.current) {
         const checkOwnerAndRemove = async () => {
-          console.log('[usePlayers] cleanup triggered for', { player: playerNicknameRef.current, playerRef: playerRefRef.current, sessionId: currentSessionId });
+          console.log('[usePlayers] cleanup triggered');
           try {
             const playerName = playerNicknameRef.current;
-            // Always remove player and send leave message
             await sendSystemMessage(roomId, `🚪 ${playerName} ha abbandonato la stanza`);
+            
             const ownerSnapshot = await get(ref(db, `rooms/${roomId}/owner`));
             const ownerData = ownerSnapshot.val();
-                if (ownerData?.sessionId === currentSessionId) {
-                  // Owner is leaving. If a restartVote is active/accepted, avoid ending the game
-                  // to prevent redirecting everyone to home while restart flow completes.
-                  const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
-                  const gameData = gameSnapshot.val();
-                  let skipOwnerRemoval = false;
-                  try {
-                    const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
-                    const restartData = restartSnap.val();
-                    console.log('[usePlayers] restartVote snapshot during owner cleanup', { roomId, restartData });
-                    if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
-                      // Found a restart vote in progress or accepted: skip owner removal to let restart flow handle navigation
-                      skipOwnerRemoval = true;
-                    }
-                  } catch (err) {
-                    console.warn('Error while checking restartVote during owner cleanup', err);
+            
+            // Se chi esce è l'owner
+            if (ownerData?.sessionId === currentSessionId) {
+                const gameSnapshot = await get(ref(db, `rooms/${roomId}/game`));
+                const gameData = gameSnapshot.val();
+                let skipOwnerRemoval = false;
+                
+                // Controlla se c'è un voto di restart in corso
+                try {
+                  const restartSnap = await get(ref(db, `rooms/${roomId}/restartVote`));
+                  const restartData = restartSnap.val();
+                  if (restartData && (restartData.status === 'open' || restartData.status === 'accepted')) {
+                    skipOwnerRemoval = true;
+                  }
+                } catch (err) { console.warn(err); }
+
+                if (!skipOwnerRemoval) {
+                  if (gameData?.active) {
+                    const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                    const playersData = playersSnapshot.val() || {};
+                    const playersList = Object.values(playersData);
+                    await endGameByOwnerLeaving(roomId, playersList, playerName);
                   }
 
-                  console.log('[usePlayers] skipOwnerRemoval?', { roomId, skipOwnerRemoval });
+                  await remove(ref(db, `rooms/${roomId}/owner`));
 
-                  if (!skipOwnerRemoval) {
-                    if (gameData?.active) {
-                      const playersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-                      const playersData = playersSnapshot.val() || {};
-                      const playersList = Object.values(playersData);
-                      // Pass the leaving owner's name so end state includes it
-                      await endGameByOwnerLeaving(roomId, playersList, playerName);
-                    }
+                  // Assegna nuovo owner
+                  const remainingPlayersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
+                  const remainingPlayers = remainingPlayersSnapshot.val() || {};
+                  const remainingPlayerList = Object.entries(remainingPlayers)
+                    .map(([id, data]) => ({ id, ...data }))
+                    .filter(player => player.sessionId !== currentSessionId)
+                    .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
 
-                    // Remove current owner
-                    console.log('[usePlayers] removing owner node for room', roomId);
-                    await remove(ref(db, `rooms/${roomId}/owner`));
-
-                    // Assign new owner to the oldest remaining player (by joinedAt)
-                    const remainingPlayersSnapshot = await get(ref(db, `rooms/${roomId}/players`));
-                    const remainingPlayers = remainingPlayersSnapshot.val() || {};
-                    const remainingPlayerList = Object.entries(remainingPlayers)
-                      .map(([id, data]) => ({ id, ...data }))
-                      .filter(player => player.sessionId !== currentSessionId) // Exclude the leaving player
-                      .sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0)); // Sort by join time
-
-                    if (remainingPlayerList.length > 0) {
-                      const newOwner = remainingPlayerList[0];
-                      console.log('[usePlayers] assigning new owner', { roomId, newOwnerId: newOwner.id, newOwnerName: newOwner.name });
-                      await set(ref(db, `rooms/${roomId}/owner`), {
-                        playerId: newOwner.id,
-                        nickname: newOwner.name,
-                        // Firebase rejects 'undefined' values; use null when sessionId is missing
-                        sessionId: typeof newOwner.sessionId !== 'undefined' ? newOwner.sessionId : null,
-                        createdAt: Date.now()
-                      });
-                      await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
-                    }
-                  } else {
-                    // Skip owner removal: announce that the creator is restarting the room and keep owner node intact
-                    try {
-                      console.log('[usePlayers] skipping owner removal due to restartVote', { roomId });
-                      await sendSystemMessage(roomId, `⚠️ Il creatore sta riavviando la partita, attendere...`);
-                    } catch (e) { /* ignore */ }
+                  if (remainingPlayerList.length > 0) {
+                    const newOwner = remainingPlayerList[0];
+                    await set(ref(db, `rooms/${roomId}/owner`), {
+                      playerId: newOwner.id,
+                      nickname: newOwner.name,
+                      sessionId: typeof newOwner.sessionId !== 'undefined' ? newOwner.sessionId : null,
+                      createdAt: Date.now()
+                    });
+                    await sendSystemMessage(roomId, `👑 ${newOwner.name} è ora il nuovo creatore della stanza`);
                   }
+                } else {
+                   try {
+                     await sendSystemMessage(roomId, `⚠️ Il creatore sta riavviando la partita, attendere...`);
+                   } catch (e) { /* ignore */ }
+                }
             }
-            // Remove player from list (wait briefly so clients receive system messages)
+            
+            // Rimuovi il player dalla lista
             await new Promise((res) => setTimeout(res, 1000));
             await remove(playerRefRef.current);
           } catch (err) {
@@ -370,8 +333,6 @@ export function usePlayers(roomId, nickname) {
     const unsubscribe = onValue(playersRef, (snapshot) => {
       try {
         const data = snapshot.val() || {};
-        
-        // Convert to array - Keep ALL connected players
         const rawPlayers = Object.entries(data)
           .map(([id, player]) => ({
             id,
@@ -379,19 +340,15 @@ export function usePlayers(roomId, nickname) {
           }))
           .filter(player => player.connected !== false);
 
-        // If we have owner info, mark the owner on the player objects
         const ownerSnapshot = ownerRef.current;
         const ownerPlayerId = ownerSnapshot ? ownerSnapshot.playerId : null;
         const allPlayers = rawPlayers.map(p => ({ ...p, isOwner: p.id === ownerPlayerId }));
-
-        // Sort by score (highest first)
         const sortedPlayers = allPlayers.sort((a, b) => (b.score || 0) - (a.score || 0));
         
         setPlayers(sortedPlayers);
         setIsRoomFull(sortedPlayers.length >= MAX_PLAYERS);
       } catch (error) {
         console.error("Error in players listener:", error);
-        // Don't crash the app, just log the error
       }
     });
     return unsubscribe;
@@ -404,11 +361,8 @@ export function usePlayers(roomId, nickname) {
       try {
         const ownerData = snapshot.val();
         const currentSessionId = sessionId.current;
-        
-        // store the owner snapshot in a ref so players listener can mark isOwner
         ownerRef.current = ownerData || null;
         if (ownerData) {
-          // Check both playerId and sessionId for more reliable owner detection
           const isOwnerByPlayerId = playerId && ownerData.playerId === playerId;
           const isOwnerBySessionId = ownerData.sessionId === currentSessionId;
           setIsOwner(isOwnerByPlayerId || isOwnerBySessionId);
@@ -417,11 +371,11 @@ export function usePlayers(roomId, nickname) {
         }
       } catch (error) {
         console.error("Error in owner listener:", error);
-        // Don't crash the app, just log the error
       }
     });
     return unsubscribe;
   }, [roomId, playerId]);
 
-  return { players, finalNickname, isRoomFull, cannotJoinReason, playerId, isOwner };
+  // FIX: Ritorna isChecking
+  return { players, finalNickname, isRoomFull, cannotJoinReason, playerId, isOwner, isChecking };
 }
