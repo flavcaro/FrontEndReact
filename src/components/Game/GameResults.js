@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ref, remove as dbRemove, push, get, set } from 'firebase/database';
+import { ref, remove as dbRemove, push, get, set, onValue } from 'firebase/database';
 import { db } from '../../firebase';
 import { startRestartVote, castRestartVote, listenRestartVote, endRestartVote } from '../../services/restartService';
 import { endGameByOwnerLeaving } from '../../services/gameService';
@@ -21,7 +21,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
   const currentPlayer = players.find(p => p.name === finalNickname);
   const currentPlayerId = propPlayerId || currentPlayer?.id;
 
-  
+
 
   // Listen for any restartVote changes
   useEffect(() => {
@@ -42,67 +42,99 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     return () => unsub && unsub();
   }, [roomId, currentPlayerId, players.length]);
 
+  // Listen for game active changes so we don't allow starting a new vote while a game is running
+  const [gameActive, setGameActive] = useState(false);
+  useEffect(() => {
+    if (!roomId) return;
+    const r = ref(db, `rooms/${roomId}/game/active`);
+    const unsub = onValue(r, (snap) => {
+      try {
+        setGameActive(!!(snap.exists() && snap.val() === true));
+      } catch (e) { setGameActive(false); }
+    });
+    return () => unsub && unsub();
+  }, [roomId]);
+
   // If votes reach a decision, conclude locally
   useEffect(() => {
     (async () => {
       if (!restartVote || restartVote.status !== 'open') {
-        // If accepted, trigger onRestart and navigate clients to new room returned by handler
+        // If accepted, trigger in-place restart automatically by a deterministic actor
         if (restartVote?.status === 'accepted') {
+          // Skip if this vote was already processed (inPlaceRestart flag exists)
+          if (restartVote.inPlaceRestart) {
+            console.log('[restart] skipping already-processed restart vote', { roomId, inPlaceRestart: restartVote.inPlaceRestart });
+            return;
+          }
           const acceptedPlayers = restartVote.acceptedPlayers || [];
           try {
             console.log('[restart] accepted detected', { roomId, acceptedPlayers, restartVote });
-            // If a newRoomId was already written by the initiator, use it
-            if (restartVote.newRoomId) {
-              const encoded = encodeURIComponent(finalNickname || '');
-              // Give users a short moment to see the result before navigating
-              await new Promise((res) => setTimeout(res, 2000));
-              navigate(`/room/${restartVote.newRoomId}/play?nick=${encoded}`);
+
+            // Prefer previous owner as restart actor if they accepted; otherwise fall back to initiator, then first accepted
+            const prevOwner = players.find(p => p.isOwner);
+            const prevOwnerId = prevOwner?.id;
+            const initiatorId = restartVote.initiatorId;
+            let restartActorId = null;
+
+            if (prevOwnerId && acceptedPlayers.includes(prevOwnerId)) {
+              restartActorId = prevOwnerId;
+            } else if (initiatorId && acceptedPlayers.includes(initiatorId)) {
+              restartActorId = initiatorId;
+            } else if (acceptedPlayers.length > 0) {
+              restartActorId = acceptedPlayers[0];
+            }
+
+            // If I'm the chosen actor, call onRestart to perform in-place restart
+            if (restartActorId && currentPlayerId && restartActorId === currentPlayerId) {
+              if (onRestart) {
+                try {
+                  await onRestart(acceptedPlayers);
+                } catch (err) {
+                  console.error('[restart] actor failed to perform onRestart', err);
+                }
+              }
+              // After actor performs restart, wait a bit for DB flags, then navigate into the same room play view
+              try {
+                const encoded = encodeURIComponent(finalNickname || '');
+                await new Promise((res) => setTimeout(res, 500));
+                navigate(`/room/${roomId}/play?nick=${encoded}`);
+              } catch (e) { /* ignore navigation errors */ }
               return;
             }
 
-            // Non-initiators: wait briefly for initiator to publish newRoomId
-            if (restartVote.initiatorId !== currentPlayerId) {
+            // If I'm not the actor, wait briefly for the room to show active=true (in-place restart) or for a published newRoomId
+            if (!restartActorId || (currentPlayerId && restartActorId !== currentPlayerId)) {
               const start = Date.now();
-              let foundNew = null;
               while (Date.now() - start < 8000) {
-                const snap = await get(ref(db, `rooms/${roomId}/restartVote/newRoomId`));
-                if (snap.exists()) { foundNew = snap.val(); break; }
+                const [snapNew, snapGameActive, snapInPlace] = await Promise.all([
+                  get(ref(db, `rooms/${roomId}/restartVote/newRoomId`)),
+                  get(ref(db, `rooms/${roomId}/game/active`)),
+                  get(ref(db, `rooms/${roomId}/restartVote/inPlaceRestart`))
+                ]);
+                if (snapNew.exists()) {
+                  const foundNew = snapNew.val();
+                  const encoded = encodeURIComponent(finalNickname || '');
+                  await new Promise((res) => setTimeout(res, 2000));
+                  navigate(`/room/${foundNew}/play?nick=${encoded}`);
+                  return;
+                }
+                if (snapGameActive.exists() && snapGameActive.val() === true) {
+                  // Game restarted in-place; navigate into same room
+                  const encoded = encodeURIComponent(finalNickname || '');
+                  navigate(`/room/${roomId}/play?nick=${encoded}`);
+                  return;
+                }
+                if (snapInPlace.exists()) {
+                  // Actor signalled in-place restart — navigate into same room
+                  const encoded = encodeURIComponent(finalNickname || '');
+                  navigate(`/room/${roomId}/play?nick=${encoded}`);
+                  return;
+                }
                 await new Promise((r) => setTimeout(r, 500));
               }
-              if (foundNew) {
-                const encoded = encodeURIComponent(finalNickname || '');
-                await new Promise((res) => setTimeout(res, 2000));
-                navigate(`/room/${foundNew}/play?nick=${encoded}`);
-                return;
-              }
-              // If after waiting the newRoomId was not published, fall through to optional fallback
-            }
-
-            // Only the initiator (or fallback) creates the new room to avoid race conditions
-            if (onRestart && restartVote.initiatorId === currentPlayerId) {
-              const newRoomId = await onRestart(acceptedPlayers);
-              if (newRoomId) {
-                // publish newRoomId so other clients can navigate
-                try { await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId); } catch (err) { console.error(err); }
-                const encoded = encodeURIComponent(finalNickname || '');
-                // Give users a short moment to see the result before navigating
-                await new Promise((res) => setTimeout(res, 2000));
-                navigate(`/room/${newRoomId}/play?nick=${encoded}`);
-                return;
-              }
-            }
-
-            // Fallback: if we're not the initiator but we have an onRestart handler, attempt to create a room
-            if (onRestart && restartVote.initiatorId !== currentPlayerId) {
-              console.warn('[restart] fallback: initiator did not publish newRoomId in time, creating new room as fallback');
-              const newRoomId = await onRestart(acceptedPlayers);
-              if (newRoomId) {
-                try { await set(ref(db, `rooms/${roomId}/restartVote/newRoomId`), newRoomId); } catch (err) { console.error(err); }
-                const encoded = encodeURIComponent(finalNickname || '');
-                await new Promise((res) => setTimeout(res, 2000));
-                navigate(`/room/${newRoomId}/play?nick=${encoded}`);
-                return;
-              }
+              // Timeout: give up waiting — leave clients in place
+              console.warn('[restart] waited for in-place restart but game did not become active in time');
+              return;
             }
           } catch (e) {
             console.error(e);
@@ -150,7 +182,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
         }
       }
     })();
-    }, [restartVote, players, roomId, onRestart, minYesVotes, navigate, finalNickname, /* derived */ currentPlayerId]);
+  }, [restartVote, players, roomId, onRestart, minYesVotes, navigate, finalNickname, /* derived */ currentPlayerId]);
 
   const handleExit = () => {
     // Open confirmation modal
@@ -190,14 +222,14 @@ export default function GameResults({ roomId, players = [], finalNickname, final
           // Wait briefly so clients receive the message before removing the player
           await new Promise((res) => setTimeout(res, 1000));
           // Remove leaving player
-          try { await dbRemove(ref(db, `rooms/${roomId}/players/${me.id}`)); } catch (e) {}
+          try { await dbRemove(ref(db, `rooms/${roomId}/players/${me.id}`)); } catch (e) { }
           navigate('/home', { replace: true });
         } else {
           // No remaining players: end game and navigate home
           await endGameByOwnerLeaving(roomId, players, me.name);
           // wait briefly so clients receive end message
           await new Promise((res) => setTimeout(res, 1000));
-          try { await dbRemove(ref(db, `rooms/${roomId}/owner`)); } catch (e) {}
+          try { await dbRemove(ref(db, `rooms/${roomId}/owner`)); } catch (e) { }
           navigate('/home', { replace: true });
         }
       } else {
@@ -211,7 +243,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
         // Give clients time to receive the message
         await new Promise((res) => setTimeout(res, 1000));
         if (me && me.id) {
-          try { await dbRemove(ref(db, `rooms/${roomId}/players/${me.id}`)); } catch (e) {}
+          try { await dbRemove(ref(db, `rooms/${roomId}/players/${me.id}`)); } catch (e) { }
         }
         navigate('/home', { replace: true });
       }
@@ -221,7 +253,8 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     }
   };
 
-  const canInitiate = players.length >= 2;
+  // Only allow initiating a new restart when there is no active game, and no restartVote node exists
+  const canInitiate = players.length >= 2 && !gameActive && !restartVote;
 
   if (!finalResults || finalResults.length === 0) return null;
 
@@ -229,6 +262,17 @@ export default function GameResults({ roomId, players = [], finalNickname, final
     if (!canInitiate) return;
     const initiator = currentPlayer || players[0];
     try {
+      // Re-check DB state to avoid races: if game already active or a restartVote exists, abort
+      const snapGameActive = await get(ref(db, `rooms/${roomId}/game/active`));
+      if (snapGameActive.exists() && snapGameActive.val() === true) {
+        alert('Il gioco è già in esecuzione. Riprova più tardi.');
+        return;
+      }
+      const snapRV = await get(ref(db, `rooms/${roomId}/restartVote`));
+      if (snapRV.exists()) {
+        alert('È già in corso una votazione.');
+        return;
+      }
       await startRestartVote(roomId, initiator.id, initiator.name, players);
       // Mark initiator as having cast locally; actual vote state will be reconciled from DB
       if (initiator.id === currentPlayerId) setHasCast(true);
@@ -294,7 +338,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
             onClick={handleStartVote}
             className="btn-restart"
             disabled={!canInitiate}
-            title={!canInitiate ? 'Servono almeno 2 giocatori per votare' : 'Avvia votazione "Gioca ancora"'}
+            title={!canInitiate ? (gameActive ? 'Partita in corso' : (restartVote ? 'Votazione in corso o appena conclusa' : 'Servono almeno 2 giocatori per votare')) : 'Avvia votazione "Gioca ancora"'}
           >
             Gioca Ancora
           </button>
@@ -308,7 +352,7 @@ export default function GameResults({ roomId, players = [], finalNickname, final
         </div>
 
         {/* Voting modal */}
-        {restartVote && (
+        {restartVote?.status === 'open' && !gameActive && !restartVote?.inPlaceRestart && (
           <div className="simple-modal" style={{
             position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
             justifyContent: 'center', background: 'rgba(0,0,0,0.4)'
@@ -317,54 +361,54 @@ export default function GameResults({ roomId, players = [], finalNickname, final
               <h3 style={{ marginTop: 0 }}>Votazione: Giocare ancora?</h3>
               <p style={{ marginTop: 6, marginBottom: 12, color: '#334155' }}>Avviata da: {restartVote.initiatorName}</p>
 
-                    <div style={{ display: 'flex', gap: 16, marginTop: 6, alignItems: 'stretch' }}>
-                      {(() => {
-                        const myVote = restartVote?.votes ? restartVote.votes[currentPlayerId] : undefined;
-                        return (
-                          <>
-                            <div
-                              className={`thumb-vote ${thumbFeedback === 'yes' ? 'pulse' : ''}`}
-                              onClick={() => (!hasCast && handleVote('yes'))}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('yes')); }}
-                              style={{
-                                flex: 1,
-                                textAlign: 'center',
-                                padding: 12,
-                                borderRadius: 8,
-                                background: myVote === 'yes' ? '#ecfdf5' : (myVote === 'no' ? '#fff1f2' : '#f8fafc'),
-                                cursor: hasCast ? 'default' : 'pointer',
-                                border: myVote === 'yes' ? '1px solid #34d399' : '1px solid transparent'
-                              }}
-                            >
-                              <div style={{ fontSize: 44 }}>👍</div>
-                              <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'yes').length} voti</div>
-                            </div>
+              <div style={{ display: 'flex', gap: 16, marginTop: 6, alignItems: 'stretch' }}>
+                {(() => {
+                  const myVote = restartVote?.votes ? restartVote.votes[currentPlayerId] : undefined;
+                  return (
+                    <>
+                      <div
+                        className={`thumb-vote ${thumbFeedback === 'yes' ? 'pulse' : ''}`}
+                        onClick={() => (!hasCast && handleVote('yes'))}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('yes')); }}
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          padding: 12,
+                          borderRadius: 8,
+                          background: myVote === 'yes' ? '#ecfdf5' : (myVote === 'no' ? '#fff1f2' : '#f8fafc'),
+                          cursor: hasCast ? 'default' : 'pointer',
+                          border: myVote === 'yes' ? '1px solid #34d399' : '1px solid transparent'
+                        }}
+                      >
+                        <div style={{ fontSize: 44 }}>👍</div>
+                        <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'yes').length} voti</div>
+                      </div>
 
-                            <div
-                              className={`thumb-vote ${thumbFeedback === 'no' ? 'pulse' : ''}`}
-                              onClick={() => (!hasCast && handleVote('no'))}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('no')); }}
-                              style={{
-                                flex: 1,
-                                textAlign: 'center',
-                                padding: 12,
-                                borderRadius: 8,
-                                background: myVote === 'no' ? '#fff1f2' : (myVote === 'yes' ? '#ecfdf5' : '#f8fafc'),
-                                cursor: hasCast ? 'default' : 'pointer',
-                                border: myVote === 'no' ? '1px solid #f87171' : '1px solid transparent'
-                              }}
-                            >
-                              <div style={{ fontSize: 44 }}>👎</div>
-                              <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'no').length} voti</div>
-                            </div>
-                          </>
-                        );
-                      })()}
-                    </div>
+                      <div
+                        className={`thumb-vote ${thumbFeedback === 'no' ? 'pulse' : ''}`}
+                        onClick={() => (!hasCast && handleVote('no'))}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('no')); }}
+                        style={{
+                          flex: 1,
+                          textAlign: 'center',
+                          padding: 12,
+                          borderRadius: 8,
+                          background: myVote === 'no' ? '#fff1f2' : (myVote === 'yes' ? '#ecfdf5' : '#f8fafc'),
+                          cursor: hasCast ? 'default' : 'pointer',
+                          border: myVote === 'no' ? '1px solid #f87171' : '1px solid transparent'
+                        }}
+                      >
+                        <div style={{ fontSize: 44 }}>👎</div>
+                        <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'no').length} voti</div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
 
               {hasCast && <div style={{ marginTop: 14, textAlign: 'center', color: '#475569' }}>Hai votato. Attendi il risultato...</div>}
             </div>

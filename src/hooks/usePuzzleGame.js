@@ -56,6 +56,13 @@ export function usePuzzleGame(roomId, nickname, players) {
         const data = snapshot.val();
         setGameState(data);
 
+        // Clear finalResults when a new game starts (so GameResults popup closes for all players)
+        if (data?.active && !data?.gameEnded) {
+          setFinalResults(null);
+          setShowResults(false);
+          return;
+        }
+
         if (!data?.gameEnded || !data?.finalScores) return;
 
         setFinalResults(data.finalScores);
