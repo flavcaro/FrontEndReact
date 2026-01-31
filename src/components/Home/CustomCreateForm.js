@@ -40,17 +40,17 @@ export default function CustomCreateForm({
 
       <div style={{ marginBottom: 12 }}>
         <div style={{ marginBottom: 8, color: '#475569' }}>Scegli la modalità</div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <div className="options-row modes-select" style={{ marginBottom: 12 }}>
           <button className={`mode-btn ${selectedModeId === 'classica' ? 'active' : ''}`} onClick={() => setSelectedModeId('classica')}>Classica</button>
           <button className={`mode-btn ${selectedModeId === 'sopravvivenza' ? 'active' : ''}`} onClick={() => setSelectedModeId('sopravvivenza')}>Sopravvivenza</button>
           <button className={`mode-btn ${selectedModeId === 'chaos_tools' ? 'active' : ''}`} onClick={() => setSelectedModeId('chaos_tools')}>Chaos</button>
           <button className={`mode-btn ${selectedModeId === 'puzzleDrawing' ? 'active' : ''}`} onClick={() => setSelectedModeId('puzzleDrawing')}>Puzzle</button>
         </div>
 
-        <div className="options-row" style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="options-row duration-rounds-row" style={{ gap: 12, marginBottom: 12 }}>
+          <div className="duration-col" style={{ minWidth: 0 }}>
             <label className="lobby-label">Durata turno</label>
-            <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+            <div className="vertical-options" style={{ marginTop: 6 }}>
               {[60,45,30].map((d) => (
                 <button
                   key={d}
@@ -67,9 +67,9 @@ export default function CustomCreateForm({
 
           {/* Rounds solo per modalità classica, sopravvivenza e chaos */}
           {selectedModeId !== 'puzzleDrawing' && (
-            <div className="rounds-box" style={{ width: 160 }}>
+            <div className="rounds-box rounds-col" style={{ minWidth: 0 }}>
               <label className="lobby-label">Rounds</label>
-              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+              <div className="vertical-options" style={{ marginTop: 6 }}>
                 {[3,6,9].map((r) => (
                   <button
                     key={r}
@@ -108,7 +108,7 @@ export default function CustomCreateForm({
 
         <div style={{ marginBottom: 12 }}>
           <label className="lobby-label">Difficoltà</label>
-          <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+          <div className="difficulty-grid" style={{ marginTop: 6 }}>
             {['easy','medium','hard'].map((d) => (
               <button
                 key={d}
