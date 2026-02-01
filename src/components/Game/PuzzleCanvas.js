@@ -156,22 +156,39 @@ export default function PuzzleCanvas({
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
 
-    // Use the smaller dimension to keep canvas square, with some padding
-    const size = Math.min(containerWidth, containerHeight) * 0.95;
+    // Use more vertical space - aim for a wider canvas that fills height better
+    // Keep aspect ratio reasonable (16:9 or similar) but prioritize using available height
+    const maxWidth = containerWidth * 0.95;
+    const maxHeight = containerHeight * 0.95;
+    
+    // Calculate size to fit within container while maintaining aspect ratio
+    // Prefer using more height when available
+    let canvasWidth, canvasHeight;
+    
+    const aspectRatio = maxWidth / maxHeight;
+    if (aspectRatio > 1.5) {
+      // Wide container: use height and calculate width
+      canvasHeight = maxHeight;
+      canvasWidth = Math.min(maxHeight * 1.5, maxWidth);
+    } else {
+      // Tall or square container: use available space more efficiently
+      canvasWidth = maxWidth;
+      canvasHeight = Math.min(maxWidth / 1.2, maxHeight);
+    }
 
     // Support high-DPI displays
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
+    canvas.width = canvasWidth * dpr;
+    canvas.height = canvasHeight * dpr;
 
     // Scale canvas CSS size
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
+    canvas.style.width = `${canvasWidth}px`;
+    canvas.style.height = `${canvasHeight}px`;
 
     // Scale context to match device pixel ratio
     ctx.scale(dpr, dpr);
 
-    drawBackground(ctx, size, size);
+    drawBackground(ctx, canvasWidth, canvasHeight);
   }, [drawBackground, totalSections]);
 
   useEffect(() => {
@@ -180,8 +197,8 @@ export default function PuzzleCanvas({
     if (!ctx || !canvas) return;
 
     // Use CSS dimensions for drawing (already scaled by dpr in context)
-    const w = parseInt(canvas.style.width) || canvas.width;
-    const h = parseInt(canvas.style.height) || canvas.height;
+    const w = parseFloat(canvas.style.width) || canvas.width;
+    const h = parseFloat(canvas.style.height) || canvas.height;
 
     drawBackground(ctx, w, h);
 
