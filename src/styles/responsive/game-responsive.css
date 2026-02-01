@@ -35,38 +35,56 @@
 /* =========================================================
    BOARD & HEADER RESPONSIVE
    ========================================================= */
-@media (min-width: 769px) {
-    .board-header .game-info {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 12px;
+/* Desktop large - tutto visibile */
+@media (min-width: 1025px) {
+    .mobile-header-buttons {
+        display: none !important;
     }
-
+    
+    .desktop-only {
+        display: flex !important;
+    }
+    
     .board-header .header-main {
-        padding-right: 200px;
-        /* Reduced from 380px */
+        flex-wrap: nowrap;
     }
-
+    
     .board-header .header-actions {
-        position: absolute;
-        right: 12px;
-        /* Tighter right spacing */
-        top: 50%;
-        transform: translateY(-50%);
         display: flex;
         gap: 8px;
         align-items: center;
-        z-index: 1100;
     }
 }
 
-@media (max-width: 1200px) {
-
-    .desktop-exit-btn,
-    .desktop-clear-btn,
+/* Tablet - mostra bottoni mobile ma ancora desktop layout */
+@media (min-width: 769px) and (max-width: 1024px) {
     .desktop-only {
         display: none !important;
+    }
+    
+    .mobile-header-buttons {
+        display: flex !important;
+    }
+    
+    .board-header .header-main {
+        flex-wrap: wrap;
+    }
+    
+    .board-header .header-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+}
+
+/* Tablet/Mobile - nasconde elementi desktop */
+@media (max-width: 1024px) {
+    .desktop-only {
+        display: none !important;
+    }
+    
+    .mobile-header-buttons {
+        display: flex !important;
     }
 
     .board-header {
@@ -79,15 +97,52 @@
         gap: 8px !important;
         width: 100% !important;
     }
+    
+    .room-info-section {
+        flex: 1;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
 }
 
 /* =========================================================
    MOBILE PORTRAIT STACKING (From board-responsive.css)
    ========================================================= */
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 768px) {
     .board-container {
         flex-direction: column !important;
         height: 100dvh !important;
+    }
+    
+    .desktop-only,
+    .desktop-exit-btn,
+    .desktop-clear-btn {
+        display: none !important;
+    }
+    
+    .mobile-header-buttons {
+        display: flex !important;
+    }
+
+    .board-header {
+        padding: 6px 10px !important;
+        min-height: 44px !important;
+    }
+    
+    .header-main {
+        gap: 6px !important;
+    }
+    
+    .room-code {
+        font-size: 14px !important;
+        padding: 4px 8px !important;
+    }
+    
+    .room-label {
+        font-size: 9px !important;
     }
 
     .board-main {
@@ -125,5 +180,22 @@
     .board-container>.players-sidebar,
     .board-container>.chat-sidebar {
         display: none !important;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .waiting-message {
+        font-size: 11px !important;
+        padding: 4px 7px !important;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .btn-start {
+        font-size: 11px !important;
+        padding: 5px 8px !important;
     }
 }
