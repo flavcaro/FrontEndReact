@@ -322,7 +322,6 @@ export default function Canvas({
       ref={containerRef}
       style={wrapperStyle}
     >
-      {/* Artist feedback badge removed: malus descriptions hidden from players */}
       <div
         className="canvas-stage-inner"
         style={{

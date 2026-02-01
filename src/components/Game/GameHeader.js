@@ -84,12 +84,6 @@ export default function GameHeader({
   const minPlayersRequired = getMinPlayersForMode();
   const canStartGame = !gameState?.active && !gameState?.gameEnded && (gameState?.round === 0 || !gameState?.round) && playersCount >= minPlayersRequired && isOwner;
 
-  // active malus list is shown via the popover; no inline summary variable needed
-
-  const [malusOpen, setMalusOpen] = useState(false);
-  const [malusManualOpen, setMalusManualOpen] = useState(false);
-  const malusRef = useRef(null);
-  const malusAutoTimeoutRef = useRef(null);
   const [mobileInfoOpen, setMobileInfoOpen] = useState(false);
 
   const almostFiredRef = useRef(false);
@@ -165,36 +159,6 @@ export default function GameHeader({
       lastCountdownRef.current = null;
     }
   }, [timeLeft, onAlmostUp]);
-
-  useEffect(() => {
-    const onDocClick = (e) => {
-      if (malusRef.current && !malusRef.current.contains(e.target)) setMalusOpen(false);
-    };
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, []);
-
-  // Auto-show malus details briefly to the artist when a round starts
-  useEffect(() => {
-    if (gameState?.active && isArtist && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0) {
-      // clear any previous timeout
-      if (malusAutoTimeoutRef.current) clearTimeout(malusAutoTimeoutRef.current);
-      setMalusOpen(true);
-      // auto-hide after 3.5s
-      malusAutoTimeoutRef.current = setTimeout(() => {
-        setMalusOpen(false);
-        setMalusManualOpen(false);
-        malusAutoTimeoutRef.current = null;
-      }, 3500);
-    }
-
-    return () => {
-      if (malusAutoTimeoutRef.current) {
-        clearTimeout(malusAutoTimeoutRef.current);
-        malusAutoTimeoutRef.current = null;
-      }
-    };
-  }, [gameState?.active, isArtist, gameState?.chaosEffects]);
 
   const handleLeaveRoom = () => {
     // Directly navigate back to home. Exit confirmation is shown only from results.
@@ -292,64 +256,10 @@ export default function GameHeader({
           </div>
         )}
         {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
-          <div
-            className="malus-inline"
-            ref={malusRef}
-            onMouseEnter={() => {
-              if (malusAutoTimeoutRef.current) {
-                clearTimeout(malusAutoTimeoutRef.current);
-                malusAutoTimeoutRef.current = null;
-              }
-              setMalusOpen(true);
-            }}
-            onMouseLeave={() => {
-              setMalusOpen(malusManualOpen);
-            }}
-          >
+          <div className="malus-inline">
             <div className="malus-label">🎭</div>
-            <div className="malus-info-inline">
-              <button
-                type="button"
-                className="malus-summary"
-                onClick={() => {
-                  setMalusManualOpen((prev) => {
-                    const nv = !prev;
-                    setMalusOpen(nv);
-                    return nv;
-                  });
-                }}
-                aria-expanded={malusOpen}
-              >
-                {gameState.chaosEffects.length} attivi
-              </button>
-              <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
-                <div className="malus-popover-inner">
-                  {gameState.chaosEffects.map((m, idx) => {
-                    const renderParams = () => {
-                      if (!m.params || typeof m.params !== 'object') return null;
-                      return Object.entries(m.params).map(([k, v]) => {
-                        const pretty = (val) => {
-                          if (val === null || val === undefined) return String(val);
-                          if (typeof val === 'object') {
-                            try { return JSON.stringify(val); } catch (e) { return String(val); }
-                          }
-                          return String(val);
-                        };
-                        return `${k}: ${pretty(v)}`;
-                      }).join(' • ');
-                    };
-
-                    return (
-                      <div key={m.id || idx} className="malus-popover-item">
-                        <div className="effect-name">{m.name}</div>
-                        {m.params && typeof m.params === 'object' && (
-                          <div className="effect-params">{renderParams()}</div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+            <div className="malus-summary">
+              {gameState.chaosEffects.map(e => e.name).join(', ')}
             </div>
           </div>
         )}

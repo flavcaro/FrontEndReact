@@ -183,12 +183,16 @@
   background: linear-gradient(90deg, var(--danger-light), var(--danger));
   color: white;
   border: none;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(239, 68, 68, 0.12);
+  white-space: nowrap;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .malus-popover {
