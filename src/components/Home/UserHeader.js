@@ -9,7 +9,7 @@ export default function UserHeader({ nickname, isGuest, user, xpPoints, level, g
     <header className="home-header">
       <div className="header-logo">
         <span className="logo-icon">
-          <img src={classicGif} alt="SketchUp" style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }} />
+          <img src={classicGif} alt="SketchUp" style={{ width: '48px', height: '48px', imageRendering: 'pixelated' }} />
         </span>
         <span className="logo-text">SketchUp</span>
       </div>

@@ -568,7 +568,7 @@ export default function Home() {
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div className="modal-illustration">
-                  <img src={classicGif} alt="SketchUp" style={{ width: '48px', height: '48px', imageRendering: 'pixelated' }} />
+                  <img src={classicGif} alt="SketchUp" style={{ width: '56px', height: '56px', imageRendering: 'pixelated' }} />
                 </div>
                 <div>
                   <h2>Crea stanza personalizzata</h2>

@@ -13,7 +13,7 @@ export default function Loading({ message = "Caricamento..." }) {
       color: 'white'
     }}>
       <div className="logo">
-        <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+        <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
       </div>
       <p style={{ fontSize: 18, marginTop: 16 }}>{message}</p>
     </div>

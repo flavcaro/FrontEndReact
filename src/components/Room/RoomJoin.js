@@ -79,7 +79,7 @@ export default function RoomJoin({ roomId }) {
         <div className="lobby-card">
           <div className="lobby-header">
             <div className="logo">
-              <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+              <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
             </div>
             <h1>Stanza: {roomId}</h1>
             <p>Devi accedere per entrare in questa stanza</p>
@@ -114,7 +114,7 @@ export default function RoomJoin({ roomId }) {
       <div className="lobby-card">
         <div className="lobby-header">
           <div className="logo">
-            <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+            <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
           </div>
           <h1>Entra nella Stanza</h1>
           <p>Stanza: <strong style={{ color: '#6366f1', fontFamily: 'monospace' }}>{roomId}</strong></p>

@@ -8,7 +8,7 @@ export default function WelcomeScreen({ onGuestLogin, onShowAuthForm, authError 
       <div className="lobby-card">
         <div className="lobby-header">
           <div className="logo">
-            <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+            <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
           </div>
           <h1>SketchUp</h1>
           <p>Disegna, indovina e divertiti con i tuoi amici!</p>
