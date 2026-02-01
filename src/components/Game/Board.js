@@ -438,18 +438,6 @@ export default function Board({ roomId, nickname, gameConfig }) {
             </div>
           </main>
 
-          {/* Game Results Overlay */}
-          {finalResults && (
-            <GameResults
-              roomId={roomId}
-              players={players}
-              finalNickname={finalNickname}
-              finalResults={finalResults}
-              onRestart={restartGame}
-              minYesVotes={4}
-              playerId={playerId}
-            />
-          )}
         </div>
 
         {/* Chat inside container on desktop AND mobile now, to allow flex splitting */}
@@ -477,6 +465,19 @@ export default function Board({ roomId, nickname, gameConfig }) {
           <div className="shape shape-3"></div>
         </div>
       </div>
+
+      {/* Game Results Overlay - Moved outside board container to sit on top of everything */}
+      {finalResults && (
+        <GameResults
+          roomId={roomId}
+          players={players}
+          finalNickname={finalNickname}
+          finalResults={finalResults}
+          onRestart={restartGame}
+          minYesVotes={4}
+          playerId={playerId}
+        />
+      )}
 
       {/* Players Modal */}
       <PlayersModal
