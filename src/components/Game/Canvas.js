@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Stage, Layer, Line } from "react-konva";
 
-export default function Canvas({ 
-  lines = [], 
-  onMouseDown, 
-  onMouseMove, 
+export default function Canvas({
+  lines = [],
+  onMouseDown,
+  onMouseMove,
   onMouseUp,
   isArtist,
   nickname,
@@ -29,13 +29,13 @@ export default function Canvas({
 
       // Respect both viewport width and height constraints so canvas scales proportionally
       const vw = window.innerWidth || document.documentElement.clientWidth;
-      const vwConstraint = Math.floor(vw * 0.98); // aumentato da 0.95 a 0.98
+      const vwConstraint = Math.floor(vw * 0.99); // aumentato da 0.98 a 0.99 per dare più spazio orizzontale
       // Prefer using the real center column width to determine available canvas horizontal space
       let availableHorizontal = clientWidth;
       const centerEl = document.querySelector('.board-center');
       if (centerEl) {
         const centerRect = centerEl.getBoundingClientRect();
-        const gutter = 4; // ridotto per dare più spazio alla canvas
+        const gutter = 2; // ridotto da 4 a 2 per dare ancora più spazio alla canvas
         // subtract center paddings / floating palette area
         availableHorizontal = Math.max(220, Math.floor(centerRect.width - gutter * 2));
       } else {
@@ -51,7 +51,7 @@ export default function Canvas({
           availableHorizontal = Math.max(220, Math.floor(boardRect.width - reserved));
         }
       }
-      const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.72); // aumentato da 0.65 a 0.72
+      const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.85); // aumentato da 0.72 a 0.85 per migliore uso verticale
 
       // Ensure canvas height never exceeds its wrapper visible height (avoids creating page scroll)
       const containerRect = container.getBoundingClientRect();
