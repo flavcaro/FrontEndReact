@@ -210,14 +210,13 @@ export const getSectionBounds = (section, canvasWidth, canvasHeight, totalSectio
 export const isPointInSection = (x, y, section, canvasWidth, canvasHeight, totalSections = 3) => {
   const bounds = getSectionBounds(section, canvasWidth, canvasHeight, totalSections);
   
-  // Margine interno di 2px per evitare sovrapposizioni sui bordi
-  const margin = 2;
-  const adjustedX = bounds.x + (section === 0 ? 0 : margin);
-  const lastSection = totalSections - 1;
-  const adjustedWidth = bounds.width - (section === 0 ? margin : (section === lastSection ? 0 : margin * 2));
+  // Small margin to prevent overlap at exact boundaries, but keep all sections equal size
+  const margin = 1;
   
-  return x >= adjustedX && x <= adjustedX + adjustedWidth && 
-         y >= bounds.y && y <= bounds.y + bounds.height;
+  return x >= bounds.x + margin && 
+         x < bounds.x + bounds.width - margin && 
+         y >= bounds.y + margin && 
+         y < bounds.y + bounds.height - margin;
 };
 
 /**

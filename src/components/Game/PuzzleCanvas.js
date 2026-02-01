@@ -139,6 +139,50 @@ export default function PuzzleCanvas({
      REDRAW
   ----------------------------- */
 
+  // Resize handler for dynamic canvas sizing
+  const updateCanvasSize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const parentRect = parent.getBoundingClientRect();
+    const availableWidth = Math.max(280, parentRect.width - 16);
+    const availableHeight = Math.max(200, parentRect.height - 16);
+    
+    const aspectRatio = 4 / 3;
+    let canvasWidth, canvasHeight;
+    
+    if (availableWidth / availableHeight > aspectRatio) {
+      canvasHeight = availableHeight;
+      canvasWidth = Math.min(availableWidth, canvasHeight * aspectRatio);
+    } else {
+      canvasWidth = availableWidth;
+      canvasHeight = Math.min(availableHeight, canvasWidth / aspectRatio);
+    }
+    
+    const newWidth = Math.floor(canvasWidth);
+    const newHeight = Math.floor(canvasHeight);
+    
+    // Only resize if dimensions changed significantly
+    if (Math.abs(canvas.width - newWidth) > 5 || Math.abs(canvas.height - newHeight) > 5) {
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        drawBackground(ctx, canvas.width, canvas.height);
+        // Redraw all strokes after resize
+        if (allStrokes) {
+          Object.entries(allStrokes).forEach(([section, strokes]) => {
+            strokes.forEach(s => drawStroke(ctx, s));
+          });
+        }
+      }
+    }
+  }, [drawBackground, drawStroke, allStrokes]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -148,17 +192,55 @@ export default function PuzzleCanvas({
 
     console.log('🔧 [PuzzleCanvas] init drawBackground totalSections=', totalSections);
 
-    // Su mobile sottrae spazio per chat (180px) + header (~150px), su desktop usa 0.4 della viewport
+    // Calculate available dimensions from parent container
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const parentRect = parent.getBoundingClientRect();
     const isMobile = window.innerWidth <= 768;
-    const availableHeight = isMobile 
-      ? window.innerHeight - 380  // Sottrae chat + header + margini + padding extra
-      : window.innerHeight * 0.4;  // Su desktop 40% della viewport
-    const size = Math.min(canvas.parentElement.clientWidth * 0.9, availableHeight);
-    canvas.width = size;
-    canvas.height = size;
+    
+    // Use parent dimensions with some padding
+    const availableWidth = Math.max(280, parentRect.width - 16);
+    const availableHeight = Math.max(200, parentRect.height - 16);
+    
+    // For puzzle mode, use rectangular canvas that fits the container
+    // Maintain a reasonable aspect ratio (wider than tall for puzzle sections)
+    const aspectRatio = 4 / 3; // width / height
+    let canvasWidth, canvasHeight;
+    
+    if (availableWidth / availableHeight > aspectRatio) {
+      // Container is wider than aspect ratio, height is limiting
+      canvasHeight = availableHeight;
+      canvasWidth = Math.min(availableWidth, canvasHeight * aspectRatio);
+    } else {
+      // Container is taller than aspect ratio, width is limiting
+      canvasWidth = availableWidth;
+      canvasHeight = Math.min(availableHeight, canvasWidth / aspectRatio);
+    }
+    
+    canvas.width = Math.floor(canvasWidth);
+    canvas.height = Math.floor(canvasHeight);
 
     drawBackground(ctx, canvas.width, canvas.height);
-  }, [drawBackground, totalSections]);
+    
+    // Set up resize observer for responsive canvas
+    let resizeObserver;
+    if (parent && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateCanvasSize();
+      });
+      resizeObserver.observe(parent);
+    }
+    
+    window.addEventListener('resize', updateCanvasSize);
+    
+    return () => {
+      if (resizeObserver && parent) {
+        resizeObserver.unobserve(parent);
+      }
+      window.removeEventListener('resize', updateCanvasSize);
+    };
+  }, [drawBackground, totalSections, updateCanvasSize]);
 
   useEffect(() => {
     const ctx = ctxRef.current;
@@ -250,7 +332,19 @@ export default function PuzzleCanvas({
   ----------------------------- */
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div style={{ 
+      position: 'relative', 
+      width: '100%', 
+      height: '100%', 
+      minHeight: '200px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      background: 'rgba(255, 255, 255, 0.9)',
+      borderRadius: '12px',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+    }}>
       <canvas
         ref={canvasRef}
         onMouseDown={handleDown}
@@ -260,7 +354,13 @@ export default function PuzzleCanvas({
         onTouchStart={handleDown}
         onTouchMove={handleMove}
         onTouchEnd={handleUp}
-        style={{ width: '100%', height: '100%', touchAction: 'none', display: 'block' }}
+        style={{ 
+          maxWidth: '100%', 
+          maxHeight: '100%', 
+          touchAction: 'none', 
+          display: 'block',
+          borderRadius: '8px'
+        }}
       />
     </div>
   );

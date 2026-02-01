@@ -199,8 +199,8 @@ body {
       width: calc(100vw - 16px);
       max-width: none;
       max-height: calc(100dvh - 220px);
-      min-height: 380px;
-      margin-top: 30px;
+      min-height: 280px;
+      margin-top: 0;
    }
 
    .canvas-stage {
@@ -213,8 +213,8 @@ body {
    .canvas-wrapper {
       padding: 2px;
       width: calc(100vw - 8px);
-      max-height: calc(100dvh - 220px);
-      min-height: 140px;
+      max-height: calc(100dvh - 200px);
+      min-height: 120px;
    }
 }
 

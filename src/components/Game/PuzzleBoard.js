@@ -216,12 +216,18 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
             )}
           </GameHeader>
 
-          <main className="board-main" style={isMobile ? { padding: '10px', flex: '1 1 auto', minHeight: 0, overflow: 'auto' } : { padding: '20px' }}>
+          <main className="board-main" style={isMobile ? { padding: '8px', flex: '1 1 auto', minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' } : { padding: '16px', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="game-content" style={{
-              maxWidth: isMobile ? '100%' : '1100px',
-              maxHeight: isMobile ? 'calc(100vh - 180px - 200px)' : '50vh',
-              height: 'auto',
-              flex: 'none'
+              width: '100%',
+              maxWidth: isMobile ? '100%' : '1000px',
+              flex: '1 1 auto',
+              minHeight: isMobile ? '250px' : '350px',
+              maxHeight: isMobile ? 'calc(100dvh - 280px)' : 'calc(100vh - 250px)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto'
             }}>
               <PuzzleCanvas
                 currentColor={selectedColor}
