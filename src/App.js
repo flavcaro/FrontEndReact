@@ -18,6 +18,7 @@ import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
 import "./styles/responsive/mobile-home-improvements.css";
+import "./styles/modal-desktop-enhancements.css";
 import { GAME_MODES, DEFAULT_DIFFICULTY, DEFAULT_ROUNDS, TURN_DURATION } from './constants/gameConfig';
 
 function ProtectedHome() {

@@ -1,0 +1,348 @@
+/* ========================================
+   MODAL DESKTOP ENHANCEMENTS
+   Stili migliorati per il modale custom-create su desktop
+   ======================================== */
+
+/* Modale più largo e spazioso su desktop */
+@media (min-width: 768px) {
+  .modal-content {
+    max-width: 900px;
+    padding: 0;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+  }
+
+  .modal-header {
+    padding: 40px 48px 36px;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.12);
+    background: linear-gradient(180deg, rgba(102, 126, 234, 0.02) 0%, transparent 100%);
+  }
+
+  .modal-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+  .modal-header p {
+    font-size: 16px;
+    color: #64748b;
+  }
+  .modal-illustration {
+    width: 88px;
+    height: 88px;
+    font-size: 42px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35);
+  }
+
+  .modal-close {
+    font-size: 28px;
+    padding: 10px;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+  }
+
+  .modal-close:hover {
+    background: rgba(102, 126, 234, 0.08);
+    color: #667eea;
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 40px 48px 48px;
+  }
+
+  /* Custom Create Form - Desktop Layout */
+  .custom-create h3 {
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 32px;
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  /* Sezione modalità - pulsanti più grandi */
+  .custom-create .modes-select {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .custom-create .modes-select .mode-btn {
+    padding: 20px 18px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .custom-create .modes-select .mode-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    background: #e2e8f0;
+  }
+
+  .custom-create .modes-select .mode-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Label migliorati */
+  .custom-create .lobby-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  /* Layout durata e rounds - affiancati con spacing migliore */
+  .custom-create .duration-rounds-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .custom-create .duration-col,
+  .custom-create .rounds-col {
+    min-width: 0;
+  }
+
+  /* Vertical options - pulsanti più grandi e spaziosi */
+  .custom-create .vertical-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .custom-create .vertical-options .option-btn {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .custom-create .vertical-options .option-btn span {
+    font-size: 22px;
+    margin-right: 0;
+  }
+
+  .custom-create .vertical-options .option-btn:hover {
+    transform: translateY(-2px);
+    background: #e2e8f0;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
+  }
+
+  .custom-create .vertical-options .option-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* Difficulty grid - tre colonne affiancate */
+  .custom-create .difficulty-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+  }
+
+  .custom-create .difficulty-grid .option-btn {
+    padding: 18px 16px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    transition: all 0.3s ease;
+  }
+
+  .custom-create .difficulty-grid .option-btn span {
+    font-size: 22px;
+    margin-right: 0;
+  }
+
+  .custom-create .difficulty-grid .option-btn:hover {
+    transform: translateY(-2px);
+    background: #e2e8f0;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
+  }
+
+  .custom-create .difficulty-grid .option-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* Testo di aiuto difficoltà */
+  .custom-create .difficulty-help {
+    font-size: 17px;
+    color: #475569;
+    margin-top: 14px;
+    padding: 16px 20px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 10px;
+    border-left: 3px solid rgba(102, 126, 234, 0.3);
+  }
+
+  /* Bottoni azione - più grandi e spaziosi */
+  .custom-create .lobby-btn {
+    padding: 18px 32px;
+    font-size: 19px;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .custom-create .lobby-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .custom-create .lobby-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+  }
+
+  .custom-create .lobby-btn.tertiary {
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+  }
+
+  .custom-create .lobby-btn.tertiary:hover {
+    background: #e2e8f0;
+    color: #475569;
+    transform: translateY(-2px);
+  }
+
+  /* Divider più bello */
+  .modal-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.15) 50%, transparent 100%);
+    margin: 32px 0;
+  }
+
+  /* Sezione game actions */
+  .game-actions {
+    padding-top: 24px;
+  }
+
+  .game-actions .divider {
+    text-align: center;
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .game-actions .divider span {
+    background: white;
+    padding: 0 24px;
+    color: #94a3b8;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .game-actions .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(102, 126, 234, 0.15);
+    z-index: 0;
+  }
+
+  .game-actions .lobby-btn.secondary {
+    width: 100%;
+    padding: 20px 32px;
+    font-size: 19px;
+    background: #f1f5f9;
+    color: #1e293b;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .game-actions .lobby-btn.secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+  }
+
+  .game-actions .lobby-btn.secondary .btn-icon {
+    font-size: 24px;
+  }
+}
+
+/* Desktop large (≥1024px) - ancora più spazio */
+@media (min-width: 1024px) {
+  .modal-content {
+    max-width: 960px;
+  }
+
+  .modal-header {
+    padding: 44px 52px 40px;
+  }
+
+  .modal-body {
+    padding: 44px 52px 52px;
+  }
+
+  .custom-create .modes-select {
+    gap: 18px;
+  }
+
+  .custom-create .modes-select .mode-btn {
+    padding: 22px 20px;
+    font-size: 19px;
+  }
+
+  .custom-create .duration-rounds-row {
+    gap: 28px;
+  }
+
+  .custom-create .difficulty-grid {
+    gap: 18px;
+  }
+}
