@@ -116,6 +116,8 @@ html body .board-container .board-header {
   align-items: center !important;
   background: white !important;
   border-bottom: 1px solid #e2e8f0 !important;
+  width: 100% !important;
+  justify-content: space-between !important;
 }
 
 html body .board-container .board-header .room-code {
