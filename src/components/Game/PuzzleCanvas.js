@@ -71,15 +71,17 @@ export default function PuzzleCanvas({
 
   const drawBackground = useCallback((ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#ffffff';
+    // Sfondo trasparente o leggermente colorato per integrarsi con il gradiente
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
     ctx.fillRect(0, 0, w, h);
 
     if (!showSectionBorders) return;
 
     const sectionW = w / totalSections;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    // Colore più visibile sia su mobile che desktop
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1;
 
     ctx.beginPath();
     for (let i = 1; i < totalSections; i++) {
@@ -146,7 +148,12 @@ export default function PuzzleCanvas({
 
     console.log('🔧 [PuzzleCanvas] init drawBackground totalSections=', totalSections);
 
-    const size = Math.min(canvas.parentElement.clientWidth, window.innerHeight * 0.7);
+    // Su mobile sottrae spazio per chat (180px) + header (~150px), su desktop usa 0.4 della viewport
+    const isMobile = window.innerWidth <= 768;
+    const availableHeight = isMobile 
+      ? window.innerHeight - 380  // Sottrae chat + header + margini + padding extra
+      : window.innerHeight * 0.4;  // Su desktop 40% della viewport
+    const size = Math.min(canvas.parentElement.clientWidth * 0.9, availableHeight);
     canvas.width = size;
     canvas.height = size;
 

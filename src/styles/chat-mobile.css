@@ -31,8 +31,10 @@ aside.chat-sidebar.chat-mobile-fullwidth,
 
 /* Ensure chat messages area is scrollable */
 .chat-mobile-fullwidth .chat-messages {
-    max-height: calc(35vh - 120px) !important;
+    max-height: calc(180px - 70px) !important;
     overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
 }
 
 /* Ensure input is visible and usable */

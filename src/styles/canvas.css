@@ -21,7 +21,7 @@ body {
    display: flex;
    justify-content: center;
    align-items: center;
-   background: #f8fafc;
+   background: transparent;
    box-sizing: border-box;
    overflow: hidden;
    padding: 8px;
@@ -46,7 +46,7 @@ body {
    /* Let the Konva stage scale to fit its wrapper while preserving square aspect */
    width: 100%;
    height: auto;
-   background: var(--surface);
+   background: rgba(255, 255, 255, 0.85);
    border-radius: var(--card-radius);
    border: 1px solid rgba(15, 23, 42, 0.06);
    box-shadow: var(--shadow-strong);
@@ -66,7 +66,7 @@ body {
 .canvas-stage-inner {
    border: 1px solid rgba(15, 23, 42, 0.08);
    border-radius: var(--card-radius);
-   background: var(--surface);
+   background: transparent;
    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
    overflow: hidden;
    display: flex;

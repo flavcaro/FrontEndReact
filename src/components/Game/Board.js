@@ -339,7 +339,14 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
         <div
           className="board-center"
-          style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 }}
+          style={{ 
+            flex: 1, 
+            display: "flex", 
+            flexDirection: "column", 
+            overflow: "hidden", 
+            minHeight: 0,
+            background: 'linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fbcfe8 100%)'
+          }}
         >
           <GameHeader
             roomId={roomId}

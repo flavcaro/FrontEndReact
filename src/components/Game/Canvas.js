@@ -29,13 +29,13 @@ export default function Canvas({
 
       // Respect both viewport width and height constraints so canvas scales proportionally
       const vw = window.innerWidth || document.documentElement.clientWidth;
-      const vwConstraint = Math.floor(vw * 0.95); // allow up to 95% of viewport width
+      const vwConstraint = Math.floor(vw * 0.98); // aumentato da 0.95 a 0.98
       // Prefer using the real center column width to determine available canvas horizontal space
       let availableHorizontal = clientWidth;
       const centerEl = document.querySelector('.board-center');
       if (centerEl) {
         const centerRect = centerEl.getBoundingClientRect();
-        const gutter = 16; // keep small gutter inside center
+        const gutter = 4; // ridotto per dare più spazio alla canvas
         // subtract center paddings / floating palette area
         availableHorizontal = Math.max(220, Math.floor(centerRect.width - gutter * 2));
       } else {
@@ -47,11 +47,11 @@ export default function Canvas({
           const chatEl = document.querySelector('.chat-sidebar');
           const playersW = playersEl && playersEl.offsetParent !== null ? playersEl.getBoundingClientRect().width : 0;
           const chatW = chatEl && chatEl.offsetParent !== null ? chatEl.getBoundingClientRect().width : 0;
-          const reserved = Math.max(16, Math.floor((playersW || 0) + (chatW || 0)) + 32);
+          const reserved = Math.max(16, Math.floor((playersW || 0) + (chatW || 0)) + 16);
           availableHorizontal = Math.max(220, Math.floor(boardRect.width - reserved));
         }
       }
-      const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.65); // at most 65% vh
+      const vhConstraint = Math.floor((window.innerHeight || document.documentElement.clientHeight) * 0.72); // aumentato da 0.65 a 0.72
 
       // Ensure canvas height never exceeds its wrapper visible height (avoids creating page scroll)
       const containerRect = container.getBoundingClientRect();

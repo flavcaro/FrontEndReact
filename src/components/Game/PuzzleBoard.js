@@ -7,6 +7,7 @@ import PuzzleCanvas from "./PuzzleCanvas";
 import GameResults from "./GameResults";
 import Palette from "./Palette";
 import SimplePopup from "./SimplePopup";
+import PlayersModal from "./PlayersModal";
 
 import { usePlayers } from "../../hooks/usePlayers";
 import { usePuzzleGame } from "../../hooks/usePuzzleGame";
@@ -47,6 +48,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   const [selectedInstrument, setSelectedInstrument] = useState("pencil");
   const [brushSize, setBrushSize] = useState(4);
   const [popup, setPopup] = useState({ open: false, message: "" });
+  const [showPlayersModal, setShowPlayersModal] = useState(false);
 
   // Detect mobile for conditional styling
   const [isMobile, setIsMobile] = useState(() => {
@@ -119,7 +121,15 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
       <div
         className="board-container"
-        style={{ position: 'fixed', inset: 0, display: 'flex', overflow: 'hidden', alignItems: 'stretch', width: '100%' }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          overflow: 'hidden',
+          alignItems: 'stretch',
+          width: '100%'
+        }}
       >
         <PlayersSidebar
           players={players}
@@ -128,7 +138,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           roomId={roomId}
         />
 
-        <div className="board-center">
+        <div className="board-center" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0, background: 'linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fbcfe8 100%)' }}>
           <GameHeader
             roomId={roomId}
             gameState={gameState}
@@ -140,6 +150,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
             isOwner={isOwner}
             onStartGame={handleStartGame}
             onClearBoard={clearSection}
+            onShowPlayers={() => setShowPlayersModal(true)}
             selectedColor={selectedColor}
             onChangeColor={setSelectedColor}
             selectedInstrument={selectedInstrument}
@@ -205,8 +216,13 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
             )}
           </GameHeader>
 
-          <main className="board-main">
-            <div className="game-content" style={{ maxWidth: '1100px' }}>
+          <main className="board-main" style={isMobile ? { padding: '10px', flex: '1 1 auto', minHeight: 0, overflow: 'auto' } : { padding: '20px' }}>
+            <div className="game-content" style={{ 
+              maxWidth: isMobile ? '100%' : '1100px',
+              maxHeight: isMobile ? 'calc(100vh - 180px - 200px)' : '70vh',
+              height: 'auto',
+              flex: 'none'
+            }}>
               <PuzzleCanvas
                 currentColor={selectedColor}
                 brushSize={brushSize}
@@ -297,20 +313,13 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
       {/* Chat outside container on mobile - as sibling */}
       {isMobile && (
         <ChatSidebar
-          className="puzzle-mode-chat"
+          className="chat-mobile-fullwidth"
           style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            width: '100vw',
-            maxWidth: '100vw',
-            height: '200px',
-            maxHeight: '200px',
-            minHeight: '200px',
+            width: '100%',
+            height: '180px',
+            flexShrink: 0,
             borderLeft: 'none',
-            borderTop: '1px solid #e2e8f0',
-            zIndex: 500,
+            borderTop: '2px solid #e2e8f0',
             margin: 0
           }}
           roomId={roomId}
@@ -324,6 +333,16 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           onGuessCorrect={handleGuess}
         />
       )}
+
+      {/* Players Modal */}
+      <PlayersModal
+        isOpen={showPlayersModal}
+        onClose={() => setShowPlayersModal(false)}
+        players={players}
+        gameState={gameState}
+        nickname={finalNickname}
+        roomId={roomId}
+      />
     </>
   );
 };
