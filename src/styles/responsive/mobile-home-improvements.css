@@ -1,0 +1,234 @@
+/* Mobile Home Improvements - CSS specifico per migliorare l'esperienza mobile */
+
+/* Migliora lo stile della sezione "Unisciti a una stanza esistente" */
+@media (max-width: 768px) {
+  .join-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    border: 2px solid #e2e8f0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    padding: 18px !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .join-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .join-card h3 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-bottom: 8px !important;
+  }
+
+  .join-subtitle {
+    font-size: 14px !important;
+    color: #64748b !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Migliora input join */
+  .join-inputs .lobby-input {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background: white !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .join-inputs .lobby-input:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
+  }
+
+  /* Migliora bottone "Unisciti a una Stanza" */
+  .join-card .lobby-btn.secondary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    padding: 14px 20px !important;
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 8px 20px rgba(99,102,241,0.25) !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .join-card .lobby-btn.secondary:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.2) !important;
+  }
+
+  /* Divider più bello */
+  .divider {
+    margin: 16px 0 !important;
+  }
+
+  .divider span {
+    display: none !important;
+  }
+
+  .divider::before,
+  .divider::after {
+    background: linear-gradient(90deg, transparent, #cbd5e1, transparent) !important;
+  }
+
+  /* Migliora sezione join quando è espansa */
+  .join-section {
+    background: #f8fafc !important;
+    padding: 14px !important;
+    border-radius: 12px !important;
+    border: 2px solid #e2e8f0 !important;
+  }
+
+  .join-section .lobby-label {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Migliora la leaderboard top 4 */
+  .leaderboard-preview-card.compact-leaderboard {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%) !important;
+    border: 2px solid #f59e0b !important;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35), 0 3px 8px rgba(251, 191, 36, 0.25) !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .leaderboard-preview-card.compact-leaderboard:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.45), 0 5px 12px rgba(251, 191, 36, 0.35) !important;
+  }
+
+  .leaderboard-preview-card h3 {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #92400e !important;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.6) !important;
+  }
+
+  .leader-row-btn {
+    background: rgba(255,255,255,0.95) !important;
+    border: 2px solid rgba(245,158,11,0.3) !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 6px rgba(245,158,11,0.15) !important;
+    border-radius: 10px !important;
+  }
+
+  .leader-row-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(245,158,11,0.25) !important;
+    border-color: rgba(245,158,11,0.5) !important;
+  }
+
+  .leader-row-btn:active {
+    background: rgba(254,243,199,0.8) !important;
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 4px rgba(245,158,11,0.2) !important;
+  }
+
+  /* Migliora stile modale "Crea Stanza Personalizzata" */
+  .custom-create-modal {
+    border-radius: 20px !important;
+  }
+
+  .custom-create .modal-header {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    color: white !important;
+    padding: 16px !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+
+  .custom-create .modal-body {
+    padding: 16px !important;
+  }
+
+  .custom-create .option-btn {
+    background: white !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .custom-create .option-btn.selected {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff) !important;
+    border-color: #6366f1 !important;
+    color: #4f46e5 !important;
+  }
+
+  .custom-create .option-btn:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* Migliora modale GameModeSelector */
+  .game-mode-selector-modal {
+    padding: 12px !important;
+  }
+
+  .game-mode-selector-modal > div {
+    max-width: 100% !important;
+    padding: 20px !important;
+    max-height: 85vh !important;
+  }
+
+  .game-mode-selector-modal h2 {
+    font-size: 22px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .game-mode-selector-modal p {
+    font-size: 14px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .game-mode-selector-modal h3 {
+    font-size: 18px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .game-mode-selector-modal > div > div > div {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  .game-mode-selector-modal > div > div > div > div:first-child {
+    font-size: 20px !important;
+  }
+
+  .game-mode-selector-modal > div > div > div > div > div:first-child {
+    font-size: 16px !important;
+  }
+
+  .game-mode-selector-modal > div > div > div > div > div:last-child {
+    font-size: 13px !important;
+  }
+}
+
+/* Ulteriori miglioramenti per schermi piccoli */
+@media (max-width: 480px) {
+  .join-card {
+    padding: 16px !important;
+  }
+
+  .join-card h3 {
+    font-size: 18px !important;
+  }
+
+  .join-subtitle {
+    font-size: 13px !important;
+  }
+
+  .divider span {
+    font-size: 13px !important;
+  }
+}

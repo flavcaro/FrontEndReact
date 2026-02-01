@@ -59,10 +59,31 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  background: none !important;
+  background-color: transparent !important;
 }
 
 .home-header .logo .logo-icon { font-size: 36px; }
-.home-header .logo .logo-text { font-size: 32px; font-weight: 800; color: #fff; }
+.home-header .logo .logo-text { 
+  font-size: 32px; 
+  font-weight: 800; 
+  color: #fff !important; 
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+span.logo-text {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
 
 .header-right {
   display: flex;

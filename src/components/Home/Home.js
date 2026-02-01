@@ -362,7 +362,7 @@ export default function Home() {
           <div className="mobile-cta-column">
             <div className="mobile-create-btn-wrapper">
               <Button onClick={() => setShowCustomModal(true)} className="mobile-create-btn">
-                🎨 Crea stanza personalizzata
+                Crea stanza personalizzata
               </Button>
             </div>
           </div>
@@ -469,7 +469,7 @@ export default function Home() {
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <h3 style={{ margin: 0 }}>Classifica (Top 4)</h3>
                 </div>
-                  <button className="header-leaderboard-btn preview-vedi-btn" onClick={() => setShowLeaderboard(true)}>Vedi tutto</button>
+                  {/* Bottone Vedi tutto rimosso dalla preview top 4 */}
                 </div>
               <div style={{ marginTop: 8 }}>
                 {(() => {
