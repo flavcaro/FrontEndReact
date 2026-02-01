@@ -40,15 +40,15 @@
     .mobile-header-buttons {
         display: none !important;
     }
-    
+
     .desktop-only {
         display: flex !important;
     }
-    
+
     .board-header .header-main {
         flex-wrap: nowrap;
     }
-    
+
     .board-header .header-actions {
         display: flex;
         gap: 8px;
@@ -61,15 +61,15 @@
     .desktop-only {
         display: none !important;
     }
-    
+
     .mobile-header-buttons {
         display: flex !important;
     }
-    
+
     .board-header .header-main {
         flex-wrap: wrap;
     }
-    
+
     .board-header .header-actions {
         display: flex;
         gap: 6px;
@@ -82,7 +82,7 @@
     .desktop-only {
         display: none !important;
     }
-    
+
     .mobile-header-buttons {
         display: flex !important;
     }
@@ -97,11 +97,11 @@
         gap: 8px !important;
         width: 100% !important;
     }
-    
+
     .room-info-section {
         flex: 1;
     }
-    
+
     .header-actions {
         flex-wrap: wrap;
         gap: 6px;
@@ -112,19 +112,31 @@
    MOBILE PORTRAIT STACKING (From board-responsive.css)
    ========================================================= */
 @media (max-width: 768px) {
+
+    /* Force exact height split layout */
     .board-container {
         flex-direction: column !important;
-        height: 100vh !important;
-        padding-bottom: 0 !important;
+        height: 100dvh !important;
+        width: 100vw !important;
+        padding: 0 !important;
+        margin: 0 !important;
         overflow: hidden !important;
+        display: flex !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        align-items: stretch !important;
+        background: #f8fafc !important;
     }
-    
+
     .desktop-only,
     .desktop-exit-btn,
     .desktop-clear-btn {
         display: none !important;
     }
-    
+
     .mobile-header-buttons {
         display: flex !important;
         gap: 4px !important;
@@ -141,7 +153,7 @@
         background: white !important;
         border-bottom: 1px solid #e2e8f0 !important;
     }
-    
+
     .header-main {
         display: flex !important;
         flex-direction: column !important;
@@ -149,7 +161,7 @@
         gap: 6px !important;
         padding-right: 110px !important;
     }
-    
+
     .room-info-section {
         display: flex !important;
         flex-direction: column !important;
@@ -157,20 +169,20 @@
         gap: 6px !important;
         width: 100% !important;
     }
-    
+
     .room-basic {
         display: flex !important;
         align-items: center !important;
         gap: 6px !important;
         flex-shrink: 0 !important;
     }
-    
+
     .room-code {
         font-size: 16px !important;
         padding: 5px 12px !important;
         font-weight: 700 !important;
     }
-    
+
     .room-label {
         font-size: 11px !important;
         font-weight: 600 !important;
@@ -185,18 +197,36 @@
         min-height: 0 !important;
         gap: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
+        align-items: stretch !important;
     }
-    
-    .game-content {
-        flex: 0 0 auto !important;
+
+    /* Game Area (Top ~55%) */
+    .board-center {
+        height: 55dvh !important;
+        min-height: 55dvh !important;
+        max-height: 55dvh !important;
+        flex: none !important;
+        /* Disable flex scaling */
+        overflow: hidden !important;
+        width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: visible !important;
+    }
+
+    .game-content {
+        flex: 1 !important;
+        /* Fill the board-center vertical space */
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        /* Cut off oversized canvas */
         gap: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
+        justify-content: flex-start !important;
     }
-    
+
     /* Canvas more compact */
     .canvas-wrapper {
         flex: 0 0 auto !important;
@@ -205,19 +235,19 @@
         margin: 0 !important;
         padding: 0 !important;
     }
-    
+
     .canvas-wrapper canvas {
         max-height: 28vh !important;
         width: 100% !important;
         height: auto !important;
         display: block !important;
     }
-    
+
     /* Hide waiting message from header */
     .header-actions .waiting-message {
         display: none !important;
     }
-    
+
     /* Mobile share link - very compact */
     .mobile-share-row {
         display: flex !important;
@@ -229,41 +259,12 @@
         border: 1px solid #e2e8f0 !important;
         width: 100% !important;
     }
-    
-    .mobile-share-row > span {
+
+    .mobile-share-row>span {
         display: none !important;
     }
-    
-    .mobile-share-link {
-        flex: 1 !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 5px !important;
-        min-width: 0 !important;
-    }
-    
-    .mobile-share-link input {
-        flex: 1 !important;
-        font-size: 11px !important;
-        padding: 5px 8px !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 4px !important;
-        background: white !important;
-        min-width: 0 !important;
-        font-weight: 500 !important;
-        color: #64748b !important;
-    }
-    
-    .mobile-share-link button {
-        padding: 5px 12px !important;
-        font-size: 11px !important;
-        background: #6366f1 !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 4px !important;
-        white-space: nowrap !important;
-        font-weight: 600 !important;
-    }
+
+    /* Old share link styles removed - see new definition below */
 
     .game-content {
         padding-top: 45px !important;
@@ -294,11 +295,79 @@
 
     /* HIDE SIDEBARS IN STACKED MODE - desktop versions */
     .board-container>.players-sidebar,
-    .board-container>.chat-sidebar:not(.chat-mobile-fullwidth) {
+    .board-container>.chat-sidebar:not(.chat-mobile-split):not(.chat-mobile-fullwidth) {
         display: none !important;
     }
-    
-    /* Show mobile chat - prominent and visible */
+
+    /* Force Chat to Bottom - strictly */
+    .board-container .chat-sidebar.chat-mobile-split,
+    .chat-mobile-split {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        height: 45dvh !important;
+        order: 99 !important;
+        /* Ensure it is last */
+        border-left: none !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+        margin-top: auto !important;
+        /* Push to bottom if there is space */
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05) !important;
+        z-index: 2000 !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+
+    /* Redesign Share Link - Compact Single Row */
+    .mobile-share-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+    }
+
+    .mobile-share-link {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        background: #f1f5f9 !important;
+        border-radius: 8px !important;
+        padding: 4px 4px 4px 10px !important;
+        /* padding left for text */
+        border: 1px solid #e2e8f0 !important;
+        max-width: 100% !important;
+    }
+
+    .mobile-share-link input {
+        border: none !important;
+        background: transparent !important;
+        font-size: 11px !important;
+        color: #64748b !important;
+        width: 100% !important;
+        padding: 0 !important;
+        height: auto !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .mobile-share-link button {
+        background: #6366f1 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 6px 12px !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-left: 6px !important;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2) !important;
+    }
+
     .chat-mobile-fullwidth {
         display: flex !important;
         flex-direction: column !important;
@@ -312,61 +381,79 @@
         border-top: 2px solid #e2e8f0 !important;
         border-left: none !important;
         overflow: hidden !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
     }
-    
-    .chat-mobile-fullwidth .chat-messages {
+
+    .chat-mobile-fullwidth .chat-messages,
+    .chat-mobile-split .chat-messages {
         flex: 1 !important;
         overflow-y: auto !important;
-        padding: 10px !important;
-        gap: 8px !important;
+        padding: 8px !important;
+        gap: 6px !important;
     }
-    
-    .chat-mobile-fullwidth .chat-message {
-        font-size: 13px !important;
+
+    .chat-mobile-fullwidth .chat-message,
+    .chat-mobile-split .chat-message {
+        font-size: 12px !important;
     }
-    
-    .chat-mobile-fullwidth .chat-input {
+
+    .chat-mobile-fullwidth .chat-input,
+    .chat-mobile-split .chat-input {
         flex-shrink: 0 !important;
-        padding: 10px !important;
+        padding: 8px !important;
         border-top: 1px solid #e2e8f0 !important;
         background: #fafafa !important;
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+        width: 100% !important;
     }
-    
-    .chat-mobile-fullwidth .chat-input input {
+
+    .chat-mobile-fullwidth .chat-input input,
+    .chat-mobile-split .chat-input input {
         font-size: 14px !important;
-        padding: 10px 12px !important;
+        padding: 8px 10px !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        height: 40px !important;
     }
-    
-    .chat-mobile-fullwidth .chat-input button {
-        width: 42px !important;
-        height: 42px !important;
-        font-size: 18px !important;
+
+    .chat-mobile-fullwidth .chat-input button,
+    .chat-mobile-split .chat-input button {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
-    
+
     /* Hide header-actions completely on mobile */
     .header-actions {
         display: none !important;
     }
-    
-    /* Create mobile waiting message - compact below canvas */
+
+    /* Waiting message ABOVE canvas */
     .mobile-waiting-overlay {
         position: relative !important;
         width: 100% !important;
-        background: #fef3c7 !important;
-        color: #92400e !important;
-        padding: 10px !important;
+        background: transparent !important;
+        color: #d97706 !important;
+        padding: 0 16px !important;
         text-align: center !important;
         font-size: 13px !important;
         font-weight: 600 !important;
-        border-bottom: 2px solid #f59e0b !important;
+        border: none !important;
         z-index: 10 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        order: 2 !important;
+        order: 0 !important;
         flex-shrink: 0 !important;
+        margin-bottom: 8px !important;
     }
-    
+
     /* Start button on mobile - compact */
     .mobile-start-btn {
         position: relative !important;
@@ -388,29 +475,139 @@
         order: 2 !important;
         flex-shrink: 0 !important;
     }
-    
+
     .mobile-icon-btn {
-        width: 34px !important;
-        height: 34px !important;
+        width: 38px !important;
+        height: 38px !important;
         padding: 0 !important;
-        font-size: 16px !important;
-        background: white !important;
-        border: 1.5px solid #cbd5e1 !important;
-        border-radius: 7px !important;
+        font-size: 18px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        border-radius: 12px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s !important;
+        color: #334155 !important;
+        backdrop-filter: blur(8px);
+    }
+
+    .mobile-icon-btn:active {
+        transform: scale(0.95);
     }
 
     .mobile-icon-btn.exit-trigger {
-        background: #ef4444 !important;
-        border-color: #dc2626 !important;
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        border: none !important;
         color: white !important;
         font-size: 20px !important;
         font-weight: bold !important;
-        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+    }
+
+    /* Redesigned Share Link - Premium Card */
+    .mobile-share-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+        margin: 8px 0 !important;
+        background: white !important;
+        padding: 4px 4px 4px 12px !important;
+        border-radius: 14px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    }
+
+    .mobile-share-link {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        background: #f1f5f9 !important;
+        border-radius: 8px !important;
+        padding: 4px 4px 4px 10px !important;
+        /* padding left for text */
+        border: 1px solid #e2e8f0 !important;
+        max-width: 100% !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .mobile-share-link input {
+        border: none !important;
+        background: transparent !important;
+        font-size: 11px !important;
+        color: #64748b !important;
+        width: 100% !important;
+        padding: 0 !important;
+        height: auto !important;
+        text-overflow: ellipsis !important;
+        font-size: 13px !important;
+        color: #1e293b !important;
+        font-family: monospace !important;
+        letter-spacing: 0.5px !important;
+        background: transparent !important;
+    }
+
+    .mobile-share-link button {
+        background: #6366f1 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 6px 12px !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-left: 6px !important;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2) !important;
+        background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 8px 14px !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25) !important;
+    }
+
+    /* Wait message - Floating pill design */
+    .mobile-waiting-overlay {
+        position: relative !important;
+        width: 100% !important;
+        background: transparent !important;
+        color: #d97706 !important;
+        padding: 0 16px !important;
+        text-align: center !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        border: none !important;
+        z-index: 10 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        order: 0 !important;
+        flex-shrink: 0 !important;
+        margin-bottom: 8px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid #fed7aa !important;
+        border-radius: 20px !important;
+        padding: 8px 16px !important;
+        margin: 10px auto 12px auto !important;
+        /* Spacing */
+        width: auto !important;
+        display: inline-flex !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1) !important;
+        color: #c2410c !important;
+        font-weight: 700 !important;
     }
 }
 
@@ -423,35 +620,35 @@
         height: 100vh !important;
         overflow: hidden !important;
     }
-    
+
     .desktop-only {
         display: none !important;
     }
-    
+
     .mobile-header-buttons {
         display: flex !important;
     }
-    
+
     .board-main {
         flex: 1 !important;
         display: flex !important;
         flex-direction: column !important;
         overflow: hidden !important;
     }
-    
+
     .game-content {
         flex: 0 0 auto !important;
         max-height: 50vh !important;
     }
-    
+
     .board-container>.players-sidebar {
         display: none !important;
     }
-    
+
     .board-container>.chat-sidebar:not(.chat-mobile-fullwidth) {
         display: none !important;
     }
-    
+
     .chat-mobile-fullwidth {
         display: flex !important;
         flex: 1 !important;

@@ -396,7 +396,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
                   )}
                 </>
               )}
-              
+
               {/* Lives Display - Solo in modalità sopravvivenza - MOBILE: between header and canvas */}
               {gameState?.survivalMode && gameState?.playerLives && (
                 <div className="lives-display">
@@ -484,28 +484,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
           )}
         </div>
 
-        {/* Chat inside container on desktop only */}
-        {!isMobile && (
-          <ChatSidebar
-            className={isMobile ? 'chat-mobile-fullwidth' : ''}
-            roomId={roomId}
-            nickname={finalNickname}
-            messages={messages}
-            messagesEndRef={messagesEndRef}
-            gameState={gameState}
-            timeLeft={timeLeft}
-            isArtist={isArtist}
-            hasGuessed={hasGuessed}
-            onGuessCorrect={handleGuess}
-            style={isMobile ? {} : { width: `${chatSidebarWidth}px` }}
-          />
-        )}
-      </div>
-
-      {/* Chat outside container on mobile - as flex sibling */}
-      {isMobile && (
+        {/* Chat inside container on desktop AND mobile now, to allow flex splitting */}
         <ChatSidebar
-          className="chat-mobile-fullwidth"
+          className={isMobile ? 'chat-mobile-split' : ''}
           roomId={roomId}
           nickname={finalNickname}
           messages={messages}
@@ -515,8 +496,12 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
+          style={isMobile
+            ? { flex: 1, minHeight: 0, width: '100%' } // Mobile: takes remaining vertical space
+            : { width: `${chatSidebarWidth}px` }       // Desktop: fixed width
+          }
         />
-      )}
+      </div>
 
       {/* Players Modal */}
       <PlayersModal
