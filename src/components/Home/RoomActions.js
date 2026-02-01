@@ -9,9 +9,9 @@ export default function RoomActions({ onCreateRoom, onJoinRoom, showCreate = tru
 
   const handleJoinRoom = () => {
     setInputError('');
-    
+
     const roomCode = extractRoomCode(roomInput);
-    
+
     if (!roomCode) {
       setInputError('⚠️ Inserisci un codice valido (6 caratteri) o un link completo!');
       return;
@@ -41,9 +41,6 @@ export default function RoomActions({ onCreateRoom, onJoinRoom, showCreate = tru
         </Button>
       )}
 
-      <div className="divider">
-        <span>oppure</span>
-      </div>
 
       {!showJoinInput ? (
         <Button onClick={() => setShowJoinInput(true)} variant="secondary" icon="🔗">
@@ -52,12 +49,12 @@ export default function RoomActions({ onCreateRoom, onJoinRoom, showCreate = tru
       ) : (
         <div className="join-section">
           <div style={{ marginBottom: 12 }}>
-            <label 
-              className="lobby-label" 
-              style={{ 
-                fontSize: 18, 
-                fontWeight: 600, 
-                color: '#334155', 
+            <label
+              className="lobby-label"
+              style={{
+                fontSize: 18,
+                fontWeight: 600,
+                color: '#334155',
                 marginBottom: 10,
                 display: 'block'
               }}
@@ -103,7 +100,7 @@ export default function RoomActions({ onCreateRoom, onJoinRoom, showCreate = tru
             <Button onClick={handleJoinRoom} variant="primary" size="small" style={{ flex: 1 }}>
               ✓ Entra
             </Button>
-            <Button 
+            <Button
               onClick={handleCancel}
               variant="tertiary"
               size="small"

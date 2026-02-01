@@ -11,59 +11,113 @@
         overflow-y: auto;
     }
 
-    /* Custom Room Modal Specifics - Back to Compact */
+    /* Custom Room Modal Specifics - Standard Compact */
+    .custom-create h3 {
+        margin-bottom: 8px !important;
+        font-size: 16px !important;
+        margin-top: 0 !important;
+    }
+
+    .custom-create .lobby-label {
+        font-size: 11px !important;
+        margin-bottom: 2px !important;
+    }
+
     .custom-create .modes-select {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
-        margin-bottom: 16px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .custom-create .mode-btn {
+        flex-direction: column !important;
+        gap: 2px !important;
+        padding: 6px 2px !important;
+        font-size: 10px !important;
+        min-height: auto !important;
+        height: auto !important;
     }
 
     .custom-create .duration-rounds-row {
         flex-direction: row !important;
-        gap: 12px !important;
-        margin-bottom: 16px !important;
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+        align-items: flex-start !important;
+    }
+
+    .custom-create .duration-col,
+    .custom-create .rounds-col {
+        flex: 1 !important;
+        min-width: 0 !important;
     }
 
     .custom-create .vertical-options {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
+        gap: 4px !important;
+        margin-top: 2px !important;
     }
 
     .custom-create .option-btn {
         flex: 1 !important;
-        padding: 10px 6px !important;
-        font-size: 13px !important;
+        padding: 6px 2px !important;
+        font-size: 11px !important;
         width: auto !important;
         min-width: 0 !important;
+        justify-content: center !important;
+        height: 32px !important;
+        /* Fixed compact height */
+    }
+
+    .custom-create .btn-emoji {
+        margin-right: 2px !important;
+        font-size: 1em !important;
     }
 
     .custom-create .difficulty-grid {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 6px !important;
+        margin-top: 2px !important;
+    }
+
+    .custom-create .difficulty-help {
+        display: none !important;
+        /* Hide help text to save space */
     }
 
     .modal-actions-row {
+        display: flex !important;
         flex-direction: row !important;
-        gap: 10px !important;
-        padding-top: 16px !important;
-        margin-top: 16px !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        padding-top: 10px !important;
+        margin-top: 10px !important;
+        width: 100% !important;
+        justify-content: space-between !important;
+        border-top: 1px solid #f1f5f9 !important;
     }
 
+    .modal-actions-row .lobby-btn,
     .modal-actions-row button {
         flex: 1 !important;
-        width: auto !important;
-        padding: 12px !important;
-        font-size: 14px !important;
+        width: 49% !important;
+        min-width: 0 !important;
+        padding: 8px !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+        height: 36px !important;
     }
 
     .modal-close {
-        top: 12px !important;
-        right: 12px !important;
-        width: 30px !important;
-        height: 30px !important;
-        font-size: 13px !important;
-        background: #f1f5f9 !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 12px !important;
+    }
+
+    .modal-header {
+        margin-bottom: 0 !important;
     }
 }
 

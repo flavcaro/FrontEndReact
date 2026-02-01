@@ -618,12 +618,7 @@ export default function Home() {
                 onCreate={handleCreateFromModal}
                 onCancel={() => setShowCustomModal(false)}
               />
-              <hr style={{ border: 'none', borderTop: '1px solid #e6edf3', margin: '12px 0' }} />
-              <RoomActions
-                onCreateRoom={() => handleQuickCreateRoom(CLASSICA)}
-                onJoinRoom={handleRoomActionsJoin}
-                showCreate={false}
-              />
+              {/* Join Room actions removed as specified */}
               {/* We hide the default "Crea Nuova Stanza" button here because the custom form already has a create action */}
             </div>
           </div>

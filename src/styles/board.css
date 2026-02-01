@@ -637,14 +637,17 @@
 ========================= */
 
 .lives-display {
-  background: #fff9db;
-  border: 1.5px solid #ffec99;
+  background: #e0f2fe;
+  /* Celeste chiaro */
+  border: 1.5px solid #bae6fd;
+  /* Bordo celeste più scuro */
   border-radius: 16px;
-  padding: 12px 20px;
+  padding: 8px 16px;
+  /* Reduced padding */
   width: 100%;
   max-width: 500px;
   margin: 0 auto 12px auto;
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+  box-shadow: 0 4px 12px rgba(186, 230, 253, 0.2);
   text-align: center;
 }
 
@@ -1063,4 +1066,7 @@
 
 .unified-drawing-toolbar .palette-inner {
   margin-left: 4px;
-}
+}.lives-display { background: #e0f2fe !important; border-color: #bae6fd !important; box-shadow: 0 4px 12px rgba(186, 230, 253, 0.2) !important; padding: 8px 16px !important; }
+
+/* Force Long and Narrow Lives Display */
+.lives-display { width: auto !important; max-width: 90% !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 6px 32px !important; min-width: 400px !important; }
