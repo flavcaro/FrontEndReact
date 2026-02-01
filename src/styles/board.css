@@ -730,11 +730,11 @@ html body .board-container .board-header .room-label {
 /* WAITING MESSAGES */
 
 .waiting-message {
-  padding: 6px 10px;
+  padding: 5px 9px;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #92400e;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 7px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
   border: 1px solid rgba(245, 158, 11, 0.3);
@@ -891,12 +891,12 @@ html body .board-container .board-header .room-label {
 .btn-leave {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 10px;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
@@ -944,7 +944,14 @@ html body .board-container .board-header .room-label {
 .header-actions .btn-leave {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
+}
+
+.header-actions .btn-leave svg,
+.btn-clear svg,
+.btn-start svg {
+  width: 16px;
+  height: 16px;
 }
 
 .btn-leave:hover {

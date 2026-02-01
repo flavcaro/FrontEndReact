@@ -56,13 +56,13 @@ html body .board-container .players-sidebar .players-list {
 html body .board-container .players-sidebar .players-list li {
   display: flex;
   align-items: center;
-  gap: 8px !important;
-  padding: 6px 8px !important;
+  gap: 6px !important;
+  padding: 5px 6px !important;
   background: #f8fafc;
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1px solid transparent;
   transition: all 0.2s;
-  min-height: 44px;
+  min-height: 38px;
 }
 
 html body .board-container .players-sidebar .players-list li.player-current {
@@ -72,12 +72,12 @@ html body .board-container .players-sidebar .players-list li.player-current {
 
 /* Avatar - Hard Override */
 html body .board-container .players-sidebar .players-list li .player-avatar {
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  border-radius: 8px !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border-radius: 7px !important;
   /* Rounded square */
-  font-size: 14px !important;
+  font-size: 13px !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,7 +88,7 @@ html body .board-container .players-sidebar .players-list li .player-avatar {
 
 /* Text Info */
 html body .board-container .players-sidebar .players-list li .player-name {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   color: #1e293b;
   white-space: nowrap;
@@ -102,6 +102,11 @@ html body .board-container .players-sidebar .players-list li .player-score-compa
   color: #64748b;
   font-weight: 500;
   margin-top: 0 !important;
+}
+
+/* Override inline styles that might set font-size: 21px */
+html body .board-container .players-sidebar .players-list li > div > div:not(.player-name) {
+  font-size: 11px !important;
 }
 
 html body .board-container .players-sidebar .players-list li .you-tag {
