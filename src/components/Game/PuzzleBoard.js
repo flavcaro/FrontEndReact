@@ -46,7 +46,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   const [selectedColor, setSelectedColor] = useState("#1e293b");
   const [selectedInstrument, setSelectedInstrument] = useState("pencil");
-  const [brushSize, setBrushSize] = useState(4);
+  const [brushSize, setBrushSize] = useState(2);
   const [popup, setPopup] = useState({ open: false, message: "" });
   const [showPlayersModal, setShowPlayersModal] = useState(false);
 
@@ -217,12 +217,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           </GameHeader>
 
           <main className="board-main" style={isMobile ? { padding: '10px', flex: '1 1 auto', minHeight: 0, overflow: 'auto' } : { padding: '20px' }}>
-            <div className="game-content" style={{
-              maxWidth: isMobile ? '100%' : '1100px',
-              maxHeight: isMobile ? 'calc(100vh - 180px - 200px)' : '50vh',
-              height: 'auto',
-              flex: 'none'
-            }}>
+            <div className="game-content">
               <PuzzleCanvas
                 currentColor={selectedColor}
                 brushSize={brushSize}
@@ -247,33 +242,6 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                     onChangeInstrument={setSelectedInstrument}
                     showColors={true}
                   />
-
-                  {/* Slider per dimensione pennello */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '12px',
-                    background: 'white',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                  }}>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#1e293b'
-                    }}>
-                      Dimensione: {brushSize}px
-                    </label>
-                    <input
-                      type="range"
-                      min="2"
-                      max="20"
-                      value={brushSize}
-                      onChange={(e) => setBrushSize(Number(e.target.value))}
-                      style={{ width: '100%' }}
-                    />
-                  </div>
                 </div>
               )}
             </div>
