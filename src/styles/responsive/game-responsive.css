@@ -374,7 +374,8 @@
         flex-direction: column !important;
         min-height: 0 !important;
         overflow: hidden !important;
-        padding: 12px !important;
+        padding: 12px 12px 80px 12px !important;
+        /* Extra bottom padding to clear toolbar */
         gap: 8px !important;
     }
 

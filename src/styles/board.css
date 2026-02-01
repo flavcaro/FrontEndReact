@@ -638,14 +638,14 @@
 
 
 .lives-display {
-  background: rgba(224, 242, 254, 0.9);
-  border: 1px solid #bae6fd;
-  border-radius: 12px;
-  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 8px;
   width: 100%;
   max-width: 100%;
   margin: 0 0 4px 0;
-  box-shadow: 0 2px 4px rgba(186, 230, 253, 0.1);
+  box-shadow: none;
   display: flex !important;
   align-items: center;
   justify-content: flex-start;
