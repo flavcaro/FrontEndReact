@@ -13,6 +13,7 @@ import { CLASSICA } from "../../constants/gameModes/classica";
 import { SOPRAVVIVENZA } from "../../constants/gameModes/sopravvivenza";
 import { CHAOS_TOOLS } from "../../constants/gameModes/chaosTools";
 import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
+import classicGif from "../../sprites/classic.gif";
 
 import "../../styles/home.css";
 import RoomActions from "./RoomActions";
@@ -307,7 +308,10 @@ export default function Home() {
   return (
     <div className="home" style={{ minHeight: '100vh' }}>
       <header className="home-header">
-        <div className="logo">🎨 <span className="logo-text">SketchUp</span></div>
+        <div className="logo">
+          <img src={classicGif} alt="SketchUp" className="logo-icon" style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }} />
+          <span className="logo-text">SketchUp</span>
+        </div>
         {/* Mobile compact nickname+XP badge shown top-left on small screens */}
         <div className="mobile-nickname-badge" aria-hidden={nickname ? 'false' : 'true'}>
           <span className="mobile-nick-text">{nickname || (isGuest ? 'Ospite' : '')}</span>
@@ -369,7 +373,7 @@ export default function Home() {
           <div className="hero-column">
             <div className="hero-text-side">
               <div className="hero-illustration">
-                <div className="main-emoji">🎨</div>
+                <img src={classicGif} alt="SketchUp" className="main-emoji" style={{ width: '120px', height: '120px', imageRendering: 'pixelated' }} />
                 <div className="floating-elements">
                   <div className="float-1">🖌️</div>
                   <div className="float-2">✏️</div>
@@ -378,8 +382,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="hero-content">
-                <h2>SketchUp! Indovina le parole</h2>
-                <h3>Disegna e indovina. Divertente e creativo!</h3>
+                <h2>SketchUp</h2>
+                <h3>Disegna in tutte le salse!</h3>
               </div>
               <div className="hero-create-inline">
                 <Button onClick={() => setShowCustomModal(true)} className="create-btn inline-create-btn">
@@ -399,7 +403,22 @@ export default function Home() {
                   const diffLabel = rawDiff === 'easy' ? 'Facile' : rawDiff === 'hard' ? 'Difficile' : 'Media';
                   return (
                     <div key={mode.id} className="quick-button-card" onClick={() => handleQuickCreateRoom(mode)}>
-                      <div className="quick-button-icon">{mode.icon}</div>
+                      <div className="quick-button-icon">
+                        {mode.sprite ? (
+                          <img 
+                            src={mode.sprite} 
+                            alt={mode.name}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'contain',
+                              imageRendering: 'pixelated'
+                            }}
+                          />
+                        ) : (
+                          mode.icon
+                        )}
+                      </div>
                       <div className="quick-button-content">
                         <h3>{mode.name}</h3>
                         <p>

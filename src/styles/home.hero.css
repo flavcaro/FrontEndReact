@@ -1,724 +1,430 @@
-/* home.hero.css — Hero section styles */
+/* home.hero.css — Clean, modern home layout focused on game modes */
 
 /* ===========================================
-   HERO FULL-PAGE CON ILLUSTRATION
-   =========================================== */
-
-.hero-section {
-  /* kept for backward compatibility when present elsewhere */
-  height: auto;
-  display: block;
-  padding: 0;
-}
-
-.hero-illustration {
-  position: relative;
-  margin-bottom: 40px;
-}
-
-.main-emoji {
-  font-size: clamp(64px, 8vw, 140px);
-  animation: bounce 3s infinite;
-  filter: drop-shadow(0 14px 36px rgba(0, 0, 0, 0.18));
-  transform: translateY(-6px);
-}
-
-.floating-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.float-1 {
-  position: absolute;
-  top: -20px;
-  left: -40px;
-  font-size: 32px;
-  animation: float1 4s ease-in-out infinite;
-}
-
-.float-2 {
-  position: absolute;
-  top: 20px;
-  right: -50px;
-  font-size: 28px;
-  animation: float2 5s ease-in-out infinite;
-}
-
-.float-3 {
-  position: absolute;
-  bottom: -30px;
-  left: -30px;
-  font-size: 26px;
-  animation: float3 6s ease-in-out infinite;
-}
-
-.float-4 {
-  position: absolute;
-  bottom: -10px;
-  right: -40px;
-  font-size: 30px;
-  animation: float4 4.5s ease-in-out infinite;
-}
-
-.hero-content {
-  max-width: 900px;
-  margin-bottom: 60px;
-  width: 100%;
-}
-
-.hero-content h1,
-.hero-content h2 {
-  font-size: clamp(22px, 4.6vw + 18px, 56px); /* slightly larger responsive hero title */
-  font-weight: 600;
-  color: white;
-  margin-bottom: 18px;
-  line-height: 1.04;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.30);
-}
-
-.hero-content p {
-  font-size: var(--font-lg);
-  color: rgba(255, 255, 255, 0.95);
-  margin: 0;
-  font-weight: 400;
-}
-
-/* Bottone inline sotto il testo del hero */
-.hero-create-inline {
-  margin-top: 20px;
-}
-
-.inline-create-btn {
-  font-size: 24px !important;
-  padding: 16px 36px !important;
-  border-radius: 48px !important;
-  background: rgba(255, 255, 255, 0.98) !important;
-  color: #1f2937 !important;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.16) !important;
-}
-
-.inline-create-btn:hover {
-  transform: translateY(-2px);
-}
-
-/* ===========================================
-   HERO LAYOUT A DUE COLONNE
+   MAIN LAYOUT - CENTERED, SPACIOUS
    =========================================== */
 
 .home-top-row {
-  padding: 40px 32px 24px;
-  margin-top: 24px; /* small offset from header */
+  padding: 8px 20px 10px;
   display: flex;
-  align-items: center; /* center vertically */
   justify-content: center;
-  /* reduce tall hero spacing so modes and join sit closer */
-  min-height: 45vh;
+  width: 100%;
 }
 
 .home-row-grid {
   display: grid;
-  grid-template-columns: 1.6fr 2.4fr 1.6fr; /* make side columns more proportional to central modes column */
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "hero modes right"
-    "hero join  right";
-  gap: 8px 36px; /* row-gap (8px) / column-gap (36px): balanced spacing */
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  max-width: 1400px;
+  width: 100%;
   align-items: start;
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
-/* Responsive stepping: at medium widths show two columns and place join-card full width below */
-@media (max-width: 1200px) {
-  .home-row-grid { grid-template-columns: 1.4fr 1fr; gap: 28px; }
-  .hero-column { order: 1; }
-  .modes-column { order: 2; }
-  .join-column { order: 3; grid-column: 1 / -1; }
-  .home-top-row { padding: 36px 22px 22px; }
-  .hero-content h1, .hero-content h2 { font-size: clamp(28px, 3.2vw + 14px, 48px); }
-  /* ensure content clears the fixed header on medium screens */
-  .home { padding-top: 100px; }
-}
-
-/* Smaller tablets: two columns but tighter, rounds to single column below */
-@media (max-width: 1024px) {
-  .home-row-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-  .hero-column { padding-right: 8px; }
-  .modes-column { padding-left: 8px; }
-  .join-column { grid-column: 1 / -1; }
-  .quick-button-card { padding: 14px; }
-  .join-card, .nickname-card { padding: 18px; }
-  .home-top-row { padding: 32px 20px 20px; }
-  .main-emoji { font-size: clamp(64px, 8vw, 120px); }
-  /* slightly smaller header offset for tablets */
-  .home { padding-top: 88px; }
-}
-
-/* Mobile: single column stacked, reduce paddings and font sizes */
-@media (max-width: 768px) {
-  /* Force stacked layout on small screens to avoid grid-area artifacts */
-  .home-row-grid { display: block !important; grid-template-columns: 1fr; grid-template-areas: none !important; gap: 8px; }
-  /* slightly tighter stacking spacing on small screens */
-  .home-row-grid > * { width: 100% !important; box-sizing: border-box; margin-bottom: 2px !important; }
-  .hero-column, .modes-column, .join-column, .right-column { width: 100% !important; display: block !important; }
-  .home-top-row { padding: 20px 12px 14px; min-height: auto; }
-  .hero-content h1, .hero-content h2 { font-size: clamp(22px, 5vw + 6px, 36px); }
-  .hero-content p { font-size: 15px; }
-  .quick-button-card { padding: 12px; }
-  .join-card, .nickname-card { padding: 12px; }
-  .quick-button-icon { width: 56px; height: 56px; font-size: 28px; }
-  /* ensure header doesn't overlap content on mobile */
-  .home { padding-top: 76px; }
-}
-
-/* Very small phones: stack and make controls full width */
-@media (max-width: 420px) {
-  .home-row-grid { gap: 12px; }
-  .inline-create-btn { font-size: 16px !important; padding: 10px 20px !important; }
-  .join-inputs .lobby-input { min-width: 0; width: 100%; }
-  .home { padding-top: 68px; }
-}
-
-.hero-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  grid-area: hero;
 }
 
 .modes-column {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  grid-area: modes;
-}
-
-.join-column {
-  display: flex;
   flex-direction: column;
-  gap: 18px;
-  align-items: stretch;
-  grid-area: join;
+  gap: 10px;
 }
 
 .right-column {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  align-items: stretch;
-  grid-area: right;
+  gap: 10px;
+  position: sticky;
+  top: 50px;
 }
 
-/* Desktop (large screens): scale up hero and right column visual weight to match central table */
-@media (min-width: 1025px) {
-  .home-row-grid { gap: 12px 36px; }
+/* ===========================================
+   GAME MODE BUTTONS - HERO ELEMENT
+   =========================================== */
 
-  /* Hero: larger illustration and headings */
-  .hero-column .hero-illustration { width: 220px; height: 220px; }
-  .hero-column .main-emoji { font-size: 180px; }
-  .hero-column .hero-content h2 { font-size: 80px; line-height: 1.02; }
-  .hero-column .hero-content p { font-size: 22px; color: #475569; }
-  .hero-logo { font-size: 64px; }
-
-  /* Right column: increase card sizes so they match central weight */
-  .right-column .join-card, .right-column .nickname-card, .right-column .leaderboard-preview-card {
-    padding: 28px;
-    border-radius: 18px;
-  }
-  .right-column .join-container h3 { font-size: 26px; }
-  .right-column .join-subtitle { font-size: 16px; margin-bottom: 12px; }
-  .right-column .leaderboard-preview-card h3 { font-size: 20px; }
-}
-
-/* LATO SINISTRO - LOGO + TESTO DESCRITTIVO */
-.hero-text-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  max-width: 1100px;
-  width: 100%;
-}
-/* Accent color & layout for Join card: match other home cards */
-.join-card {
-  background: rgba(255,255,255,0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 24px;
-  border: 1px solid rgba(255,255,255,0.34);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.09);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.join-card h3 { color: #0f172a; }
-.join-card .join-subtitle { color: #475569; }
-.join-card .lobby-btn.secondary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 6px 18px rgba(102,126,234,0.24);
-  border: none;
-}
-.join-card .lobby-btn.secondary:hover { transform: translateY(-2px); }
-
-/* Nickname card accent */
-.nickname-card { background: rgba(255,255,255,0.98); }
-.nickname-card .nickname-header {
-  display: inline-block;
-  background: rgba(99,102,241,0.08);
-  color: #6366f1;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-weight: 800;
-}
-
-/* Make the save button in nickname box visually consistent with join button but smaller */
-.nickname-card .lobby-btn.tertiary {
-  background: linear-gradient(90deg, #eef2ff, #f8fafc);
-  color: #374151;
-  border: 1px solid rgba(99,102,241,0.12);
-  padding: 8px 12px;
-  font-size: 15px;
-}
-
-/* Header profile button adjustments kept earlier near top of file. */
-
-.hero-logo {
-  font-size: 36px;
-  font-weight: 900;
-  color: white;
-  margin-bottom: 24px;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.hero-content {
-  max-width: 1100px;
-  width: 100%;
-}
-
-.hero-actions-side {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* SEZIONE CREAZIONE RAPIDA */
-.quick-create-section {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 16px; /* slightly reduced */
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
-  max-width: 1000px; /* moderate central block */
-  width: 100%;
-}
-
-.central-create-btn {
-  display: block;
-  width: 100%;
-  padding: 18px 24px;
-  font-size: 24px;
-  font-weight: 800;
-  border-radius: 14px;
-  background: linear-gradient(135deg,#ff7ab6,#7c3aed);
-  color: white;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 30px rgba(124,58,237,0.18);
-  text-align: center;
-}
-.central-create-btn:hover{ transform: translateY(-2px); }
-
-.quick-create-title {
-  font-size: 28px;
-  font-weight: 900;
-  color: #1f2937;
-  margin-bottom: 12px;
-  text-align: center;
-}
-
-.quick-create-subtitle {
-  font-size: 16px;
-  color: #6b7280;
-  margin-bottom: 24px;
-  text-align: center;
-  font-weight: 400;
-}
-
-/* Reduce spacing for quick-create contents so the block stays compact */
-.quick-create-section .quick-buttons-grid {
-  gap: 12px;
-}
-
-.quick-create-section .quick-button-card {
-  padding: 12px;
-}
-
-.quick-create-section .central-create-btn {
-  padding: 12px 16px;
-  font-size: 18px;
-}
-
-/* Desktop: two-column layout for quick-create buttons to reduce vertical height */
-@media (min-width: 769px) {
-  .quick-create-section .quick-buttons-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-}
-
-/* GRID BOTTONI RAPIDI */
 .quick-buttons-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .quick-button-card {
-  background: rgba(255,255,255,0.95);
+  background: linear-gradient(145deg, #ffffff 0%, #fafbff 100%);
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.3);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border: 2px solid rgba(139, 92, 246, 0.15);
+  padding: 8px 10px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 12px;
-  padding: 20px;
+  gap: 6px;
+  min-height: 140px;
+  box-shadow: 
+    0 4px 20px rgba(124, 58, 237, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-button-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.03), rgba(168, 85, 247, 0.06));
+  opacity: 0;
+  transition: opacity 0.35s;
 }
 
 .quick-button-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  background: rgba(255,255,255,1);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(124, 58, 237, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
 }
 
-/* Compact-but-legible variants when inside the quick-create section (increased for readability) */
-.quick-create-section .quick-button-card {
-  padding: 16px !important;
-}
-.quick-create-section .quick-button-icon {
-  width: 64px !important;
-  height: 64px !important;
-  font-size: 28px !important;
-}
-.quick-create-section .quick-button-content h3 {
-  font-size: 22px !important;
-  margin: 0;
-}
-.quick-create-section .quick-button-content p {
-  font-size: 15px !important;
-  margin: 0;
-  color: #475569;
-}
-.quick-create-section .central-create-btn {
-  padding: 14px 20px;
-  font-size: 20px;
+.quick-button-card:hover::before {
+  opacity: 1;
 }
 
-/* ==========================
-   GAME-LIKE VISUAL EFFECTS
-   - animated hero gradient
-   - floating emojis
-   - card lift + glow
-   - subtle drifting background shapes (confetti-like)
-   ========================== */
-
-.hero-content h1 {
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-  border-radius: 24px 24px 0 0;
-}
-
-.join-container h3 {
-  font-size: 28px;
-  font-weight: 900;
-  color: #1f2937;
-  margin-bottom: 10px;
+.quick-button-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  font-size: 35px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  box-shadow: 
+    0 8px 32px rgba(124, 58, 237, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
-.join-container h3::before {
-  content: '🔗';
-  font-size: 32px;
+.quick-button-card:hover .quick-button-icon {
+  transform: scale(1.05);
+  box-shadow: 
+    0 12px 48px rgba(124, 58, 237, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.quick-button-content {
+  text-align: center;
+  z-index: 1;
+}
+
+.quick-button-content h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 3px 0;
+  letter-spacing: -0.02em;
+}
+
+.quick-button-content p {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.mode-difficulty {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1.5px solid rgba(124, 58, 237, 0.2);
+}
+
+/* ===========================================
+   QUICK CREATE SECTION
+   =========================================== */
+
+.quick-create-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(91, 33, 182, 0.12);
+}
+
+.quick-create-title {
+  font-size: 17px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 3px 0;
+  text-align: center;
+}
+
+.quick-create-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ===========================================
+   SIDEBAR CARDS
+   =========================================== */
+
+.join-card,
+.nickname-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.join-card h3,
+.nickname-card .nickname-header {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 3px 0;
+}
+
+.nickname-card .nickname-header {
+  display: inline-block;
+  background: rgba(124, 58, 237, 0.08);
+  color: #7c3aed;
+  padding: 8px 14px;
+  border-radius: 10px;
 }
 
 .join-subtitle {
-  font-size: 18px;
-  color: #6b7280;
-  margin-bottom: 16px; /* reduce vertical space under subtitle */
-  font-weight: 400;
+  font-size: 10px;
+  color: #64748b;
+  margin: 0 0 8px 0;
 }
 
 .join-inputs {
   display: flex;
-  gap: 16px;
-  align-items: flex-end;
-  justify-content: center;
-  max-width: 520px;
-  margin: 0 auto;
-}
-
-.join-inputs .input-container {
-  flex: 1;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* ===========================================
-   NICKNAME DISCRETO IN BASSO
+   LEADERBOARD PREVIEW
    =========================================== */
 
-.nickname-card {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 28px; /* larger */
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: stretch;
-  position: relative;
-}
-
-.nickname-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #22C55E, #16A34A);
-  border-radius: 20px 20px 0 0;
-}
-
-.nickname-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 8px;
-}
-
-.nickname-header::before {
-  content: '👤';
-  font-size: 20px;
-}
-
-.nickname-inputs {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between; /* push the save button to the right end */
-  width: 100%;
-  max-width: 360px;
-}
-
-/* Inline save button: slightly larger and placed to the right */
-.nickname-inputs .lobby-btn {
-  width: auto; /* don't stretch full width */
-  padding: 10px 14px;
-  font-size: 18px; /* slightly larger for visibility */
-  border-radius: 10px;
-  flex: 0 0 auto;
-}
-
-.nickname-inputs .lobby-btn.tertiary {
-  background: transparent;
-  color: #374151;
-  border: 1px solid #e6eefc;
-  box-shadow: none;
-}
-
-/* Leaderboard preview card (compact) shown in Home under nickname */
 .leaderboard-preview-card {
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 14px;
-  padding: 12px 14px;
-  border: 1px solid rgba(230, 238, 252, 0.6);
-  box-shadow: 0 12px 30px rgba(2,6,23,0.06);
-  font-size: 14px;
-  color: #0f172a;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .leaderboard-preview-card .preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 }
 
-.leaderboard-preview-card .header-title { font-weight: 800; font-size: 14px; }
-
-.leaderboard-preview-card .header-leaderboard-btn {
-  background: none;
-  border: 1px solid rgba(15,23,42,0.06);
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  color: #111827;
-}
-.preview-vedi-btn {
-  background: linear-gradient(90deg,#7c3aed,#ff7ab6);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 12px;
+.leaderboard-preview-card .header-title {
   font-weight: 800;
-  box-shadow: 0 10px 28px rgba(124,58,237,0.16);
+  font-size: 13px;
+  color: #1e293b;
 }
-.preview-vedi-btn:hover { transform: translateY(-3px); }
-
-.leaderboard-preview-card .header-leaderboard-btn:hover { transform: translateY(-1px); background: rgba(15,23,42,0.02); }
 
 .leaderboard-preview-card ol {
-  margin: 0;
+  list-style: none;
   padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
 }
 
 .leaderboard-preview-card li {
-  list-style: none;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 8px;
-  border-radius: 10px;
+  padding: 5px;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 7px;
+  transition: all 0.2s;
 }
 
-.leaderboard-preview-card li:hover { background: rgba(15,23,42,0.02); }
+.leaderboard-preview-card li:hover {
+  background: rgba(241, 245, 249, 0.9);
+}
 
-.leaderboard-preview-card .leader-left { display:flex; gap:10px; align-items:center; }
+.leaderboard-preview-card .leader-left {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
 
 .leaderboard-preview-card .leader-avatar {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  display:flex; align-items:center; justify-content:center;
-  font-weight: 900; color: white; font-size: 18px;
-  flex-shrink: 0;
-}
-
-.leaderboard-preview-card li:nth-child(1) .leader-avatar { background: linear-gradient(135deg,#F59E0B,#F97316); }
-.leaderboard-preview-card li:nth-child(2) .leader-avatar { background: linear-gradient(135deg,#9CA3AF,#6B7280); }
-.leaderboard-preview-card li:nth-child(3) .leader-avatar { background: linear-gradient(135deg,#D97706,#F59E0B); }
-.leaderboard-preview-card li:nth-child(4) .leader-avatar { background: linear-gradient(135deg,#60A5FA,#3B82F6); }
-
-.leaderboard-preview-card .leader-name { font-weight: 800; color: #0f172a; font-size: 16px; }
-.leaderboard-preview-card .leader-meta { font-size: 13px; color: #64748b; }
-
-.leaderboard-preview-card .leader-score { font-weight: 900; color: #111827; min-width: 60px; text-align: right; font-size: 16px; }
-
-.leaderboard-preview-card .position-note { font-size: 13px; color: #334155; margin-top: 4px; }
-
-@media (max-width: 768px) {
-  .leaderboard-preview-card { padding: 10px; font-size: 13px; }
-}
-
-/* Small inline spinner used for leaderboard preview */
-.small-spinner {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid rgba(99,102,241,0.12);
-  border-top-color: rgba(99,102,241,0.9);
-  animation: spin 800ms linear infinite;
-  box-sizing: border-box;
-}
-
-.loading-inline { display:flex; align-items:center; gap:8px; }
-
-.nickname-inputs .lobby-btn.tertiary:hover {
-  background: #f8fafc;
-}
-
-/* Prominent save button style for nickname (overrides tertiary) */
-.nickname-inputs .lobby-btn.save-nick-btn {
-  background: linear-gradient(90deg,#7c3aed,#ff7ab6);
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  font-size: 16px;
-  font-weight: 800;
-  border-radius: 12px;
-  box-shadow: 0 8px 22px rgba(124,58,237,0.18);
-}
-.nickname-inputs .lobby-btn.save-nick-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(124,58,237,0.22); }
-
-/* Saving state: subtle disabled look */
-.nickname-inputs .lobby-btn.save-nick-btn.saving,
-.nickname-inputs .lobby-btn.save-nick-btn:disabled {
-  opacity: 0.9;
-  transform: none;
-  cursor: progress;
-  box-shadow: none;
-}
-
-/* Saved state: change to green confirmation */
-.nickname-inputs .lobby-btn.save-nick-btn.saved {
-  background: linear-gradient(90deg,#10b981,#34d399) !important;
-  box-shadow: 0 10px 30px rgba(16,185,129,0.16) !important;
-}
-
-.save-feedback {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
-  color: #059669;
-  font-size: 14px;
+  color: white;
+  font-size: 11px;
 }
 
-/* Ensure input expands and leaves room for button on small screens */
-.nickname-inputs .input-container { flex: 1 1 auto; min-width: 0; margin-right: 8px; }
+.leaderboard-preview-card li:nth-child(1) .leader-avatar {
+  background: linear-gradient(135deg, #F59E0B, #F97316);
+}
 
-@media (max-width: 520px) {
-  .nickname-inputs { flex-direction: column; align-items: stretch; gap: 8px; }
-  .nickname-inputs .input-container { margin-right: 0; }
-  .nickname-inputs .lobby-btn { width: 100%; }
+.leaderboard-preview-card li:nth-child(2) .leader-avatar {
+  background: linear-gradient(135deg, #9CA3AF, #6B7280);
+}
+
+.leaderboard-preview-card li:nth-child(3) .leader-avatar {
+  background: linear-gradient(135deg, #D97706, #F59E0B);
+}
+
+.leaderboard-preview-card li:nth-child(4) .leader-avatar {
+  background: linear-gradient(135deg, #60A5FA, #3B82F6);
+}
+
+.leaderboard-preview-card .leader-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 11px;
+}
+
+.leaderboard-preview-card .leader-score {
+  font-weight: 800;
+  color: #1e293b;
+  font-size: 12px;
+}
+
+/* ===========================================
+   UTILITY STYLES
+   =========================================== */
+
+.nickname-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.nickname-inputs .input-container {
+  flex: 1;
 }
 
 .guest-badge {
-  font-size: 14px;
-  color: #059669;
-  background: rgba(34, 197, 94, 0.1);
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1.5px solid rgba(251, 191, 36, 0.3);
 }
 
-.guest-badge::before {
-  content: '✨';
+.save-feedback {
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 600;
 }
 
 .nickname-error {
-  margin-top: 12px;
-  color: #b91c1c;
-  background: rgba(255, 233, 233, 0.9);
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
   padding: 8px 12px;
   border-radius: 8px;
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  font-weight: 600;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.small-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(124, 58, 237, 0.2);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 1200px) {
+  .home-row-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .right-column {
+    position: static;
+  }
+  
+  .quick-button-icon {
+    width: 180px;
+    height: 180px;
+    font-size: 90px;
+  }
+  
+  .quick-button-card {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-top-row {
+    padding: 40px 20px 60px;
+  }
+  
+  .quick-buttons-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .quick-button-card {
+    min-height: 280px;
+    padding: 32px 24px;
+  }
+  
+  .quick-button-icon {
+    width: 160px;
+    height: 160px;
+    font-size: 80px;
+  }
+  
+  .quick-button-content h3 {
+    font-size: 20px;
+  }
+  
+  .quick-button-content p {
+    font-size: 15px;
+  }
+  
+  .quick-create-title {
+    font-size: 28px;
+  }
 }

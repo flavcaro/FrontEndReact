@@ -58,11 +58,10 @@
 /* logout button styling unified above */
 
 /* ===========================================
-   HERO FULL-PAGE CON ILLUSTRATION
+   HERO
    =========================================== */
 
 .hero-section {
-  /* kept for backward compatibility when present elsewhere */
   height: auto;
   display: block;
   padding: 0;
@@ -70,14 +69,16 @@
 
 .hero-illustration {
   position: relative;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-emoji {
-  font-size: clamp(64px, 8vw, 140px);
+  font-size: clamp(80px, 10vw, 140px);
   animation: bounce 3s infinite;
-  filter: drop-shadow(0 14px 36px rgba(0, 0, 0, 0.18));
-  transform: translateY(-6px);
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
 }
 
 .floating-elements {
@@ -91,75 +92,85 @@
 
 .float-1 {
   position: absolute;
-  top: -20px;
-  left: -40px;
-  font-size: 32px;
+  top: 10%;
+  left: 5%;
+  font-size: 36px;
   animation: float1 4s ease-in-out infinite;
+  opacity: 0.8;
 }
 
 .float-2 {
   position: absolute;
-  top: 20px;
-  right: -50px;
-  font-size: 28px;
+  top: 15%;
+  right: 5%;
+  font-size: 32px;
   animation: float2 5s ease-in-out infinite;
+  opacity: 0.8;
 }
 
 .float-3 {
   position: absolute;
-  bottom: -30px;
-  left: -30px;
-  font-size: 26px;
+  bottom: 10%;
+  left: 10%;
+  font-size: 30px;
   animation: float3 6s ease-in-out infinite;
+  opacity: 0.8;
 }
 
 .float-4 {
   position: absolute;
-  bottom: -10px;
-  right: -40px;
-  font-size: 30px;
+  bottom: 15%;
+  right: 10%;
+  font-size: 34px;
   animation: float4 4.5s ease-in-out infinite;
+  opacity: 0.8;
 }
 
 .hero-content {
-  max-width: 900px;
-  margin-bottom: 60px;
+  max-width: 100%;
+  margin-bottom: 32px;
   width: 100%;
+  text-align: center;
 }
 
-.hero-content h1,
 .hero-content h2 {
-  font-size: clamp(22px, 4.6vw + 18px, 56px); /* slightly larger responsive hero title */
-  font-weight: 600;
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 900;
   color: white;
-  margin-bottom: 18px;
-  line-height: 1.04;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.30);
+  margin-bottom: 12px;
+  line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.hero-content p {
-  font-size: var(--font-lg);
+.hero-content h3 {
+  font-size: clamp(18px, 2.5vw, 24px);
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Bottone inline sotto il testo del hero */
 .hero-create-inline {
-  margin-top: 20px;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .inline-create-btn {
-  font-size: 24px !important;
-  padding: 16px 36px !important;
-  border-radius: 48px !important;
-  background: rgba(255, 255, 255, 0.98) !important;
-  color: #1f2937 !important;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.16) !important;
+  font-size: 18px !important;
+  padding: 16px 32px !important;
+  border-radius: 16px !important;
+  background: white !important;
+  color: #667eea !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 700 !important;
+  border: none !important;
+  transition: all 0.3s !important;
 }
 
 .inline-create-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* ===========================================
@@ -301,107 +312,120 @@
   max-width: 1100px;
   width: 100%;
 }
-/* Accent color for Join card: make the join button match primary brand */
-.join-card h3 { color: #0f172a; }
-.join-card .join-subtitle { color: #475569; }
-.join-card .lobby-btn.secondary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 6px 18px rgba(102,126,234,0.24);
-  border: none;
+.join-card, .nickname-card, .leaderboard-preview-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
-.join-card .lobby-btn.secondary:hover { transform: translateY(-2px); }
 
-/* Nickname card accent */
-.nickname-card { background: rgba(255,255,255,0.98); }
-.nickname-card .nickname-header {
-  display: inline-block;
-  background: rgba(99,102,241,0.08);
-  color: #6366f1;
-  padding: 6px 10px;
-  border-radius: 8px;
+.join-card h3 {
+  font-size: 24px;
   font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
 }
 
-/* Make the save button in nickname box visually consistent with join button but smaller */
-.nickname-card .lobby-btn.tertiary {
-  background: linear-gradient(90deg, #eef2ff, #f8fafc);
-  color: #374151;
-  border: 1px solid rgba(99,102,241,0.12);
-  padding: 8px 12px;
-  font-size: 15px;
+.join-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+  font-weight: 500;
 }
 
-/* Header profile button adjustments kept earlier near top of file. */
-
-.hero-logo {
-  font-size: 36px;
-  font-weight: 900;
-  color: white;
-  margin-bottom: 24px;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.join-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
 }
 
-.hero-content {
-  max-width: 1100px;
-  width: 100%;
+.join-inputs .input-container {
+  flex: 1;
 }
 
-.hero-actions-side {
+.nickname-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.nickname-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 20px 20px 0 0;
+}
+
+.nickname-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+}
+
+.nickname-header::before {
+  content: '👤';
+  font-size: 20px;
+}
+
+.nickname-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nickname-inputs .input-container {
+  flex: 1;
 }
 
 /* SEZIONE CREAZIONE RAPIDA */
 .quick-create-section {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border-radius: 28px;
-  padding: 44px; /* larger */
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.15);
-  max-width: 1000px; /* moderate central block */
+  border-radius: 24px;
+  padding: 32px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  max-width: 900px;
   width: 100%;
 }
-
-.central-create-btn {
-  display: block;
-  width: 100%;
-  padding: 18px 24px;
-  font-size: 24px;
-  font-weight: 800;
-  border-radius: 14px;
-  background: linear-gradient(135deg,#ff7ab6,#7c3aed);
-  color: white;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 30px rgba(124,58,237,0.18);
-  text-align: center;
-}
-.central-create-btn:hover{ transform: translateY(-2px); }
 
 .quick-create-title {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
-  color: #1f2937;
-  margin-bottom: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
   text-align: center;
 }
 
 .quick-create-subtitle {
   font-size: 16px;
-  color: #6b7280;
-  margin-bottom: 24px;
+  color: #64748b;
+  margin-bottom: 28px;
   text-align: center;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* GRID BOTTONI RAPIDI */
 .quick-buttons-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 /* ==========================

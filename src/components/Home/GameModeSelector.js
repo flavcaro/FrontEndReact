@@ -20,6 +20,13 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
   const [survivalThresholdType, setSurvivalThresholdType] = useState(SURVIVAL_DEFAULT_THRESHOLD.thresholdType);
   const [survivalThresholdValue, setSurvivalThresholdValue] = useState(SURVIVAL_DEFAULT_THRESHOLD.thresholdValue);
 
+  // Debug: check if sprites are loaded
+  console.log('GameModes with sprites:', Object.values(GAME_MODES).map(m => ({ 
+    name: m.name, 
+    hasSprite: !!m.sprite,
+    sprite: m.sprite 
+  })));
+
   const handleConfirm = () => {
     const mode = Object.values(GAME_MODES).find(m => m.id === selectedMode);
     const timeOption = Object.values(TURN_TIME_OPTIONS).find(t => t.id === selectedTime);
@@ -130,7 +137,20 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   gap: '12px'
                 }}
               >
-                <div style={{ fontSize: '24px' }}>{mode.icon}</div>
+                {mode.sprite ? (
+                  <img 
+                    src={mode.sprite} 
+                    alt={mode.name}
+                    style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      objectFit: 'contain',
+                      imageRendering: 'pixelated'
+                    }}
+                  />
+                ) : (
+                  <div style={{ fontSize: '24px' }}>{mode.icon}</div>
+                )}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
                     {mode.name}

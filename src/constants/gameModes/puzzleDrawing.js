@@ -8,11 +8,14 @@
  * I turni ruotano fino a quando tutti hanno indovinato almeno una volta.
  */
 
+import puzzleSprite from '../../sprites/puzzle.gif';
+
 export const PUZZLE_DRAWING = {
   id: 'puzzleDrawing',
   name: 'Puzzle Drawing',
   description: 'Disegnate insieme dividendo il canvas!',
   icon: '🧩',
+  sprite: puzzleSprite,
   turnDuration: 90, // Più tempo perché i giocatori devono coordinarsi
   minPlayers: 4, // Minimo per entrambe le configurazioni
   maxPlayers: 6,

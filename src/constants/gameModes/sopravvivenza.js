@@ -1,9 +1,12 @@
 // Modalità Sopravvivenza
+import survivalSprite from '../../sprites/survival.gif';
+
 export const SOPRAVVIVENZA = {
   id: 'sopravvivenza',
   name: 'Sopravvivenza',
   description: 'Difficoltà crescente per round. Penalità per non indovinare: perdita vite, eliminazione. Vince l\'ultimo rimasto!',
   icon: '🏃',
+  sprite: survivalSprite,
   turnDuration: 30,
   survivalMode: true,
   startingLives: 3

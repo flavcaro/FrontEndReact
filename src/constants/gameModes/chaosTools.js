@@ -1,9 +1,12 @@
 // Modalità Chaos Tools
+import chaosSprite from '../../sprites/chaos.gif';
+
 export const CHAOS_TOOLS = {
   id: 'chaos_tools',
   name: 'Chaos Tools',
   description: 'Modificatori casuali disturbano il disegno: colori casuali, canvas deformato, ritardo input, linee tremolanti',
   icon: '🌀',
+  sprite: chaosSprite,
   turnDuration: 45,
   hasChaosEffects: true
 };

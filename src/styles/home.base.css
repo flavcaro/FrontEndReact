@@ -18,51 +18,53 @@
   border-radius: 10px;
   font-weight: 900;
 }
+
 /* ===========================================
-   SKETCHUP HOME - STILE GARTIC PHONE
-   Design giocoso, dinamico, full-page
+   SKETCHUP HOME - MODERN DESIGN
+   Clean, professional, playful
    =========================================== */
 
 .home {
   min-height: 100vh;
-  background: var(--brand-gradient);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
   position: relative;
-  overflow: hidden;
-  font-family: 'Inter', system-ui, sans-serif;
-  /* responsive base font that scales between mobile and desktop */
-  font-size: clamp(16px, 1.6vw + 12px, 28px);
-  /* keep content below the fixed header on all viewports */
-  padding-top: 110px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding-top: 0;
+  padding-bottom: 8px;
 }
 
 /* ===========================================
-   HEADER MINIMAL
+   HEADER
    =========================================== */
 
 .home-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px; /* restored more compact header spacing */
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 20px;
+  background: transparent;
+  z-index: 100;
 }
 
-/* Tidy header buttons and spacing */
 .home-header .logo {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.home-header .logo .logo-icon { font-size: 36px; }
-.home-header .logo .logo-text { font-size: 32px; font-weight: 800; color: #fff; }
+.home-header .logo .logo-icon { 
+  font-size: 20px; 
+}
+
+.home-header .logo .logo-text { 
+  font-size: 18px; 
+  font-weight: 900; 
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
 
 .header-right {
   display: flex;
@@ -70,94 +72,72 @@
   align-items: center;
 }
 
-.header-right .user-stats-header { margin-right: 8px; }
-
 .header-profile-btn, .header-leaderboard-btn, .logout-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  font-size: 15px;
-  border-radius: 12px;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.10);
-  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
 }
 
 .header-profile-btn:hover, .header-leaderboard-btn:hover {
-  transform: translateY(-3px);
-  background: rgba(255,255,255,0.12);
-  box-shadow: 0 10px 28px rgba(2,6,23,0.12);
-}
-
-/* Accent the logout button while keeping proportions consistent */
-.logout-btn {
-  background: linear-gradient(90deg,#ff7a7a,#ff5a5a);
-  border: none;
-  color: #fff;
-  box-shadow: 0 8px 22px rgba(255,90,90,0.18);
-}
-
-.logout-btn:hover { transform: translateY(-2px); }
-
-/* Logo */
-.logo {
-  font-size: 44px; /* larger logo */
-  font-weight: 900;
-  color: white;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.34);
-}
-
-.header-right {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-/* Profile button in header */
-.header-profile-btn {
-  padding: 10px 14px;
-  font-size: 16px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.18);
-  cursor: pointer;
-}
-.header-profile-btn:hover {
-  background: rgba(255,255,255,0.18);
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Make profile button content not expand to fill available space */
-.lobby-btn.header-profile-btn .btn-text { flex: 0 0 auto; }
+.logout-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+}
 
-/* Slightly smaller icon inside the header button */
-.lobby-btn.header-profile-btn .btn-icon { font-size: 16px; margin-right: 6px; }
+.logout-btn:hover { 
+  transform: translateY(-2px); 
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.lobby-btn.header-profile-btn .btn-text { 
+  flex: 0 0 auto; 
+}
+
+.lobby-btn.header-profile-btn .btn-icon { 
+  font-size: 16px; 
+  margin-right: 6px; 
+}
 
 .user-name {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.96);
-  margin-left: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  margin-left: 8px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .user-stats-header {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   align-items: center;
-  margin-right: 12px;
+  margin-right: 10px;
 }
 
 .level-badge, .xp-badge {
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 18px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* HERO, LAYOUT, QUICK CREATE, JOIN, NICKNAME, MODAL, and other non-responsive rules
