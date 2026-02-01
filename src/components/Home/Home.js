@@ -291,6 +291,12 @@ export default function Home() {
           <span className="logo-text">SketchUp</span>
         </div>
         {/* Mobile compact nickname+XP badge shown top-left on small screens */}
+        {user && (
+          <div className="mobile-nickname-badge">
+            <span>🏆 Lv.{Number(level || 1)}</span>
+            <span className="mobile-nick-xp">⭐ {xpPoints || 0} XP</span>
+          </div>
+        )}
         {/* Mobile hamburger - visible only on small screens via CSS */}
         <button className="mobile-hamburger" onClick={(e) => { e.stopPropagation(); setShowMobileMenu(s => !s); }} aria-label="Menu">☰</button>
         {showMobileMenu && (

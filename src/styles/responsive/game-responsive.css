@@ -401,21 +401,27 @@
     /* 5. UNIFIED MOBILE TOOLBAR POSITIONING */
     .unified-drawing-toolbar {
         bottom: 20px !important;
-        padding: 6px 10px !important;
+        padding: 4px 8px !important;
+        /* Reduced padding */
         border-radius: 16px !important;
-        gap: 8px !important;
+        gap: 6px !important;
+        /* Reduced gap */
         width: fit-content !important;
         max-width: 95vw !important;
         z-index: 1000 !important;
         display: flex !important;
         background: white !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+        transform: translateX(-50%) scale(0.9) !important;
+        /* Slightly scale down */
+        transform-origin: bottom center !important;
     }
 
     .unified-clear-btn {
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 12px !important;
+        width: 34px !important;
+        /* Smaller clear button */
+        height: 34px !important;
+        border-radius: 10px !important;
     }
 
     /* 6. CHAT STYLING - Forced Bottom Fixed */
@@ -563,37 +569,6 @@
         border-top: 2px solid #e2e8f0 !important;
     }
 
-    /* Copy Link Toast */
-    .copy-toast {
-        position: absolute !important;
-        top: 60px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        background: rgba(16, 185, 129, 0.95) !important;
-        color: white !important;
-        padding: 8px 16px !important;
-        border-radius: 999px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
-        z-index: 10000 !important;
-        animation: toastEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-
-    @keyframes toastEnter {
-        from {
-            transform: translate(-50%, -20px) !important;
-            opacity: 0 !important;
-        }
-
-        to {
-            transform: translate(-50%, 0) !important;
-            opacity: 1 !important;
-        }
-    }
 }
 
 /* =========================================================
@@ -693,5 +668,47 @@
 
     .board-container[style*="position: fixed"] .desktop-only {
         display: none !important;
+    }
+}
+
+/* =========================================================
+   GLOBAL COMPONENTS (Toast, etc.)
+   ========================================================= */
+
+/* Copy Link Toast - Global for all devices */
+.copy-toast {
+    position: fixed !important;
+    /* Fixed to viewport so it floats above everything */
+    top: 100px !important;
+    /* Consistent top placement */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(16, 185, 129, 0.95) !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    /* Slightly larger touch target */
+    border-radius: 999px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3) !important;
+    z-index: 10000 !important;
+    /* Extremely high z-index */
+    animation: toastEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    pointer-events: none;
+    /* Let clicks pass through if needed */
+}
+
+@keyframes toastEnter {
+    from {
+        transform: translate(-50%, -20px) !important;
+        opacity: 0 !important;
+    }
+
+    to {
+        transform: translate(-50%, 0) !important;
+        opacity: 1 !important;
     }
 }

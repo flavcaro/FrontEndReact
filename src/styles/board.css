@@ -636,46 +636,49 @@
    LIVES DISPLAY (SURVIVAL)
 ========================= */
 
+
 .lives-display {
-  background: #e0f2fe;
-  /* Celeste chiaro */
-  border: 1.5px solid #bae6fd;
-  /* Bordo celeste più scuro */
-  border-radius: 16px;
-  padding: 8px 16px;
-  /* Reduced padding */
+  background: rgba(224, 242, 254, 0.9);
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 4px 8px;
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto 12px auto;
-  box-shadow: 0 4px 12px rgba(186, 230, 253, 0.2);
-  text-align: center;
+  max-width: 100%;
+  margin: 0 0 4px 0;
+  box-shadow: 0 2px 4px rgba(186, 230, 253, 0.1);
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Hide scrollbar Firefox */
 }
 
-.lives-title {
-  font-weight: 800;
-  font-size: 14px;
-  color: #856404;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+.lives-display::-webkit-scrollbar {
+  display: none;
+  /* Hide scrollbar Chrome/Safari */
 }
 
 .lives-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
+  flex-wrap: nowrap;
+  gap: 6px;
+  flex: 1;
 }
 
 .player-lives {
   background: white;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
   border: 1px solid #dee2e6;
-  min-width: 100px;
-  transition: all 0.2s;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .player-lives.current-player {
@@ -690,13 +693,11 @@
 }
 
 .player-lives .player-name {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: #495057;
-  margin-bottom: 4px;
+  margin: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .hearts-container {
@@ -706,7 +707,7 @@
 }
 
 .heart {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* =========================
@@ -1066,7 +1067,4 @@
 
 .unified-drawing-toolbar .palette-inner {
   margin-left: 4px;
-}.lives-display { background: #e0f2fe !important; border-color: #bae6fd !important; box-shadow: 0 4px 12px rgba(186, 230, 253, 0.2) !important; padding: 8px 16px !important; }
-
-/* Force Long and Narrow Lives Display */
-.lives-display { width: auto !important; max-width: 90% !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 6px 32px !important; min-width: 400px !important; }
+}

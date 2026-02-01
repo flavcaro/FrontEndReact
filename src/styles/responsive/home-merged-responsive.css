@@ -11,7 +11,18 @@
 /* --- MOBILE & TABLET LAYOUT (Single Rule) --- */
 @media (max-width: 1024px) {
 
+    /* Fix empty space at bottom by letting height be auto */
+    .home {
+        min-height: auto !important;
+        height: auto !important;
+        padding-bottom: 20px !important;
+    }
+
     /* Header Elements */
+    .logo-text {
+        display: none !important;
+    }
+
     .mobile-hamburger {
         display: flex !important;
         position: absolute !important;
@@ -32,18 +43,21 @@
     .mobile-nickname-badge {
         display: inline-flex !important;
         position: absolute !important;
-        right: 64px !important;
+        right: 60px !important;
+        /* Slightly closer to hamburger */
         top: 14px !important;
         height: 38px !important;
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(8px) !important;
-        padding: 6px 14px !important;
+        padding: 4px 10px !important;
+        /* Reduced padding */
         border-radius: 99px !important;
         align-items: center !important;
-        gap: 10px !important;
+        gap: 8px !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.25) !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
+        /* Smaller font */
         font-weight: 700 !important;
         white-space: nowrap !important;
     }

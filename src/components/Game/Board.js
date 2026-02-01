@@ -372,7 +372,6 @@ export default function Board({ roomId, nickname, gameConfig }) {
               {/* Lives Display - Solo in modalità sopravvivenza - MOBILE: between header and canvas */}
               {gameState?.survivalMode && gameState?.playerLives && (
                 <div className="lives-display">
-                  <div className="lives-title">❤️ Vite Giocatori</div>
                   {typeof survivalThresholdValue !== 'undefined' && (
                     <div className="lives-subtitle">
                       Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
