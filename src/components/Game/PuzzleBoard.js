@@ -284,7 +284,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           className="chat-mobile-split"
           style={{
             width: '100%',
-            height: '40dvh', // Match Board.js
+            height: '25dvh', // Reduced to give more space to canvas
             flexShrink: 0,
             borderLeft: 'none',
             borderTop: '2px solid #e2e8f0',

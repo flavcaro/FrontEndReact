@@ -80,8 +80,8 @@ export default function PuzzleCanvas({
     const sectionW = w / totalSections;
     ctx.setLineDash([4, 4]);
     // Colore più visibile sia su mobile che desktop
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#475569'; // Slate 600 - Darker
+    ctx.lineWidth = 2; // Thicker
 
     ctx.beginPath();
     for (let i = 1; i < totalSections; i++) {
@@ -158,22 +158,22 @@ export default function PuzzleCanvas({
 
     // Use more vertical space - aim for a wider canvas that fills height better
     // Keep aspect ratio reasonable (16:9 or similar) but prioritize using available height
-    const maxWidth = containerWidth * 0.95;
-    const maxHeight = containerHeight * 0.95;
-    
+    const maxWidth = containerWidth * 0.99;
+    const maxHeight = containerHeight * 0.99;
+
     // Calculate size to fit within container while maintaining aspect ratio
     // Prefer using more height when available
     let canvasWidth, canvasHeight;
-    
+
     const aspectRatio = maxWidth / maxHeight;
-    if (aspectRatio > 1.5) {
+    if (aspectRatio > 1.8) {
       // Wide container: use height and calculate width
       canvasHeight = maxHeight;
-      canvasWidth = Math.min(maxHeight * 1.5, maxWidth);
+      canvasWidth = Math.min(maxHeight * 1.8, maxWidth);
     } else {
       // Tall or square container: use available space more efficiently
       canvasWidth = maxWidth;
-      canvasHeight = Math.min(maxWidth / 1.2, maxHeight);
+      canvasHeight = maxHeight;
     }
 
     // Support high-DPI displays

@@ -601,10 +601,12 @@
 @media (max-width: 768px) {
 
     .board-container[style*="position: fixed"] {
-        height: 60dvh !important;
-        max-height: 60dvh !important;
-        bottom: auto !important;
         top: 0 !important;
+        bottom: 25dvh !important;
+        /* Anchor to chat top (25dvh) */
+        height: auto !important;
+        max-height: none !important;
+        background: linear-gradient(135deg, #eee 0%, #f9f9f9 100%);
     }
 
     .board-container[style*="position: fixed"] .board-center {
@@ -613,6 +615,7 @@
         flex-direction: column;
         overflow: hidden;
         min-height: 0;
+        background: transparent !important;
     }
 
     .board-container[style*="position: fixed"] .board-header {
@@ -660,12 +663,13 @@
         min-width: 80px;
     }
 
-    .chat-mobile-split[style*="height: 40dvh"] {
+    /* Update selector to match 25dvh inline style OR generic style */
+    .chat-mobile-split[style*="height: 25dvh"] {
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        height: 40dvh !important;
+        height: 25dvh !important;
         border-top: 2px solid #e2e8f0 !important;
         background: white !important;
         z-index: 100 !important;
@@ -679,7 +683,7 @@
 
     .board-container[style*="position: fixed"] .palette-floating {
         position: fixed !important;
-        bottom: calc(40dvh + 8px) !important;
+        bottom: calc(25dvh + 8px) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         z-index: 150 !important;
@@ -687,27 +691,5 @@
 
     .board-container[style*="position: fixed"] .desktop-only {
         display: none !important;
-    }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-    .board-container[style*="position: fixed"] {
-        height: 58dvh !important;
-    }
-
-    .chat-mobile-split[style*="height: 40dvh"] {
-        height: 42dvh !important;
-    }
-}
-
-/* Extra small phones */
-@media (max-width: 375px) {
-    .board-container[style*="position: fixed"] {
-        height: 56dvh !important;
-    }
-
-    .chat-mobile-split[style*="height: 40dvh"] {
-        height: 44dvh !important;
     }
 }

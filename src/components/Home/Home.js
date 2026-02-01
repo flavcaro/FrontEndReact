@@ -16,7 +16,7 @@ import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
 import classicGif from "../../sprites/logo.gif";
 
 import "../../styles/home.css";
-import RoomActions from "./RoomActions";
+
 import CustomCreateForm from "./CustomCreateForm";
 import Leaderboard from "./Leaderboard";
 import { subscribeLeaderboard } from "../../services/userService";
@@ -105,28 +105,6 @@ export default function Home() {
     })();
   };
 
-  const handleRoomActionsJoin = (roomCode) => {
-    (async () => {
-      try {
-        const playersRef = ref(db, `rooms/${roomCode}/players`);
-        const snap = await get(playersRef);
-        const existing = snap.val() || {};
-        const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
-        const unique = generateUniqueNickname(nickname, latestList) || nickname;
-        if (unique !== nickname) {
-          setNickname(unique);
-          localStorage.setItem('nickname', unique);
-        } else {
-          localStorage.setItem('nickname', nickname);
-        }
-      } catch (err) {
-        console.warn('Could not verify nickname uniqueness before join via RoomActions', err);
-        localStorage.setItem('nickname', nickname);
-      }
-      navigate(`/room/${roomCode}`);
-      setShowCustomModal(false);
-    })();
-  };
 
   const handleSaveNickname = async () => {
     const nick = (nickname || '').trim();
