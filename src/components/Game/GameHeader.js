@@ -216,48 +216,31 @@ export default function GameHeader({
             {/* mobile info toggle */}
             <button
               type="button"
-              className="mobile-info-btn"
-              aria-expanded={mobileInfoOpen}
-              onClick={() => setMobileInfoOpen((s) => !s)}
+              className="mobile-icon-btn info-trigger"
+              onClick={() => setMobileInfoOpen(true)}
+              aria-label="Informazioni partita"
             >
               ℹ️
             </button>
 
-            {/* Exit button - visible on mobile */}
-            <button onClick={handleLeaveRoom} className="btn-leave mobile-exit-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile second row: Players button + Share link */}
-          <div className="mobile-share-row">
             {/* mobile players toggle */}
             <button
               type="button"
-              className="mobile-players-btn"
+              className="mobile-icon-btn players-trigger"
               onClick={onShowPlayers}
-              title="Vedi giocatori"
+              aria-label="Lista giocatori"
             >
               👥
             </button>
 
-            {/* Share link for mobile */}
-            <div className="mobile-share-link">
-              <label>🔗</label>
-              <input
-                value={`${window.location.origin}/room/${roomId}`}
-                readOnly
-                onClick={(e) => {
-                  e.target.select();
-                  navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-                }}
-                title="Clicca per copiare il link"
-              />
-            </div>
+            {/* Exit button - visible on mobile */}
+            <button
+              onClick={handleLeaveRoom}
+              className="mobile-icon-btn exit-trigger"
+              aria-label="Esci"
+            >
+              🚪
+            </button>
           </div>
 
           {/* Render game-info normally (desktop) */}
@@ -348,29 +331,51 @@ export default function GameHeader({
           </div>
         </div>
 
-        {/* Mobile popover with compact game info (only used on small screens) */}
-        <div className={`mobile-game-info-popover ${mobileInfoOpen ? 'open' : ''}`} role="dialog" aria-hidden={!mobileInfoOpen}>
-          <div className="mobile-game-info-inner">
-            <div className="game-mode-info">
-              <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
+        {/* Mobile Modal for game info */}
+        {mobileInfoOpen && (
+          <div className="mobile-modal-overlay" onClick={() => setMobileInfoOpen(false)}>
+            <div className="mobile-modal-content" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>ℹ️ Informazioni Partita</h3>
+                <button className="close-btn" onClick={() => setMobileInfoOpen(false)}>✕</button>
+              </div>
+              <div className="mobile-game-info-inner">
+                <div className="game-mode-info">
+                  <div className="room-label">Modalità</div>
+                  <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
+                </div>
+                <div className="difficulty-info">
+                  <div className="room-label">Difficoltà</div>
+                  <div className="difficulty-badge secondary">{difficulty}</div>
+                </div>
+                <div className="round-info">
+                  <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
+                  <div className="round-display">{roundsPerPlayer}</div>
+                </div>
+                {gameState?.active && (
+                  <div className="round-info">
+                    <div className="room-label">Round</div>
+                    <div className="round-display">{currentRound}/{totalRounds}</div>
+                  </div>
+                )}
+                <div className="share-section">
+                  <div className="room-label">Link Invito</div>
+                  <div className="mobile-share-link">
+                    <input
+                      value={`${window.location.origin}/room/${roomId}`}
+                      readOnly
+                      onClick={(e) => {
+                        e.target.select();
+                        navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+                      }}
+                    />
+                    <span className="copy-hint">Tocca per copiare</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="difficulty-info">
-              <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">{difficulty}</div>
-            </div>
-            <div className="round-info">
-              <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
-              <div className="round-display">{roundsPerPlayer}</div>
-            </div>
-            {gameState?.active && (
-              <div className="round-info"><div className="room-label">Round</div><div className="round-display">{currentRound}/{totalRounds}</div></div>
-            )}
-            {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
-              <div className="malus-compact">{gameState.chaosEffects.length} malus attivi</div>
-            )}
           </div>
-        </div>
+        )}
 
         {/* Stato artista / malus */}
         <div className="status-section">

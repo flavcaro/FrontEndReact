@@ -76,10 +76,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 0 !important;
+  /* Force zero padding */
   width: 100%;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 .game-content {
@@ -87,7 +89,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 4px;
   width: 100%;
   overflow: hidden;
   min-height: 0;
@@ -105,19 +107,45 @@
    HEADER / ROOM INFO
 ========================= */
 
-.board-header {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 2px solid rgba(102, 126, 234, 0.12);
-  padding: 4px 12px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
-  min-height: 42px;
-  max-height: none;
-  overflow: visible;
-  border-radius: 0 0 16px 16px;
-  transition: padding 0.3s ease;
+/* Hard-Compact Header Overrides */
+html body .board-container .board-header {
+  padding: 4px 12px !important;
+  min-height: 40px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+html body .board-container .board-header .room-code {
+  font-size: 16px !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+}
+
+html body .board-container .board-header .mode-badge,
+html body .board-container .board-header .difficulty-badge,
+html body .board-container .board-header .round-display {
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+html body .board-container .board-header .btn-start,
+html body .board-container .board-header .btn-clear,
+html body .board-container .board-header .btn-leave {
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+  height: 28px !important;
+  min-height: 0 !important;
+}
+
+html body .board-container .board-header .room-label {
+  font-size: 9px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 0 !important;
+  line-height: 1 !important;
 }
 
 /* Malus compact summary + popover */
@@ -657,7 +685,7 @@
 
 .header-actions {
   display: flex;
-  gap: clamp(8px, 1.5vw, 12px);
+  gap: 8px;
   flex-wrap: wrap;
   align-items: center;
   flex: 0 1 auto;
@@ -702,19 +730,156 @@
 /* WAITING MESSAGES */
 
 .waiting-message {
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #92400e;
-  border-radius: 10px;
-  font-size: clamp(12px, 1.8vw, 14px);
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
-  border: 2px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
   transition: all 0.3s ease;
   max-width: 100%;
+}
+
+/* Mobile Modals (Room Info & Players) */
+.mobile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.mobile-modal-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-modal-content .modal-header {
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-modal-content .modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.mobile-modal-content .close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.mobile-game-info-inner {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-game-info-inner .share-section {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.mobile-share-link {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mobile-share-link input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #475569;
+}
+
+.mobile-share-link .copy-hint {
+  font-size: 11px;
+  color: #6366f1;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Header Buttons Layout */
+.mobile-header-buttons {
+  display: none;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .mobile-header-buttons {
+    display: flex !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1f5f9;
+    cursor: pointer;
+  }
+
+  .mobile-icon-btn.info-trigger {
+    color: #3b82f6;
+  }
+
+  .mobile-icon-btn.players-trigger {
+    color: #8b5cf6;
+  }
+
+  .mobile-icon-btn.exit-trigger {
+    background: #fef2f2;
+    border-color: #fee2e2;
+  }
 }
 
 /* =========================
@@ -726,12 +891,12 @@
 .btn-leave {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
-  border-radius: 12px;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
-  font-size: clamp(14px, 1.8vw, 16px);
+  font-size: 13px;
   font-weight: 700;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
