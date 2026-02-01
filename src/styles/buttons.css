@@ -1,17 +1,17 @@
 /* Lobby Buttons */
 .lobby-btn {
   width: 100%;
-  padding: 16px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 12px;
-  font-size: 20px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   font-family: inherit;
 }
 
@@ -45,8 +45,8 @@
 }
 
 .lobby-btn.small {
-  padding: 12px 20px;
-  font-size: 18px;
+  padding: 8px 16px;
+  font-size: 13px;
 }
 
 .lobby-btn:active {
@@ -54,7 +54,7 @@
 }
 
 .btn-icon {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .btn-text {

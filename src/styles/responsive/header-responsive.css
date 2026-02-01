@@ -2,6 +2,7 @@
 
 /* Desktop-first: hide mobile-only info toggle/popover by default on large screens */
 @media (min-width: 1201px) {
+
   .mobile-info-btn,
   .mobile-players-btn,
   .mobile-game-info-popover {
@@ -31,6 +32,7 @@
 
 /* Show mobile buttons when layout switches to mobile (same as chat breakpoint) */
 @media (max-width: 1200px) {
+
   .mobile-info-btn,
   .mobile-players-btn {
     display: inline-flex !important;
@@ -61,13 +63,13 @@
   }
 
   /* Hide players sidebar - shown only via modal button */
-  .board-container > .players-sidebar,
+  .board-container>.players-sidebar,
   .players-sidebar {
     display: none !important;
   }
 
   /* Adjust game area to take full width without sidebar */
-  .board-container > .game-area {
+  .board-container>.game-area {
     width: 100% !important;
     max-width: 100% !important;
   }
@@ -78,20 +80,20 @@
   .board-header {
     padding: 16px 20px;
   }
-  
+
   .header-main {
     gap: 16px;
   }
-  
+
   .room-code {
-    font-size: 22px;
-    padding: 8px 12px;
+    font-size: 18px;
+    padding: 6px 10px;
   }
-  
+
   .mode-badge,
   .difficulty-badge {
-    font-size: 15px;
-    padding: 8px 14px;
+    font-size: 13px;
+    padding: 6px 12px;
   }
 }
 
@@ -100,15 +102,15 @@
   .board-header {
     padding: 14px 18px;
   }
-  
+
   .status-section {
     min-width: 150px;
   }
-  
+
   .word-display {
-    font-size: 28px;
-    padding: 6px 12px;
-    letter-spacing: 2px;
+    font-size: 18px;
+    padding: 4px 10px;
+    letter-spacing: 1px;
   }
 }
 
@@ -127,11 +129,11 @@
     gap: 8px;
     align-items: center;
   }
-  
+
   .board-header {
     padding: 12px 16px;
   }
-  
+
   .header-main {
     gap: 12px;
   }

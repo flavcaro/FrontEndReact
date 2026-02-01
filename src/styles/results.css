@@ -17,13 +17,14 @@
 
 .game-results-card {
   background: white;
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 600px;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.5s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 .results-header {
@@ -32,14 +33,14 @@
 }
 
 .results-header h1 {
-  font-size: 36px;
+  font-size: 22px;
   color: #1e293b;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .results-header p {
   color: #64748b;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .podium {
@@ -107,14 +108,14 @@
 
 .podium-name {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 14px;
   color: #1e293b;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   word-break: break-word;
 }
 
 .podium-score {
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 700;
   color: #6366f1;
 }

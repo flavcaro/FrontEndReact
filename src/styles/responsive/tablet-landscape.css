@@ -1,47 +1,48 @@
 /* Tablet Landscape Layout - Larger screens in landscape */
 
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+
   /* Board Container - Horizontal layout */
   .board-container {
-    flex-direction: row !important;
+    flex-direction: row;
   }
 
-  /* Players Sidebar - Left side, wider than mobile */
+  /* Players Sidebar - Left side, compact */
   .players-sidebar {
-    width: 220px !important;
-    max-height: none !important;
-    height: 100vh !important;
-    border-right: 1px solid #e2e8f0 !important;
-    border-top: none !important;
+    width: 200px;
+    max-height: none;
+    height: 100vh;
+    border-right: 1px solid #e2e8f0;
+    border-top: none;
   }
 
   .players-sidebar .sidebar-header {
-    display: flex !important;
+    display: flex;
   }
 
   .players-list {
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .players-list li {
-    flex-direction: row !important;
-    text-align: left !important;
-    min-width: auto !important;
-    max-width: none !important;
+    flex-direction: row;
+    text-align: left;
+    min-width: auto;
+    max-width: none;
   }
 
-  /* Chat Sidebar - Right side, wider than mobile */
+  /* Chat Sidebar - Right side, compact */
   .chat-sidebar {
-    width: 360px !important; /* give more room on tablet landscape */
-    height: 100vh !important;
-    max-height: none !important;
-    border-left: 1px solid #e2e8f0 !important;
-    border-top: none !important;
+    width: 240px;
+    height: 100vh;
+    max-height: none;
+    border-left: 1px solid #e2e8f0;
+    border-top: none;
   }
 
   .chat-sidebar .sidebar-header {
-    display: flex !important;
+    display: flex;
   }
 }

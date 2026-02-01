@@ -2,7 +2,7 @@
 .chat-sidebar {
   width: 320px;
   background: var(--sidebar-tint);
-  border-left: 1px solid rgba(15,23,42,0.06);
+  border-left: 1px solid rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -34,7 +34,8 @@
 }
 
 .chat-message.system .chat-text {
-  font-size: 28px; /* larger system messages */
+  font-size: 14px;
+  /* standard system messages */
   line-height: 1.35;
 }
 
@@ -43,15 +44,15 @@
 }
 
 .chat-user {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #6366f1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   word-break: break-word;
 }
 
 .chat-text {
-  font-size: 24px;
+  font-size: 13px;
   color: #334155;
   word-wrap: break-word;
 }
@@ -65,10 +66,10 @@
 
 .chat-input input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 8px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 20px;
+  font-size: 13px;
   min-width: 0;
 }
 
@@ -97,6 +98,7 @@
   background: #cbd5e1;
   cursor: not-allowed;
 }
+
 @media (max-width: 1400px) {
   .chat-sidebar {
     width: 280px;
@@ -344,7 +346,8 @@
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
   .chat-input input {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
+    /* Prevents zoom on iOS */
     padding: 12px 14px;
     min-height: 48px;
   }

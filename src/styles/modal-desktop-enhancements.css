@@ -3,44 +3,46 @@
    Stili migliorati per il modale custom-create su desktop
    ======================================== */
 
-/* Modale più largo e spazioso su desktop */
+/* Modale più compatto su desktop */
 @media (min-width: 768px) {
   .modal-content {
-    max-width: 900px;
+    max-width: 550px;
     padding: 0;
-    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
   }
 
   .modal-header {
-    padding: 40px 48px 36px;
+    padding: 20px 24px 16px;
     border-bottom: 1px solid rgba(102, 126, 234, 0.12);
     background: linear-gradient(180deg, rgba(102, 126, 234, 0.02) 0%, transparent 100%);
   }
 
   .modal-header h2 {
-    font-size: 36px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: #0f172a;
   }
+
   .modal-header p {
-    font-size: 16px;
+    font-size: 12px;
     color: #64748b;
   }
+
   .modal-illustration {
-    width: 88px;
-    height: 88px;
-    font-size: 42px;
-    border-radius: 18px;
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35);
+    box-shadow: 0 8px 28px rgba(102, 126, 234, 0.3);
   }
 
   .modal-close {
-    font-size: 28px;
-    padding: 10px;
+    font-size: 20px;
+    padding: 6px;
     transition: all 0.3s ease;
-    border-radius: 10px;
+    border-radius: 8px;
   }
 
   .modal-close:hover {
@@ -50,41 +52,41 @@
   }
 
   .modal-body {
-    padding: 40px 48px 48px;
+    padding: 20px 24px 24px;
   }
 
   /* Custom Create Form - Desktop Layout */
   .custom-create h3 {
-    font-size: 28px;
+    font-size: 18px;
     margin-top: 0;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     color: #0f172a;
     font-weight: 700;
   }
 
-  /* Sezione modalità - pulsanti più grandi */
+  /* Sezione modalità - pulsanti compatti */
   .custom-create .modes-select {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
+    gap: 10px;
+    margin-bottom: 20px;
   }
 
   .custom-create .modes-select .mode-btn {
-    padding: 20px 18px;
-    font-size: 18px;
-    border-radius: 12px;
+    padding: 12px 10px;
+    font-size: 13px;
+    border-radius: 10px;
     border: none;
     background: #f1f5f9;
     color: #1e293b;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.06);
     transition: all 0.3s ease;
   }
 
   .custom-create .modes-select .mode-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.12);
     background: #e2e8f0;
   }
 
@@ -92,25 +94,25 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #ffffff;
     border: none;
-    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
     transform: translateY(-2px);
   }
 
   /* Label migliorati */
   .custom-create .lobby-label {
-    font-size: 18px;
+    font-size: 13px;
     font-weight: 700;
     color: #0f172a;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     display: block;
   }
 
-  /* Layout durata e rounds - affiancati con spacing migliore */
+  /* Layout durata e rounds - affiancati compatti */
   .custom-create .duration-rounds-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 32px;
+    gap: 16px;
+    margin-bottom: 20px;
   }
 
   .custom-create .duration-col,
@@ -118,19 +120,19 @@
     min-width: 0;
   }
 
-  /* Vertical options - pulsanti più grandi e spaziosi */
+  /* Vertical options - pulsanti compatti */
   .custom-create .vertical-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 12px;
+    gap: 8px;
+    margin-top: 8px;
   }
 
   .custom-create .vertical-options .option-btn {
     width: 100%;
-    padding: 18px 20px;
-    font-size: 18px;
-    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    border-radius: 10px;
     border: none;
     background: #f1f5f9;
     color: #1e293b;
@@ -138,27 +140,27 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 14px;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.05);
     transition: all 0.3s ease;
   }
 
   .custom-create .vertical-options .option-btn span {
-    font-size: 22px;
+    font-size: 16px;
     margin-right: 0;
   }
 
   .custom-create .vertical-options .option-btn:hover {
     transform: translateY(-2px);
     background: #e2e8f0;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.1);
   }
 
   .custom-create .vertical-options .option-btn.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #ffffff;
     border: none;
-    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.25);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
     transform: translateY(-2px);
   }
 
@@ -172,9 +174,9 @@
   }
 
   .custom-create .difficulty-grid .option-btn {
-    padding: 18px 16px;
-    font-size: 18px;
-    border-radius: 12px;
+    padding: 12px 10px;
+    font-size: 14px;
+    border-radius: 10px;
     border: none;
     background: #f1f5f9;
     color: #1e293b;
@@ -182,13 +184,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 8px;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
     transition: all 0.3s ease;
   }
 
   .custom-create .difficulty-grid .option-btn span {
-    font-size: 22px;
+    font-size: 16px;
     margin-right: 0;
   }
 
@@ -208,10 +210,10 @@
 
   /* Testo di aiuto difficoltà */
   .custom-create .difficulty-help {
-    font-size: 17px;
+    font-size: 13px;
     color: #475569;
-    margin-top: 14px;
-    padding: 16px 20px;
+    margin-top: 10px;
+    padding: 12px 14px;
     background: rgba(102, 126, 234, 0.05);
     border-radius: 10px;
     border-left: 3px solid rgba(102, 126, 234, 0.3);
@@ -219,9 +221,9 @@
 
   /* Bottoni azione - più grandi e spaziosi */
   .custom-create .lobby-btn {
-    padding: 18px 32px;
-    font-size: 19px;
-    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 10px;
     font-weight: 700;
     transition: all 0.3s ease;
   }
@@ -315,10 +317,9 @@
   }
 }
 
-/* Desktop large (≥1024px) - ancora più spazio */
 @media (min-width: 1024px) {
   .modal-content {
-    max-width: 960px;
+    max-width: 600px;
   }
 
   .modal-header {

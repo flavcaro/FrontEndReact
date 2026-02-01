@@ -76,11 +76,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 8px;
   width: 100%;
   min-width: 0;
   min-height: 0;
-  /* allow children to shrink and avoid overflow */
 }
 
 .game-content {
@@ -88,12 +87,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
   overflow: hidden;
-  /* Nasconde tutte le scrollbar */
   min-height: 0;
-  /* ensure contained elements respect parent's height */
 }
 
 /* Let the main game content grow to fill available vertical space so
@@ -111,10 +108,10 @@
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 2px solid rgba(102, 126, 234, 0.12);
-  padding: 20px 28px;
+  padding: 8px 16px;
   box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
-  min-height: 80px;
+  min-height: 50px;
   max-height: none;
   overflow: visible;
   border-radius: 0 0 16px 16px;
@@ -260,7 +257,7 @@
   min-width: 0;
 }
 
-.board-header .game-info > div {
+.board-header .game-info>div {
   min-width: 0;
   flex: 0 0 auto;
 }
@@ -320,43 +317,44 @@
   box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
 }
 
-/* Larger header and badges on desktop-wide screens */
+/* Compact header and badges on desktop screens */
 @media (min-width: 1024px) {
   .board-header {
-    padding: 22px 32px;
+    padding: 12px 24px;
+    min-height: 60px;
   }
 
   .room-code {
-    font-size: 44px !important;
-    padding: 10px 18px !important;
+    font-size: 24px !important;
+    padding: 6px 14px !important;
   }
 
   .room-label {
-    font-size: 14px !important;
+    font-size: 11px !important;
   }
 
   .board-header .game-info .room-label {
-    font-size: 13px !important;
+    font-size: 11px !important;
   }
 
   .mode-badge {
-    font-size: 26px !important;
-    padding: 12px 20px !important;
+    font-size: 14px !important;
+    padding: 8px 14px !important;
   }
 
   .mode-badge.puzzle {
-    font-size: 26px !important;
-    padding: 12px 20px !important;
+    font-size: 14px !important;
+    padding: 8px 14px !important;
   }
 
   .difficulty-badge {
-    font-size: 20px !important;
-    padding: 10px 16px !important;
+    font-size: 14px !important;
+    padding: 8px 14px !important;
   }
 
   .round-display {
-    font-size: 20px !important;
-    padding: 10px 14px !important;
+    font-size: 14px !important;
+    padding: 6px 12px !important;
   }
 }
 
@@ -378,21 +376,21 @@
 }
 
 .status-label {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
 }
 
 .word-display {
-  font-size: clamp(20px, 4vw, 36px);
+  font-size: clamp(16px, 3vw, 24px);
   font-weight: 900;
   color: var(--success);
   background: linear-gradient(90deg, rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.03));
-  padding: 8px 14px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: 10px;
   border: 1px solid rgba(16, 185, 129, 0.12);
-  letter-spacing: 3px;
-  text-shadow: 0 6px 18px rgba(16, 185, 129, 0.12);
+  letter-spacing: 2px;
+  text-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
   transition: font-size 0.3s ease;
   word-break: break-word;
   max-width: 100%;
@@ -667,12 +665,12 @@
 /* TIMER */
 
 .timer-display {
-  font-size: clamp(18px, 2.5vw, 24px);
+  font-size: clamp(14px, 2vw, 18px);
   font-weight: 800;
   color: #667eea;
   background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-  padding: 10px 18px;
-  border-radius: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
   border: 2px solid rgba(102, 126, 234, 0.2);
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
@@ -701,11 +699,11 @@
 /* WAITING MESSAGES */
 
 .waiting-message {
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #92400e;
-  border-radius: 12px;
-  font-size: clamp(14px, 2vw, 18px);
+  border-radius: 10px;
+  font-size: clamp(12px, 1.8vw, 14px);
   font-weight: 700;
   white-space: nowrap;
   border: 2px solid rgba(245, 158, 11, 0.3);

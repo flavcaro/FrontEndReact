@@ -1,58 +1,88 @@
-body {
+:root {
+  /* Stabilized ultra-reduced font sizes for 100% zoom desktop */
+  --font-xs: 0.7rem;
+  /* ~11px */
+  --font-sm: 0.75rem;
+  /* ~12px */
+  --font-md: 0.8125rem;
+  /* ~13px */
+  --font-lg: 0.875rem;
+  /* ~14px */
+  --font-xl: 1rem;
+  /* ~16px */
+  --font-xxl: 1.125rem;
+  /* ~18px */
+  --heading-scale-1: 1.5rem;
+  --heading-scale-2: 1.25rem;
+  --base-line-height: 1.4;
+}
+
+html,
+body,
+#root {
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: var(--font-md);
+  line-height: var(--base-line-height);
+  background-color: #f8fafc;
+  color: #1e293b;
 }
 
-/* Root typography scale variables for consistent, linear sizing across the app */
-:root {
-  /* bumped globally for improved readability */
-  --font-xs: 1rem;        /* 16px */
-  --font-sm: 1.125rem;    /* 18px */
-  --font-md: 1.25rem;     /* 20px */
-  --font-lg: 1.375rem;    /* 22px */
-  --font-xl: 1.5rem;      /* 24px */
-  --font-xxl: 1.875rem;   /* 30px */
-  --heading-scale-1: clamp(1.6rem, 2.6vw, 3.2rem); /* responsive h1 */
-  --heading-scale-2: clamp(1.25rem, 2.0vw, 2.2rem); /* responsive h2 */
-  --base-line-height: 1.45;
+h1 {
+  font-size: var(--heading-scale-1);
+  line-height: 1.1;
+  margin: 0 0 0.4em;
+  font-weight: 800;
 }
 
-/* Apply a consistent base font-size and line-height; prefer font-size scaling over zoom */
-html, body { font-size: var(--font-md); line-height: var(--base-line-height); }
+h2 {
+  font-size: var(--heading-scale-2);
+  line-height: 1.2;
+  margin: 0 0 0.35em;
+  font-weight: 700;
+}
 
-/* Increase base readability with modest scaling on larger viewports */
-html, body, #root { height: 100%; }
-@media (min-width: 1024px) {
-  body { font-size: var(--font-lg); }
+h3 {
+  font-size: var(--font-lg);
+  margin: 0 0 0.3em;
+  font-weight: 700;
 }
-@media (min-width: 769px) and (max-width: 1023px) {
-  body { font-size: var(--font-md); }
+
+p,
+span,
+label {
+  font-size: var(--font-md);
 }
-@media (max-width: 768px) {
-  body { font-size: var(--font-sm); }
+
+button,
+input,
+select,
+textarea {
+  font-size: var(--font-sm);
+  font-family: inherit;
+}
+
+button {
+  font-weight: 700;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Global typography normalization */
-h1 { font-size: var(--heading-scale-1); line-height: 1.05; margin: 0 0 0.4em; }
-h2 { font-size: var(--heading-scale-2); margin: 0 0 0.35em; }
-h3 { font-size: 1.125rem; margin: 0 0 0.3em; }
-p, span, label { font-size: var(--font-md); }
-button, input, select, textarea { font-size: var(--font-md); }
-
-/* Buttons and common interactive elements use a slightly larger font for legibility */
-button { font-weight: 700; }
 
 /* Reduce wildly large fonts set in some components, but keep component-level overrides possible */
-* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 /* Prevent showing a text caret when clicking non-editable elements.
    Keep caret visible inside inputs, textareas and contenteditable elements only. */
@@ -60,6 +90,8 @@ button { font-weight: 700; }
   caret-color: transparent !important;
 }
 
-input, textarea, [contenteditable] {
+input,
+textarea,
+[contenteditable] {
   caret-color: auto;
 }

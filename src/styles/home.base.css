@@ -2,18 +2,20 @@
 
 /* Highlight the current user's row inside the leaderboard modal/preview */
 .leader-row.current {
-  background: linear-gradient(90deg, rgba(255,249,236,0.95), rgba(255,243,224,0.95));
-  border: 1px solid rgba(245,158,11,0.14);
-  box-shadow: 0 12px 36px rgba(245,158,11,0.08);
+  background: linear-gradient(90deg, rgba(255, 249, 236, 0.95), rgba(255, 243, 224, 0.95));
+  border: 1px solid rgba(245, 158, 11, 0.14);
+  box-shadow: 0 12px 36px rgba(245, 158, 11, 0.08);
   border-radius: 12px;
   padding: 8px;
 }
+
 .leader-row.current .leader-name {
   color: #92400e;
   font-weight: 900;
 }
+
 .leader-row.current .leader-score {
-  background: linear-gradient(90deg,#fff7ed,#fff1d6);
+  background: linear-gradient(90deg, #fff7ed, #fff1d6);
   padding: 8px 12px;
   border-radius: 10px;
   font-weight: 900;
@@ -57,20 +59,16 @@
   background-color: transparent !important;
 }
 
-.home-header .logo .logo-icon { font-size: 36px; }
-.home-header .logo .logo-text { 
-  font-size: 32px; 
-  font-weight: 800; 
-  color: #fff !important; 
-  background: none !important;
-  background-color: transparent !important;
-  background-image: none !important;
+.home-header .logo .logo-icon {
+  font-size: 24px;
+}
+
+.home-header .logo .logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.5px;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  border: none !important;
 }
 
 span.logo-text {
@@ -78,16 +76,8 @@ span.logo-text {
   background-color: transparent !important;
   background-image: none !important;
 }
-.home-header .logo .logo-icon { 
-  font-size: 20px; 
-}
 
-.home-header .logo .logo-text { 
-  font-size: 18px; 
-  font-weight: 900; 
-  color: white;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
+
 
 .header-right {
   display: flex;
@@ -95,7 +85,9 @@ span.logo-text {
   align-items: center;
 }
 
-.header-profile-btn, .header-leaderboard-btn, .logout-btn {
+.header-profile-btn,
+.header-leaderboard-btn,
+.logout-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -111,7 +103,8 @@ span.logo-text {
   backdrop-filter: blur(10px);
 }
 
-.header-profile-btn:hover, .header-leaderboard-btn:hover {
+.header-profile-btn:hover,
+.header-leaderboard-btn:hover {
   transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
@@ -122,18 +115,18 @@ span.logo-text {
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-.logout-btn:hover { 
-  transform: translateY(-2px); 
+.logout-btn:hover {
+  transform: translateY(-2px);
   background: rgba(239, 68, 68, 0.3);
 }
 
-.lobby-btn.header-profile-btn .btn-text { 
-  flex: 0 0 auto; 
+.lobby-btn.header-profile-btn .btn-text {
+  flex: 0 0 auto;
 }
 
-.lobby-btn.header-profile-btn .btn-icon { 
-  font-size: 16px; 
-  margin-right: 6px; 
+.lobby-btn.header-profile-btn .btn-icon {
+  font-size: 16px;
+  margin-right: 6px;
 }
 
 .user-name {
@@ -151,7 +144,8 @@ span.logo-text {
   margin-right: 10px;
 }
 
-.level-badge, .xp-badge {
+.level-badge,
+.xp-badge {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   color: white;
@@ -175,7 +169,8 @@ span.logo-text {
 
 .modal-overlay {
   position: fixed;
-  inset: 0; /* shorthand for top/right/bottom/left:0 */
+  inset: 0;
+  /* shorthand for top/right/bottom/left:0 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -188,21 +183,22 @@ span.logo-text {
   position: relative;
   background: #fff;
   border-radius: 16px;
-  /* larger default modal for header-triggered modals */
-  max-width: 1100px;
-  width: calc(100% - 120px); /* fit within overlay padding on narrow screens */
-  margin: 0 40px;
-  max-height: 92vh;
+  /* Compact modal size for desktop */
+  max-width: 600px;
+  width: 100%;
+  /* fit within overlay padding */
+  margin: 20px;
+  max-height: 90vh;
   overflow: auto;
-  overflow-x: hidden; /* prevent horizontal scrollbar inside modal */
+  overflow-x: hidden;
   box-sizing: border-box;
-  box-shadow: 0 36px 100px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   padding: 0;
 }
 
 /* entrance animation for modal */
 .modal-content {
-  animation: popIn 220ms cubic-bezier(.2,.9,.3,1);
+  animation: popIn 220ms cubic-bezier(.2, .9, .3, 1);
   transform-origin: center top;
 }
 
@@ -212,18 +208,19 @@ span.logo-text {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap; /* allow header items to wrap instead of overflowing */
+  flex-wrap: wrap;
+  /* allow header items to wrap instead of overflowing */
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: 18px;
   color: #111827;
 }
 
 .modal-header p {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: #6b7280;
 }
 
@@ -238,16 +235,16 @@ span.logo-text {
 }
 
 .modal-illustration {
-  width: 72px;
-  height: 72px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34px;
+  font-size: 24px;
   color: white;
   background: linear-gradient(135deg, #ff7ab6 0%, #7c3aed 100%);
-  box-shadow: 0 10px 34px rgba(124,58,237,0.2);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
 }
 
 .modal-body {
@@ -260,7 +257,8 @@ span.logo-text {
   display: flex;
   gap: 12px;
   align-items: center;
-  flex-wrap: wrap; /* allow duration and rounds to stack on small widths */
+  flex-wrap: wrap;
+  /* allow duration and rounds to stack on small widths */
 }
 
 .custom-create .rounds-box {
@@ -271,7 +269,7 @@ span.logo-text {
 }
 
 /* Ensure the inner button row can wrap onto multiple lines instead of overflowing */
-.custom-create .rounds-box > div {
+.custom-create .rounds-box>div {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -279,12 +277,18 @@ span.logo-text {
 
 .custom-create .options-row .option-btn {
   white-space: nowrap;
-  flex: 0 1 auto; /* allow each option button to shrink if needed */
+  flex: 0 1 auto;
+  /* allow each option button to shrink if needed */
 }
 
 @media (max-width: 520px) {
-  .custom-create .rounds-box { width: 100%; }
-  .custom-create .options-row > div { width: 100%; }
+  .custom-create .rounds-box {
+    width: 100%;
+  }
+
+  .custom-create .options-row>div {
+    width: 100%;
+  }
 }
 
 /* Prevent text from being clipped: allow wrapping and proper box-sizing inside modal */
@@ -398,4 +402,3 @@ span.logo-text {
   color: white;
   border-color: transparent;
 }
-

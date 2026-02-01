@@ -5,18 +5,18 @@
 
 .lobby-label {
   display: block;
-  font-size: 28px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .lobby-input {
   width: 100%;
-  padding: 20px 22px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 30px;
+  padding: 10px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
   transition: all 0.2s;
   font-family: inherit;
 }
@@ -30,9 +30,9 @@
 .lobby-input.code-input {
   text-align: center;
   font-family: 'Courier New', monospace;
-  font-size: 30px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -45,6 +45,7 @@
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
   .lobby-input {
-    font-size: 28px; /* Prevents zoom on iOS */
+    font-size: 28px;
+    /* Prevents zoom on iOS */
   }
 }

@@ -54,72 +54,72 @@
     gap: 14px;
     align-items: center;
     z-index: 1100;
-    font-size: 18px;
+    font-size: 14px;
   }
 }
 
-/* Large desktop scaling */
+/* Compact desktop scaling */
 @media (min-width: 1024px) {
   .board-header {
-    padding: 22px 32px;
+    padding: 12px 24px;
   }
 
   .room-code {
-    font-size: 44px;
-    padding: 10px 18px;
+    font-size: 24px;
+    padding: 6px 14px;
   }
 
   .room-label {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .board-header .game-info .room-label {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .mode-badge {
-    font-size: 26px;
-    padding: 12px 20px;
+    font-size: 14px;
+    padding: 8px 14px;
   }
 
   .mode-badge.puzzle {
-    font-size: 26px;
-    padding: 12px 20px;
+    font-size: 14px;
+    padding: 8px 14px;
   }
 
   .difficulty-badge {
-    font-size: 20px;
-    padding: 10px 16px;
+    font-size: 14px;
+    padding: 8px 14px;
   }
 
   .round-display {
-    font-size: 20px;
-    padding: 10px 14px;
+    font-size: 14px;
+    padding: 6px 12px;
   }
 
   .board-header .header-actions {
-    right: 40px;
+    right: 24px;
   }
 
   .board-header .header-actions>* {
-    font-size: 20px;
-    padding: 10px 12px;
+    font-size: 14px;
+    padding: 6px 10px;
   }
 
   .btn-leave {
-    font-size: 18px;
-    padding: 10px 14px;
-    border-radius: 10px;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
   }
 
   .timer-display {
-    font-size: 24px;
-    padding: 10px 16px;
+    font-size: 16px;
+    padding: 6px 12px;
   }
 
   .waiting-message {
-    font-size: 20px;
-    padding: 10px 14px;
+    font-size: 14px;
+    padding: 6px 12px;
   }
 }
 

@@ -56,7 +56,7 @@
   align-items: center;
   gap: 6px;
   min-height: 140px;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(124, 58, 237, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   position: relative;
@@ -75,7 +75,7 @@
 .quick-button-card:hover {
   transform: translateY(-4px);
   border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 
+  box-shadow:
     0 20px 60px rgba(124, 58, 237, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.8) inset;
 }
@@ -93,7 +93,7 @@
   justify-content: center;
   font-size: 35px;
   background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(124, 58, 237, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -102,7 +102,7 @@
 
 .quick-button-card:hover .quick-button-icon {
   transform: scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 12px 48px rgba(124, 58, 237, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
@@ -359,7 +359,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-inline {
@@ -377,54 +379,32 @@
 @media (max-width: 1200px) {
   .home-row-grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 16px;
   }
-  
+
   .right-column {
     position: static;
-  }
-  
-  .quick-button-icon {
-    width: 180px;
-    height: 180px;
-    font-size: 90px;
-  }
-  
-  .quick-button-card {
-    min-height: 320px;
   }
 }
 
 @media (max-width: 768px) {
   .home-top-row {
-    padding: 40px 20px 60px;
+    padding: 20px 10px;
   }
-  
+
   .quick-buttons-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 12px;
   }
-  
+
   .quick-button-card {
-    min-height: 280px;
-    padding: 32px 24px;
+    min-height: auto;
+    padding: 16px;
   }
-  
+
   .quick-button-icon {
-    width: 160px;
-    height: 160px;
-    font-size: 80px;
-  }
-  
-  .quick-button-content h3 {
-    font-size: 20px;
-  }
-  
-  .quick-button-content p {
-    font-size: 15px;
-  }
-  
-  .quick-create-title {
-    font-size: 28px;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
   }
 }

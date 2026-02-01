@@ -4,7 +4,7 @@
   /* Use a subtle tint derived from Home primary so sidebars read as part of the brand */
   background: var(--sidebar-tint);
   /* ensure content cards (player rows) remain white for readability */
-  border-right: 1px solid rgba(15,23,42,0.06);
+  border-right: 1px solid rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -16,11 +16,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(15,23,42,0.04);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.04);
 }
 
 .sidebar-header h3 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
@@ -29,11 +29,11 @@
 .players-badge {
   background: white;
   color: #0f172a;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(15,23,42,0.06);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .players-list {
@@ -42,6 +42,7 @@
   padding: 12px;
   list-style: none;
 }
+
 .players-list li {
   display: flex;
   align-items: center;
@@ -50,9 +51,10 @@
   border-radius: 10px;
   margin-bottom: 8px;
   transition: background 0.15s ease, transform 0.12s ease;
-  background: white; /* keep player rows white per request */
+  background: white;
+  /* keep player rows white per request */
   color: #0f172a;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .players-list li:hover {
@@ -62,29 +64,30 @@
 
 .players-list li.player-current {
   background: #ffffff;
-  border: 1px solid rgba(15,23,42,0.06);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .player-avatar {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffffff, rgba(255,255,255,0.9));
+  background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.9));
   color: #1f2937;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 26px;
+  font-size: 16px;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .player-name {
   flex: 1;
-  font-size: 20px;
+  font-size: 13px;
   font-weight: 700;
-  color: #0f172a; /* dark on white row */
+  color: #0f172a;
+  /* dark on white row */
   word-break: break-word;
 }
 
@@ -99,7 +102,7 @@
 
 .share-box {
   padding: 18px;
-  border-top: 1px solid rgba(15,23,42,0.06);
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
   background: transparent;
 }
 
@@ -114,11 +117,12 @@
 .share-box input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid rgba(15,23,42,0.08);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 10px;
   font-size: 16px;
   font-family: 'Courier New', monospace;
-  background: white; /* keep invite input white */
+  background: white;
+  /* keep invite input white */
   color: #0f172a;
   cursor: pointer;
   transition: all 0.12s;
