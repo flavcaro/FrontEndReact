@@ -345,7 +345,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
             flexDirection: "column",
             overflow: "hidden",
             minHeight: 0,
-            background: 'linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fbcfe8 100%)'
+            background: 'linear-gradient(135deg, #f0f1ff 0%, #f5f3ff 50%, #faf5ff 100%)'
           }}
         >
           <GameHeader
@@ -469,12 +469,18 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
-          isMobile={true}
+          isMobile={isMobile}
           style={isMobile
-            ? { flex: 1, minHeight: 0, width: '100%' } // Mobile: takes remaining vertical space
-            : { width: `${chatSidebarWidth}px` }       // Desktop: fixed width
+            ? { height: '32dvh', width: '100vw', minWidth: '100vw', flex: 'none' }
+            : { width: `${chatSidebarWidth}px` }
           }
         />
+
+        <div className="home-bg-shapes">
+          <div className="shape shape-1"></div>
+          <div className="shape shape-2"></div>
+          <div className="shape shape-3"></div>
+        </div>
       </div>
 
       {/* Players Modal */}

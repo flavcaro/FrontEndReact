@@ -201,8 +201,31 @@ export default function GameHeader({
     navigate('/home', { replace: true });
   };
 
+  const [showCopyPopup, setShowCopyPopup] = useState(false);
+
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/room/${roomId}`;
+    navigator.clipboard.writeText(link);
+    setShowCopyPopup(true);
+  };
+
+  // Auto-close for the copy toast
+  useEffect(() => {
+    if (showCopyPopup) {
+      const timer = setTimeout(() => setShowCopyPopup(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showCopyPopup]);
+
   return (
     <header className="board-header">
+      {/* Visual Feedback Toast for Room Code Copy */}
+      {showCopyPopup && (
+        <div className="copy-toast">
+          <span className="toast-icon">🔗</span>
+          <span className="toast-text">Link Copiato!</span>
+        </div>
+      )}
       <div className="header-main">
         <div className="room-info-section">
           <div className="room-basic">
@@ -212,9 +235,7 @@ export default function GameHeader({
 
           {/* Mobile Share Button Style (Classic) */}
           <div className="mobile-share-row">
-            <div className="mobile-share-link" onClick={() => {
-              navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-            }}>
+            <div className="mobile-share-link" onClick={handleCopyLink}>
               🔗 Invita Amici
             </div>
           </div>
@@ -227,12 +248,23 @@ export default function GameHeader({
         </div>
       </div>
 
-      {/* This was causing the 'macello' - hiding it for now or making it CSS-conditional */}
       {!gameState?.active && (
         <div className="mobile-waiting-status">
-          {playersCount < minPlayersRequired
-            ? `⏳ In attesa (${playersCount}/${minPlayersRequired})`
-            : isOwner ? "✅ Pronti a iniziare!" : "👑 In attesa dell'host..."}
+          {canStartGame ? (
+            <button
+              className="mobile-start-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                onStartGame();
+              }}
+            >
+              🚀 Inizia partita
+            </button>
+          ) : (
+            playersCount < minPlayersRequired
+              ? `⏳ In attesa di altri giocatori (${playersCount}/${minPlayersRequired})`
+              : "👑 In attesa dell'host..."
+          )}
         </div>
       )}
 

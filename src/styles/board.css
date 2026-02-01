@@ -11,7 +11,7 @@
   height: 100%;
   /* fill available container (board-container) so layout fits viewport */
   overflow: hidden;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f0f1ff 0%, #f5f3ff 50%, #faf5ff 100%);
   width: 100%;
   max-height: 100vh;
   /* Prevent overflow beyond viewport */

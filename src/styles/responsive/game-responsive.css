@@ -142,11 +142,14 @@
         flex-direction: column !important;
         height: 100dvh !important;
         width: 100vw !important;
+        min-width: 100vw !important;
+        max-width: 100vw !important;
         overflow: hidden !important;
-        background: #f8fafc !important;
+        background: linear-gradient(135deg, #f0f1ff 0%, #f5f3ff 50%, #faf5ff 100%) !important;
         position: fixed !important;
         top: 0;
         left: 0;
+        align-items: stretch !important;
     }
 
     .board-main {
@@ -155,6 +158,7 @@
         flex: 1 !important;
         min-height: 0 !important;
         overflow: hidden !important;
+        padding-bottom: 32dvh !important;
     }
 
     /* 2. HEADER - Slim & Non-Overlapping */
@@ -181,16 +185,32 @@
     .room-info-section {
         display: flex !important;
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 4px !important;
         flex: 1 !important;
         align-items: flex-start !important;
         text-align: left !important;
+        padding-left: 0 !important;
     }
 
     .room-basic {
         display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 4px !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .room-label {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
     }
 
     .room-code {
@@ -201,6 +221,9 @@
         border-radius: 6px !important;
         color: #1e293b !important;
         font-family: monospace !important;
+        margin: 0 !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
     }
 
     .mobile-header-buttons {
@@ -377,37 +400,47 @@
         margin-top: 4px !important;
     }
 
-    /* 6. CHAT STYLING */
-    .chat-mobile-split {
-        flex: 0 0 32dvh !important;
+    /* 6. CHAT STYLING - Forced Bottom Fixed */
+    html body .board-container .chat-mobile-split {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
         height: 32dvh !important;
-        width: 100% !important;
-        max-width: 100vw !important;
         background: white !important;
         border-top: 1px solid #f1f5f9 !important;
         display: flex !important;
         flex-direction: column !important;
         padding-bottom: env(safe-area-inset-bottom) !important;
-        order: 99 !important;
-        z-index: 50 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        z-index: 9999 !important;
+        margin: 0 !important;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05) !important;
+        right: 0 !important;
     }
 
-    .chat-messages {
+    html body .board-container .chat-mobile-split .chat-messages {
         flex: 1 !important;
         padding: 8px !important;
         width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         overflow-y: auto !important;
     }
 
-    .chat-input {
-        padding: 8px 12px !important;
+    html body .board-container .chat-mobile-split .chat-input {
+        padding: 10px 12px !important;
         border-top: 1px solid #f1f5f9 !important;
         background: white !important;
         display: flex !important;
         width: 100% !important;
         gap: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .board-container .chat-mobile-split .chat-input input {
+        flex: 1 !important;
+        width: auto !important;
     }
 
     .chat-input input {
@@ -444,13 +477,17 @@
     }
 
     .mobile-start-btn {
-        margin: 20px !important;
-        padding: 14px !important;
-        border-radius: 12px !important;
-        background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+        width: 100% !important;
+        padding: 12px !important;
+        background: linear-gradient(135deg, #10b981, #059669) !important;
         color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
         font-weight: 800 !important;
-        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2) !important;
+        font-size: 15px !important;
+        margin-top: 4px !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+        cursor: pointer !important;
     }
 
     /* Hide Sidebars */
@@ -504,5 +541,37 @@
         flex: 1 !important;
         min-height: 0 !important;
         border-top: 2px solid #e2e8f0 !important;
+    }
+
+    /* Copy Link Toast */
+    .copy-toast {
+        position: absolute !important;
+        top: 60px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        background: rgba(16, 185, 129, 0.95) !important;
+        color: white !important;
+        padding: 8px 16px !important;
+        border-radius: 999px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+        z-index: 10000 !important;
+        animation: toastEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    @keyframes toastEnter {
+        from {
+            transform: translate(-50%, -20px) !important;
+            opacity: 0 !important;
+        }
+
+        to {
+            transform: translate(-50%, 0) !important;
+            opacity: 1 !important;
+        }
     }
 }
