@@ -14,10 +14,7 @@ body {
    CANVAS WRAPPER
 ========================= */
 .canvas-wrapper {
-   /* Occupare lo spazio centrale tra le sidebar ma senza creare grandi margini
-       verticali — il wrapper ora cresce orizzontalmente e può usare più altezza. */
    flex: 1 1 auto;
-   /* permetti al centro di espandersi */
    display: flex;
    justify-content: center;
    align-items: center;
@@ -25,16 +22,11 @@ body {
    box-sizing: border-box;
    overflow: hidden;
    padding: 8px;
-   /* padding ridotto */
    width: 100%;
-   /* Allow canvas to grow responsively; don't force a large subtraction that
-      makes the canvas shrink excessively on narrower windows */
    max-width: 100%;
-   /* Constrain height to viewport space (header + padding reserved elsewhere) */
-   max-height: calc(100vh - 160px);
+   max-height: calc(100vh - 240px);
    min-height: 0;
    margin: 0 auto;
-   /* Previeni comportamenti indesiderati su touch */
    touch-action: none;
    -webkit-overflow-scrolling: touch;
 }

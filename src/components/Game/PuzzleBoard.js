@@ -217,9 +217,9 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           </GameHeader>
 
           <main className="board-main" style={isMobile ? { padding: '10px', flex: '1 1 auto', minHeight: 0, overflow: 'auto' } : { padding: '20px' }}>
-            <div className="game-content" style={{ 
+            <div className="game-content" style={{
               maxWidth: isMobile ? '100%' : '1100px',
-              maxHeight: isMobile ? 'calc(100vh - 180px - 200px)' : '70vh',
+              maxHeight: isMobile ? 'calc(100vh - 180px - 200px)' : '50vh',
               height: 'auto',
               flex: 'none'
             }}>

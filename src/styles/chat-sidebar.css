@@ -19,7 +19,7 @@
 
 .chat-message {
   background: #f8fafc;
-  padding: 10px 14px;
+  padding: 6px 8px;
   border-radius: 12px;
   border-left: 3px solid #6366f1;
   word-wrap: break-word;
@@ -34,17 +34,17 @@
 }
 
 .chat-message.system .chat-text {
-  font-size: 14px;
+  font-size: 11px;
   /* standard system messages */
   line-height: 1.35;
 }
 
 .chat-message.system .chat-user {
-  font-size: 18px;
+  font-size: 13px;
 }
 
 .chat-user {
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 700;
   color: #6366f1;
   margin-bottom: 2px;
@@ -52,7 +52,7 @@
 }
 
 .chat-text {
-  font-size: 13px;
+  font-size: 10px;
   color: #334155;
   word-wrap: break-word;
 }

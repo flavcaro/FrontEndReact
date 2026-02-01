@@ -91,6 +91,8 @@
   width: 100%;
   overflow: hidden;
   min-height: 0;
+  max-height: 60vh;
+  max-width: 900px;
 }
 
 /* Let the main game content grow to fill available vertical space so

@@ -84,7 +84,7 @@
 
 .player-name {
   flex: 1;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 700;
   color: #0f172a;
   /* dark on white row */
@@ -92,7 +92,7 @@
 }
 
 .you-tag {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 800;
   color: #1f2937;
   background: white;
@@ -108,7 +108,7 @@
 
 .share-box label {
   display: block;
-  font-size: 16px;
+  font-size: 11px;
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 6px;
@@ -116,10 +116,10 @@
 
 .share-box input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 6px 8px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 11px;
   font-family: 'Courier New', monospace;
   background: white;
   /* keep invite input white */

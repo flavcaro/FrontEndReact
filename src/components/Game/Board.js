@@ -41,22 +41,22 @@ export default function Board({ roomId, nickname, gameConfig }) {
   const [playersSidebarWidth, setPlayersSidebarWidth] = useState(() => {
     try {
       const w = window.innerWidth;
-      if (w > 1400) return 480;
-      if (w > 1200) return 240;
-      if (w > 1000) return 200;
-      if (w > 800) return 180;
-      return 160;
-    } catch (e) { return 240; }
+      if (w > 1400) return 200;
+      if (w > 1200) return 180;
+      if (w > 1000) return 160;
+      if (w > 800) return 140;
+      return 120;
+    } catch (e) { return 180; }
   });
   const [chatSidebarWidth, setChatSidebarWidth] = useState(() => {
     try {
       const w = window.innerWidth;
-      if (w > 1400) return 560;
-      if (w > 1200) return 240;
-      if (w > 1000) return 240;
-      if (w > 800) return 200;
-      return 180;
-    } catch (e) { return 320; }
+      if (w > 1400) return 240;
+      if (w > 1200) return 220;
+      if (w > 1000) return 200;
+      if (w > 800) return 180;
+      return 160;
+    } catch (e) { return 220; }
   });
 
   // --- HOOKS ---
@@ -215,20 +215,20 @@ export default function Board({ roomId, nickname, gameConfig }) {
       setIsMobile(w <= 768);
       setIsPinned(w >= 900);
       if (w > 1400) {
-        setPlayersSidebarWidth(480);
-        setChatSidebarWidth(560);
-      } else if (w > 1200) {
-        setPlayersSidebarWidth(240);
-        setChatSidebarWidth(240);
-      } else if (w > 1000) {
         setPlayersSidebarWidth(200);
         setChatSidebarWidth(240);
-      } else if (w > 800) {
+      } else if (w > 1200) {
         setPlayersSidebarWidth(180);
-        setChatSidebarWidth(200);
-      } else {
+        setChatSidebarWidth(220);
+      } else if (w > 1000) {
         setPlayersSidebarWidth(160);
+        setChatSidebarWidth(200);
+      } else if (w > 800) {
+        setPlayersSidebarWidth(140);
         setChatSidebarWidth(180);
+      } else {
+        setPlayersSidebarWidth(120);
+        setChatSidebarWidth(160);
       }
     };
 
@@ -339,11 +339,11 @@ export default function Board({ roomId, nickname, gameConfig }) {
 
         <div
           className="board-center"
-          style={{ 
-            flex: 1, 
-            display: "flex", 
-            flexDirection: "column", 
-            overflow: "hidden", 
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
             minHeight: 0,
             background: 'linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fbcfe8 100%)'
           }}
