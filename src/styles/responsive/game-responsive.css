@@ -127,12 +127,14 @@
     
     .mobile-header-buttons {
         display: flex !important;
-        gap: 8px !important;
-        margin-left: auto !important;
+        gap: 4px !important;
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
     }
 
     .board-header {
-        padding: 6px 10px !important;
+        padding: 8px 10px !important;
         min-height: auto !important;
         position: relative !important;
         flex-shrink: 0 !important;
@@ -142,17 +144,18 @@
     
     .header-main {
         display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
-        flex-wrap: wrap !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        padding-right: 110px !important;
     }
     
     .room-info-section {
         display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
         width: 100% !important;
-        flex-wrap: nowrap !important;
     }
     
     .room-basic {
@@ -163,14 +166,15 @@
     }
     
     .room-code {
-        font-size: 15px !important;
-        padding: 5px 10px !important;
-        font-weight: 600 !important;
+        font-size: 16px !important;
+        padding: 5px 12px !important;
+        font-weight: 700 !important;
     }
     
     .room-label {
-        font-size: 10px !important;
+        font-size: 11px !important;
         font-weight: 600 !important;
+        color: #64748b !important;
     }
 
     .board-main {
@@ -180,27 +184,30 @@
         overflow: hidden !important;
         min-height: 0 !important;
         gap: 0 !important;
+        padding: 0 !important;
     }
     
     .game-content {
-        flex: 1 !important;
+        flex: 0 0 auto !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: hidden !important;
+        overflow: visible !important;
         gap: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
-    /* Canvas takes available space but not too much */
+    /* Canvas more compact */
     .canvas-wrapper {
         flex: 0 0 auto !important;
-        max-height: 40vh !important;
+        max-height: 28vh !important;
         order: 1 !important;
         margin: 0 !important;
         padding: 0 !important;
     }
     
     .canvas-wrapper canvas {
-        max-height: 40vh !important;
+        max-height: 28vh !important;
         width: 100% !important;
         height: auto !important;
         display: block !important;
@@ -211,30 +218,27 @@
         display: none !important;
     }
     
-    /* Mobile share link - full width row below room info */
+    /* Mobile share link - very compact */
     .mobile-share-row {
         display: flex !important;
         align-items: center !important;
         gap: 6px !important;
-        padding: 6px 8px !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
-        border-radius: 6px !important;
+        padding: 5px 8px !important;
+        background: #f8fafc !important;
+        border-radius: 5px !important;
+        border: 1px solid #e2e8f0 !important;
         width: 100% !important;
-        margin-top: 6px !important;
     }
     
     .mobile-share-row > span {
-        flex-shrink: 0 !important;
-        font-size: 11px !important;
-        color: white !important;
-        font-weight: 600 !important;
+        display: none !important;
     }
     
     .mobile-share-link {
         flex: 1 !important;
         display: flex !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 5px !important;
         min-width: 0 !important;
     }
     
@@ -242,22 +246,23 @@
         flex: 1 !important;
         font-size: 11px !important;
         padding: 5px 8px !important;
-        border: none !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 4px !important;
         background: white !important;
         min-width: 0 !important;
         font-weight: 500 !important;
+        color: #64748b !important;
     }
     
     .mobile-share-link button {
         padding: 5px 12px !important;
         font-size: 11px !important;
-        background: white !important;
-        color: #6366f1 !important;
+        background: #6366f1 !important;
+        color: white !important;
         border: none !important;
         border-radius: 4px !important;
         white-space: nowrap !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
     }
 
     .game-content {
@@ -293,27 +298,49 @@
         display: none !important;
     }
     
-    /* Show mobile chat - give it proper space */
+    /* Show mobile chat - prominent and visible */
     .chat-mobile-fullwidth {
         display: flex !important;
+        flex-direction: column !important;
         background: white !important;
         position: relative !important;
-        flex: 1 !important;
-        min-height: 200px !important;
-        max-height: 40vh !important;
+        flex: 1 1 auto !important;
+        min-height: 300px !important;
+        max-height: 50vh !important;
+        width: 100% !important;
         order: 3 !important;
         border-top: 2px solid #e2e8f0 !important;
+        border-left: none !important;
         overflow: hidden !important;
     }
     
-    .chat-sidebar .chat-messages {
-        padding: 8px !important;
+    .chat-mobile-fullwidth .chat-messages {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding: 10px !important;
         gap: 8px !important;
     }
     
-    .chat-sidebar .chat-input {
-        padding: 8px !important;
+    .chat-mobile-fullwidth .chat-message {
+        font-size: 13px !important;
+    }
+    
+    .chat-mobile-fullwidth .chat-input {
+        flex-shrink: 0 !important;
+        padding: 10px !important;
         border-top: 1px solid #e2e8f0 !important;
+        background: #fafafa !important;
+    }
+    
+    .chat-mobile-fullwidth .chat-input input {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .chat-mobile-fullwidth .chat-input button {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 18px !important;
     }
     
     /* Hide header-actions completely on mobile */
@@ -321,7 +348,7 @@
         display: none !important;
     }
     
-    /* Create mobile waiting message - right below header */
+    /* Create mobile waiting message - compact below canvas */
     .mobile-waiting-overlay {
         position: relative !important;
         width: 100% !important;
@@ -329,56 +356,106 @@
         color: #92400e !important;
         padding: 10px !important;
         text-align: center !important;
-        font-size: 12px !important;
+        font-size: 13px !important;
         font-weight: 600 !important;
         border-bottom: 2px solid #f59e0b !important;
         z-index: 10 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        order: 0 !important;
+        order: 2 !important;
         flex-shrink: 0 !important;
     }
     
-    /* Start button on mobile - below header */
+    /* Start button on mobile - compact */
     .mobile-start-btn {
         position: relative !important;
         width: calc(100% - 20px) !important;
         margin: 10px !important;
         z-index: 10 !important;
-        padding: 14px 20px !important;
+        padding: 12px 20px !important;
         font-size: 16px !important;
         background: linear-gradient(135deg, #667eea, #764ba2) !important;
         color: white !important;
         border: none !important;
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         font-weight: 700 !important;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 8px !important;
-        order: 0 !important;
+        order: 2 !important;
         flex-shrink: 0 !important;
     }
     
     .mobile-icon-btn {
-        width: 32px !important;
-        height: 32px !important;
+        width: 34px !important;
+        height: 34px !important;
         padding: 0 !important;
         font-size: 16px !important;
-        background: #f8fafc !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 6px !important;
+        background: white !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 7px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        transition: all 0.2s !important;
+    }
+
+    .mobile-icon-btn.exit-trigger {
+        background: #ef4444 !important;
+        border-color: #dc2626 !important;
+        color: white !important;
+        font-size: 20px !important;
+        font-weight: bold !important;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4) !important;
+    }
+}
+
+/* =========================================================
+   TABLET / INTERMEDIATE RESPONSIVE (769px - 900px)
+   ========================================================= */
+@media (min-width: 769px) and (max-width: 900px) {
+    .board-container {
+        flex-direction: column !important;
+        height: 100vh !important;
+        overflow: hidden !important;
     }
     
-    .mobile-icon-btn.exit-trigger {
-        background: #fee2e2 !important;
-        border-color: #fca5a5 !important;
-        font-size: 18px !important;
-        font-weight: bold !important;
+    .desktop-only {
+        display: none !important;
+    }
+    
+    .mobile-header-buttons {
+        display: flex !important;
+    }
+    
+    .board-main {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+    
+    .game-content {
+        flex: 0 0 auto !important;
+        max-height: 50vh !important;
+    }
+    
+    .board-container>.players-sidebar {
+        display: none !important;
+    }
+    
+    .board-container>.chat-sidebar:not(.chat-mobile-fullwidth) {
+        display: none !important;
+    }
+    
+    .chat-mobile-fullwidth {
+        display: flex !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        border-top: 2px solid #e2e8f0 !important;
     }
 }

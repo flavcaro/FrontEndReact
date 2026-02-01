@@ -502,7 +502,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
         )}
       </div>
 
-      {/* Chat outside container on mobile - as sibling */}
+      {/* Chat outside container on mobile - as flex sibling */}
       {isMobile && (
         <ChatSidebar
           className="chat-mobile-fullwidth"
