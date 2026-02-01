@@ -310,6 +310,19 @@ export default function GameHeader({
                 <div className="word-display">
                   {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
                 </div>
+                {gameState?.active && (
+                  <div className="mobile-round-display" style={{
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    color: '#64748b',
+                    background: '#f1f5f9',
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    🔄 {currentRound}/{totalRounds}
+                  </div>
+                )}
                 <div className="timer-display mobile-timer">⏱️ {timeLeft}s</div>
               </div>
             </div>
