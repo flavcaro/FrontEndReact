@@ -418,26 +418,25 @@ export default function Board({ roomId, nickname, gameConfig }) {
                 chaosEffects={gameState?.chaosEffects}
               />
 
-              {/* Mobile Clear button - below canvas */}
               {isArtist && gameState?.active && (
-                <button onClick={clearBoard} className="btn-clear mobile-clear-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                  Pulisci
-                </button>
-              )}
+                <div className="mobile-drawing-controls">
+                  <button onClick={clearBoard} className="btn-clear mobile-clear-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Pulisci
+                  </button>
 
-              {isArtist && (
-                <div className="palette-floating">
-                  <Palette
-                    selectedColor={selectedColor}
-                    onChangeColor={setSelectedColor}
-                    selectedInstrument={selectedInstrument}
-                    onChangeInstrument={setSelectedInstrument}
-                    showColors={selectedInstrument === "pencil"}
-                  />
+                  <div className="palette-floating">
+                    <Palette
+                      selectedColor={selectedColor}
+                      onChangeColor={setSelectedColor}
+                      selectedInstrument={selectedInstrument}
+                      onChangeInstrument={setSelectedInstrument}
+                      showColors={selectedInstrument === "pencil"}
+                    />
+                  </div>
                 </div>
               )}
             </div>

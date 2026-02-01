@@ -11,7 +11,8 @@
     .mobile-timer,
     .mobile-share-link,
     .mobile-game-info-popover,
-    .mobile-game-info-inline {
+    .mobile-game-info-inline,
+    .mobile-waiting-status {
         display: none !important;
     }
 
@@ -80,7 +81,8 @@
     }
 
     .mobile-share-row,
-    .mobile-game-info-inline {
+    .mobile-game-info-inline,
+    .mobile-waiting-status {
         display: none !important;
     }
 
@@ -376,28 +378,46 @@
         touch-action: none !important;
     }
 
-    /* Floating Palette and Clear Button */
+    /* 5. DRAWING CONTROLS (Floating Palette and Clear Button) */
+    .mobile-drawing-controls {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin-top: auto !important;
+        padding: 4px 12px !important;
+        z-index: 1000 !important;
+    }
+
     .palette-floating {
         position: relative !important;
-        margin-top: auto !important;
+        margin: 0 !important;
         z-index: 10 !important;
-        padding: 6px !important;
+        padding: 4px 8px !important;
         background: white !important;
         border-radius: 12px !important;
         border: 1px solid #f1f5f9 !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+        display: flex !important;
+        align-items: center !important;
     }
 
     .mobile-clear-btn {
-        width: 100% !important;
-        padding: 10px !important;
+        width: auto !important;
+        padding: 8px 12px !important;
         background: #ef4444 !important;
         color: white !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         border: none !important;
         font-weight: 700 !important;
-        font-size: 14px !important;
-        margin-top: 4px !important;
+        font-size: 13px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2) !important;
+        margin: 0 !important;
     }
 
     /* 6. CHAT STYLING - Forced Bottom Fixed */
