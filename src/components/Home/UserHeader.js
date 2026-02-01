@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import classicGif from '../../sprites/logo.gif';
 
 export default function UserHeader({ nickname, isGuest, user, xpPoints, level, gamesPlayed, gamesWon, totalScore, bestScore, onSignOut }) {
   const navigate = useNavigate();
@@ -7,7 +8,9 @@ export default function UserHeader({ nickname, isGuest, user, xpPoints, level, g
   return (
     <header className="home-header">
       <div className="header-logo">
-        <span className="logo-icon">🎨</span>
+        <span className="logo-icon">
+          <img src={classicGif} alt="SketchUp" style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }} />
+        </span>
         <span className="logo-text">SketchUp</span>
       </div>
       

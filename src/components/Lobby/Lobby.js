@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
+import classicGif from "../../sprites/logo.gif";
 import { onAuthStateChanged } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
 import WelcomeScreen from "./WelcomeScreen";
@@ -53,7 +54,9 @@ export default function Lobby() {
       <div className="lobby-container">
         <div className="lobby-card">
           <div className="lobby-header">
-            <div className="logo">🎨</div>
+            <div className="logo">
+              <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+            </div>
             <h1>SketchUp</h1>
             <p>Caricamento...</p>
           </div>

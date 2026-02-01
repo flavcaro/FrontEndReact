@@ -1,12 +1,15 @@
 import React from 'react';
 import Button from '../common/Button';
+import classicGif from '../../sprites/logo.gif';
 
 export default function WelcomeScreen({ onGuestLogin, onShowAuthForm, authError }) {
   return (
     <div className="lobby-container">
       <div className="lobby-card">
         <div className="lobby-header">
-          <div className="logo">🎨</div>
+          <div className="logo">
+            <img src={classicGif} alt="SketchUp" style={{ width: '64px', height: '64px', imageRendering: 'pixelated' }} />
+          </div>
           <h1>SketchUp</h1>
           <p>Disegna, indovina e divertiti con i tuoi amici!</p>
         </div>
