@@ -217,6 +217,24 @@ body {
    .canvas-stage {
       border-radius: 10px;
    }
+
+   /* Puzzle mode: more aggressive canvas sizing */
+   .board-container[style*="position: fixed"] .canvas-wrapper {
+      padding: 4px;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      min-height: 200px;
+      margin: 0;
+   }
+
+   .board-container[style*="position: fixed"] .canvas-stage {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+   }
 }
 
 /* Small phones: header ~50px, chat ~90px, players ~50px = ~190px reserved */
@@ -227,6 +245,15 @@ body {
       max-height: calc(100dvh - 220px);
       min-height: 140px;
    }
+
+   /* Puzzle mode: fill available height */
+   .board-container[style*="position: fixed"] .canvas-wrapper {
+      padding: 2px;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      min-height: 150px;
+   }
 }
 
 /* Extra small phones: header ~44px, chat ~80px, players ~44px = ~168px reserved */
@@ -236,5 +263,14 @@ body {
       width: calc(100vw - 4px);
       max-height: calc(100dvh - 180px);
       min-height: 120px;
+   }
+
+   /* Puzzle mode: fill available height */
+   .board-container[style*="position: fixed"] .canvas-wrapper {
+      padding: 2px;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      min-height: 100px;
    }
 }
