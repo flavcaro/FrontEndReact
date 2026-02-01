@@ -148,16 +148,30 @@ export default function PuzzleCanvas({
 
     console.log('🔧 [PuzzleCanvas] init drawBackground totalSections=', totalSections);
 
-    // Su mobile sottrae spazio per chat (180px) + header (~150px), su desktop usa 0.4 della viewport
-    const isMobile = window.innerWidth <= 768;
-    const availableHeight = isMobile 
-      ? window.innerHeight - 380  // Sottrae chat + header + margini + padding extra
-      : window.innerHeight * 0.4;  // Su desktop 40% della viewport
-    const size = Math.min(canvas.parentElement.clientWidth * 0.9, availableHeight);
-    canvas.width = size;
-    canvas.height = size;
+    // Use parent container dimensions for responsive sizing
+    const container = canvas.parentElement;
+    if (!container) return;
 
-    drawBackground(ctx, canvas.width, canvas.height);
+    // Get available space from container
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    // Use the smaller dimension to keep canvas square, with some padding
+    const size = Math.min(containerWidth, containerHeight) * 0.95;
+
+    // Support high-DPI displays
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+
+    // Scale canvas CSS size
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+
+    // Scale context to match device pixel ratio
+    ctx.scale(dpr, dpr);
+
+    drawBackground(ctx, size, size);
   }, [drawBackground, totalSections]);
 
   useEffect(() => {
@@ -165,7 +179,11 @@ export default function PuzzleCanvas({
     const canvas = canvasRef.current;
     if (!ctx || !canvas) return;
 
-    drawBackground(ctx, canvas.width, canvas.height);
+    // Use CSS dimensions for drawing (already scaled by dpr in context)
+    const w = parseInt(canvas.style.width) || canvas.width;
+    const h = parseInt(canvas.style.height) || canvas.height;
+
+    drawBackground(ctx, w, h);
 
     if (!allStrokes) return;
 
@@ -250,7 +268,15 @@ export default function PuzzleCanvas({
   ----------------------------- */
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
       <canvas
         ref={canvasRef}
         onMouseDown={handleDown}

@@ -340,6 +340,7 @@ export default function Canvas({
             height={dimensions.height}
             className="canvas-stage"
             style={{ display: 'block', width: `${dimensions.width}px`, height: `${dimensions.height}px` }}
+            pixelRatio={window.devicePixelRatio || 1}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
@@ -357,12 +358,22 @@ export default function Canvas({
 
                 const pts = Array.isArray(line && line.points) ? line.points : [];
 
+                // Calculate stroke width based on canvas size for consistent appearance
+                // Use square root scaling so strokes don't grow too thick on large canvases
+                const baseCanvasSize = 600;
+                const currentCanvasSize = Math.min(dimensions.width, dimensions.height);
+                const scaleFactor = Math.sqrt(currentCanvasSize / baseCanvasSize);
+                const baseStrokeWidth = 2.5;
+                const baseEraserWidth = 16;
+                const scaledStrokeWidth = baseStrokeWidth * scaleFactor;
+                const scaledEraserWidth = baseEraserWidth * scaleFactor;
+
                 return (
                   <Line
                     key={(line && line.id) || i}
                     points={pts.map((p, idx) => (idx % 2 === 0 ? p * dimensions.width : p * dimensions.height))}
                     stroke={strokeColor}
-                    strokeWidth={line && line.eraser ? 20 : 3}
+                    strokeWidth={line && line.eraser ? scaledEraserWidth : scaledStrokeWidth}
                     tension={0.5}
                     lineCap="round"
                     lineJoin="round"
