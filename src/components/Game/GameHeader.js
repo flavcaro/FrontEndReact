@@ -211,7 +211,7 @@ export default function GameHeader({
             <div className="room-code">{roomId}</div>
           </div>
 
-          {/* Mobile buttons group */}
+          {/* Mobile buttons group - info and players next to room */}
           <div className="mobile-header-buttons">
             {/* mobile info toggle */}
             <button
@@ -239,9 +239,32 @@ export default function GameHeader({
               className="mobile-icon-btn exit-trigger"
               aria-label="Esci"
             >
-              🚪
+              ✕
             </button>
           </div>
+
+        {/* Mobile share link row - visible on mobile */}
+        <div className="mobile-share-row">
+          <span>🔗 Invita:</span>
+          <div className="mobile-share-link">
+            <input
+              type="text"
+              value={`${window.location.origin}/room/${roomId}`}
+              readOnly
+              onClick={(e) => {
+                e.target.select();
+                navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+              }}
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+              }}
+            >
+              Copia
+            </button>
+          </div>
+        </div>
 
           {/* Render game-info normally (desktop) */}
           <div className="game-info desktop-only">
