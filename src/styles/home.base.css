@@ -4,9 +4,9 @@
 .leader-row.current {
   background: linear-gradient(90deg, rgba(255, 249, 236, 0.95), rgba(255, 243, 224, 0.95));
   border: 1px solid rgba(245, 158, 11, 0.14);
-  box-shadow: 0 12px 36px rgba(245, 158, 11, 0.08);
-  border-radius: 12px;
-  padding: 8px;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.08);
+  border-radius: 10px;
+  padding: 6px;
 }
 
 .leader-row.current .leader-name {
@@ -19,6 +19,56 @@
   padding: 8px 12px;
   border-radius: 10px;
   font-weight: 900;
+}
+
+/* Leaderboard Modal Rows */
+.leader-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.leader-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leader-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.leader-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.leader-meta {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+.leader-score {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e293b;
 }
 
 /* ===========================================
@@ -245,13 +295,12 @@ span.logo-text {
 }
 
 .modal-header {
-  padding: 24px 28px;
+  padding: 16px 20px;
   border-bottom: 1px solid #eef2ff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  /* allow header items to wrap instead of overflowing */
 }
 
 .modal-header h2 {
@@ -277,20 +326,20 @@ span.logo-text {
 }
 
 .modal-illustration {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   color: white;
   background: linear-gradient(135deg, #ff7ab6 0%, #7c3aed 100%);
-  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.15);
 }
 
 .modal-body {
-  padding: 24px 28px 32px 28px;
+  padding: 16px 20px 24px 20px;
   overflow-x: hidden;
 }
 

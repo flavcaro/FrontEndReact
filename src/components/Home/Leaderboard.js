@@ -56,7 +56,7 @@ export default function Leaderboard({ show, onClose, limit = 20 }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720 }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 540 }}>
         <div className="modal-header">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div className="modal-illustration">🏆</div>
@@ -93,9 +93,9 @@ export default function Leaderboard({ show, onClose, limit = 20 }) {
                     <li key={u.uid || idx} className={`leader-row ${isCurrent ? 'current' : ''}`} aria-current={isCurrent ? 'true' : 'false'} style={{ listStyle: 'none', marginBottom: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div className="leader-left">
-                          <div className={`leader-avatar`}>{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx === 3 ? '🏅' : (idx+1))}</div>
+                          <div className={`leader-avatar`}>{idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx === 3 ? '🏅' : (idx + 1))}</div>
                           <div>
-                            <div className="leader-name">{u.nickname || u.email || u.displayName || `Utente-${(u.uid || '').slice(0,6)}`}</div>
+                            <div className="leader-name">{u.nickname || u.email || u.displayName || `Utente-${(u.uid || '').slice(0, 6)}`}</div>
                             <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
                           </div>
                         </div>
