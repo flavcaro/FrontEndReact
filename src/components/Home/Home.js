@@ -284,7 +284,7 @@ export default function Home() {
   };
 
   return (
-    <div className="home" style={{ minHeight: '100vh' }}>
+    <div className="home">
       <header className="home-header">
         <div className="logo">
           <img src={classicGif} alt="SketchUp" className="logo-icon" style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }} />

@@ -13,9 +13,17 @@
 
     /* Fix empty space at bottom by letting height be auto */
     .home {
-        min-height: auto !important;
+        min-height: 100dvh;
+        /* Fill screen but don't force overflow */
         height: auto !important;
-        padding-bottom: 20px !important;
+        padding-bottom: 0px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Hide background shapes on mobile to prevent overflow/extra space */
+    .bg-elements {
+        display: none !important;
     }
 
     /* Header Elements */
