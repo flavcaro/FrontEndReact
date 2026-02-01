@@ -97,6 +97,8 @@
   min-height: 0;
   max-height: 100%;
   max-width: 100%;
+  position: relative;
+  /* Anchor for absolute children like the toolbar */
 }
 
 /* Let the main game content grow to fill available vertical space so
