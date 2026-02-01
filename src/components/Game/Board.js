@@ -419,24 +419,22 @@ export default function Board({ roomId, nickname, gameConfig }) {
               />
 
               {isArtist && gameState?.active && (
-                <div className="mobile-drawing-controls">
-                  <button onClick={clearBoard} className="btn-clear mobile-clear-btn">
+                <div className="palette-floating unified-drawing-toolbar">
+                  <button onClick={clearBoard} className="btn-clear unified-clear-btn" title="Pulisci lavagna">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="3 6 5 6 21 6"></polyline>
                       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
-                    Pulisci
+                    <span className="btn-text">Pulisci</span>
                   </button>
 
-                  <div className="palette-floating">
-                    <Palette
-                      selectedColor={selectedColor}
-                      onChangeColor={setSelectedColor}
-                      selectedInstrument={selectedInstrument}
-                      onChangeInstrument={setSelectedInstrument}
-                      showColors={selectedInstrument === "pencil"}
-                    />
-                  </div>
+                  <Palette
+                    selectedColor={selectedColor}
+                    onChangeColor={setSelectedColor}
+                    selectedInstrument={selectedInstrument}
+                    onChangeInstrument={setSelectedInstrument}
+                    showColors={selectedInstrument === "pencil"}
+                  />
                 </div>
               )}
             </div>

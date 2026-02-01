@@ -378,46 +378,20 @@
         touch-action: none !important;
     }
 
-    /* 5. DRAWING CONTROLS (Floating Palette and Clear Button) */
-    .mobile-drawing-controls {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        width: 100% !important;
-        margin-top: auto !important;
-        padding: 4px 12px !important;
-        z-index: 1000 !important;
-    }
-
-    .palette-floating {
-        position: relative !important;
-        margin: 0 !important;
-        z-index: 10 !important;
-        padding: 4px 8px !important;
-        background: white !important;
-        border-radius: 12px !important;
-        border: 1px solid #f1f5f9 !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .mobile-clear-btn {
-        width: auto !important;
-        padding: 8px 12px !important;
-        background: #ef4444 !important;
-        color: white !important;
-        border-radius: 10px !important;
-        border: none !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        display: flex !important;
-        align-items: center !important;
+    /* 5. UNIFIED MOBILE TOOLBAR POSITIONING */
+    .unified-drawing-toolbar {
+        bottom: 12px !important;
+        padding: 5px 8px !important;
+        border-radius: 14px !important;
         gap: 6px !important;
-        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2) !important;
-        margin: 0 !important;
+        width: fit-content !important;
+        max-width: 95vw !important;
+    }
+
+    .unified-clear-btn {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
     }
 
     /* 6. CHAT STYLING - Forced Bottom Fixed */
