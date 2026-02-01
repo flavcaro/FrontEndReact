@@ -508,29 +508,6 @@
     display: none !important;
   }
 
-  /* Force column layout on mobile to stack chat at bottom */
-  .board-container {
-    flex-direction: column !important;
-  }
-
-  .board-container .chat-sidebar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 200px !important;
-    max-height: 200px !important;
-    min-height: 200px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    border-left: none !important;
-    border-top: 1px solid #e2e8f0 !important;
-    background: white !important;
-    z-index: 500 !important;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1) !important;
-  }
-
   /* Adjust board-center to account for fixed chat */
   .board-center {
     padding-bottom: 0 !important;
