@@ -47,12 +47,12 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId, s
             >
               {p.isOwner ? '👑' : p.name === gameState?.currentArtist ? '🎨' : p.name.charAt(0).toUpperCase()}
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div className="player-name">
                 {p.isOwner && '👑 '}
                 {p.name}
               </div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>{p.score || 0} punti</div>
+              <div className="player-score-compact">{p.score || 0} punti</div>
               {gameState?.survivalMode && (
                 <div style={{ fontSize: 11, color: '#ef4444' }}>
                   ❤️ {gameState.playerLives?.[p.name] || 0} vite
@@ -68,8 +68,8 @@ export default function PlayersSidebar({ players, gameState, nickname, roomId, s
       <div className="share-box">
         <label>🔗 Invita amici {players.length >= MAX_PLAYERS && <span style={{ color: '#dc2626' }}>(Stanza piena)</span>}</label>
         {roomName && (
-          <div className="room-name" style={{ fontSize: 12, color: '#475569', marginBottom: 8 }}>
-            Nome stanza: <strong>{roomName}</strong>
+          <div className="room-name" style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>
+            Stanza: <strong>{roomName}</strong>
           </div>
         )}
         <input
