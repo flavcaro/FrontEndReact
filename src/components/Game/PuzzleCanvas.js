@@ -158,23 +158,15 @@ export default function PuzzleCanvas({
 
     // Use more vertical space - aim for a wider canvas that fills height better
     // Keep aspect ratio reasonable (16:9 or similar) but prioritize using available height
-    const maxWidth = containerWidth * 0.99;
-    const maxHeight = containerHeight * 0.99;
+    // Use close to 100% of available space
+    const maxWidth = containerWidth - 4;
+    const maxHeight = containerHeight - 4;
 
-    // Calculate size to fit within container while maintaining aspect ratio
-    // Prefer using more height when available
+    // Simply fill the available space to maximize size
+    // Normalized coordinates handle the aspect ratio scaling automatically
     let canvasWidth, canvasHeight;
-
-    const aspectRatio = maxWidth / maxHeight;
-    if (aspectRatio > 1.8) {
-      // Wide container: use height and calculate width
-      canvasHeight = maxHeight;
-      canvasWidth = Math.min(maxHeight * 1.8, maxWidth);
-    } else {
-      // Tall or square container: use available space more efficiently
-      canvasWidth = maxWidth;
-      canvasHeight = maxHeight;
-    }
+    canvasWidth = maxWidth;
+    canvasHeight = maxHeight;
 
     // Support high-DPI displays
     const dpr = window.devicePixelRatio || 1;

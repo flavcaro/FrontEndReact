@@ -542,8 +542,10 @@
     }
 
     .game-content {
-        flex: 0 0 auto !important;
-        max-height: 50vh !important;
+        flex: 1 !important;
+        /* Allow growing */
+        max-height: none !important;
+        overflow: hidden !important;
     }
 
     .board-container>.players-sidebar {

@@ -19,17 +19,17 @@ export const PUZZLE_DRAWING = {
   turnDuration: 90, // Più tempo perché i giocatori devono coordinarsi
   minPlayers: 4, // Minimo per entrambe le configurazioni
   maxPlayers: 6,
-  
+
   // Configurazione specifica del puzzle (default)
   sections: 3, // Numero di sezioni del canvas (configurabile: 2 o 3)
   drawersPerRound: 3, // Numero di giocatori che disegnano simultaneamente
   guessersPerRound: 1, // Numero di giocatori che indovinano
-  
+
   // Punteggi
   pointsPerGuess: 150, // Più punti perché è più difficile
   artistPoints: 50, // Punti per ogni artista quando qualcuno indovina
   teamBonusPoints: 30, // Bonus per tutti e 3 i disegnatori se qualcuno indovina velocemente
-  
+
   // Regole specifiche
   rules: [
     'Il canvas è diviso in 2 o 3 sezioni verticali (configurabile)',
@@ -71,6 +71,7 @@ export const assignPuzzleRoles = (players, roundIndex, sectionsCount = 3) => {
     console.error('Non ci sono abbastanza giocatori per Puzzle Drawing');
     return null;
   }
+  // ... (rest of function logic is fine, existing file has it)
 
   const config = PUZZLE_SECTIONS_CONFIG[sectionsCount] || PUZZLE_SECTIONS_CONFIG[3];
   const totalPlayers = players.length;
@@ -125,7 +126,7 @@ export const assignPuzzleRoles = (players, roundIndex, sectionsCount = 3) => {
     }
   }
 
-  console.log('assignPuzzleRoles debug:', { totalPlayers, sectionsCount, drawersCount, finalGuessersCount, guessers: guessers.map(g=>g.name), drawers: drawers.map(d=>d.player.name) });
+  console.log('assignPuzzleRoles debug:', { totalPlayers, sectionsCount, drawersCount, finalGuessersCount, guessers: guessers.map(g => g.name), drawers: drawers.map(d => d.player.name) });
 
   return { drawers, guessers };
 };
@@ -140,10 +141,10 @@ export const assignPuzzleRoles = (players, roundIndex, sectionsCount = 3) => {
 export const calculateMinRounds = (playerCount, sectionsCount = 3, cycles = 1) => {
   const config = PUZZLE_SECTIONS_CONFIG[sectionsCount] || PUZZLE_SECTIONS_CONFIG[3];
   const guessersPerRound = config.guessers;
-  
+
   // Calcola quanti round servono perché tutti indovinino "cycles" volte
   const roundsForGuessing = Math.ceil((playerCount * cycles) / guessersPerRound);
-  
+
   // Assicura un minimo ragionevole di round
   return Math.max(roundsForGuessing, Math.ceil(playerCount / 2) * cycles);
 };
@@ -155,17 +156,17 @@ export const calculateMinRounds = (playerCount, sectionsCount = 3, cycles = 1) =
  */
 export const allPlayersHaveGuessed = (gameState) => {
   if (!gameState || !gameState.players) return false;
-  
+
   const requiredCycles = gameState.puzzleCycles || 1;
   const playersWhoGuessedCounts = gameState.playersWhoGuessedCounts || {};
-  
+
   // Verifica se tutti i giocatori hanno indovinato almeno "requiredCycles" volte
   const allPlayers = Object.keys(gameState.players);
   const allHaveGuessedEnough = allPlayers.every(uid => {
     const count = playersWhoGuessedCounts[uid] || 0;
     return count >= requiredCycles;
   });
-  
+
   console.log('🎯 [allPlayersHaveGuessed] Check:', {
     totalPlayers: allPlayers.length,
     requiredCycles,
@@ -173,7 +174,7 @@ export const allPlayersHaveGuessed = (gameState) => {
     allHaveGuessedEnough,
     remaining: allPlayers.filter(uid => (playersWhoGuessedCounts[uid] || 0) < requiredCycles)
   });
-  
+
   return allHaveGuessedEnough;
 };
 
@@ -187,7 +188,7 @@ export const allPlayersHaveGuessed = (gameState) => {
  */
 export const getSectionBounds = (section, canvasWidth, canvasHeight, totalSections = 3) => {
   const sectionWidth = canvasWidth / totalSections;
-  
+
   return {
     x: section * sectionWidth,
     y: 0,
@@ -209,15 +210,15 @@ export const getSectionBounds = (section, canvasWidth, canvasHeight, totalSectio
  */
 export const isPointInSection = (x, y, section, canvasWidth, canvasHeight, totalSections = 3) => {
   const bounds = getSectionBounds(section, canvasWidth, canvasHeight, totalSections);
-  
+
   // Margine interno di 2px per evitare sovrapposizioni sui bordi
   const margin = 2;
   const adjustedX = bounds.x + (section === 0 ? 0 : margin);
   const lastSection = totalSections - 1;
   const adjustedWidth = bounds.width - (section === 0 ? margin : (section === lastSection ? 0 : margin * 2));
-  
-  return x >= adjustedX && x <= adjustedX + adjustedWidth && 
-         y >= bounds.y && y <= bounds.y + bounds.height;
+
+  return x >= adjustedX && x <= adjustedX + adjustedWidth &&
+    y >= bounds.y && y <= bounds.y + bounds.height;
 };
 
 /**
@@ -232,10 +233,10 @@ export const calculatePuzzleScore = (timeLeft, turnDuration) => {
   const basePoints = 100;
   const timeBonus = Math.floor((timeLeft / turnDuration) * basePoints * 2);
   const guesserPoints = basePoints + timeBonus;
-  
+
   // Per i disegnatori: 50 punti base + 1 punto per ogni secondo rimasto
   const artistPoints = 50 + timeLeft;
-  
+
   return {
     guesserPoints,
     artistPoints

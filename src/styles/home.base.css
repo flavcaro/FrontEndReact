@@ -559,4 +559,53 @@ span.logo-text {
   background: linear-gradient(90deg, #667eea, #764ba2);
   color: white;
   border-color: transparent;
-}.custom-create h3 { margin-bottom: 12px !important; } .custom-create .lobby-label { font-size: 12px !important; margin-bottom: 4px !important; }
+}
+
+/* Puzzle Config Buttons */
+.puzzle-options-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  /* Ensure they fit side by side */
+  gap: 10px !important;
+  width: 100% !important;
+  margin-top: 8px !important;
+}
+
+.puzzle-config-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 10px 14px !important;
+  height: auto !important;
+  min-height: 60px !important;
+  gap: 12px !important;
+}
+
+.puzzle-config-btn .config-text {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.puzzle-config-btn .config-title {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: inherit !important;
+}
+
+.puzzle-config-btn .config-desc {
+  font-weight: 400 !important;
+  font-size: 11px !important;
+  opacity: 0.8 !important;
+  line-height: 1.2 !important;
+}
+
+.custom-create h3 {
+  margin-bottom: 12px !important;
+}
+
+.custom-create .lobby-label {
+  font-size: 12px !important;
+  margin-bottom: 4px !important;
+}
