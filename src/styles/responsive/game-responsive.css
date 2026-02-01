@@ -9,8 +9,13 @@
     .mobile-header-buttons,
     .mobile-share-row,
     .mobile-timer,
-    .mobile-share-link {
+    .mobile-share-link,
+    .mobile-game-info-popover {
         display: none !important;
+    }
+
+    .desktop-only {
+        display: flex !important;
     }
 }
 
@@ -81,7 +86,8 @@
 @media (max-width: 1200px) {
 
     .desktop-exit-btn,
-    .desktop-clear-btn {
+    .desktop-clear-btn,
+    .desktop-only {
         display: none !important;
     }
 
@@ -130,6 +136,11 @@
         border-radius: 8px !important;
         justify-content: center;
         align-items: center;
+    }
+
+    .mobile-header-buttons,
+    .mobile-share-row {
+        display: flex !important;
     }
 
     /* Share Link (From share-link-mobile.css) */
