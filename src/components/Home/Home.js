@@ -13,7 +13,7 @@ import { CLASSICA } from "../../constants/gameModes/classica";
 import { SOPRAVVIVENZA } from "../../constants/gameModes/sopravvivenza";
 import { CHAOS_TOOLS } from "../../constants/gameModes/chaosTools";
 import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
-import classicGif from "../../sprites/classic.gif";
+import classicGif from "../../sprites/logo.gif";
 
 import "../../styles/home.css";
 import RoomActions from "./RoomActions";

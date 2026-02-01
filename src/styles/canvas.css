@@ -24,7 +24,7 @@ body {
    padding: 8px;
    width: 100%;
    max-width: 100%;
-   max-height: calc(100vh - 240px);
+   max-height: calc(100vh - 100px);
    min-height: 0;
    margin: 0 auto;
    touch-action: none;
@@ -91,7 +91,7 @@ body {
 ========================= */
 @media (max-width: 1400px) {
    .canvas-wrapper {
-      padding: 20px;
+      padding: 12px;
    }
 }
 
@@ -99,6 +99,15 @@ body {
 @media (min-width: 1600px) {
    .canvas-wrapper {
       max-width: calc(100% - 560px);
+      padding: 6px;
+   }
+}
+
+/* Optimize canvas space on desktop */
+@media (min-width: 1201px) {
+   .canvas-wrapper {
+      max-height: calc(100vh - 90px);
+      padding: 6px;
    }
 }
 
