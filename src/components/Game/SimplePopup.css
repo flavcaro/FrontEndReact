@@ -1,26 +1,34 @@
 .simple-popup-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 99999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2000000 !important;
+  /* Ensure it stays above GameResults (999999) and Toasts */
+  animation: fadeIn 0.2s ease-out;
 }
+
 .simple-popup {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);
   padding: 32px 24px 24px 24px;
   min-width: 280px;
   max-width: 90vw;
   text-align: center;
 }
+
 .simple-popup-message {
   font-size: 1.25rem;
   margin-bottom: 24px;
   color: #1e293b;
 }
+
 .simple-popup-btn {
   background: #6366f1;
   color: #fff;
@@ -32,15 +40,17 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .simple-popup-btn:hover {
   background: #4f46e5;
 }
 
 /* Thumb vote quick feedback */
 .thumb-vote {
-  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms;
+  transition: transform 180ms cubic-bezier(.2, .9, .2, 1), box-shadow 180ms;
   will-change: transform;
 }
+
 .thumb-vote.pulse {
   transform: scale(1.12);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);

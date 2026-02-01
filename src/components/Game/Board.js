@@ -236,6 +236,12 @@ export default function Board({ roomId, nickname, gameConfig }) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1200);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Body Scroll Lock
   useEffect(() => {
     const prev = document.body.style.overflow;
