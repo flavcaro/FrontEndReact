@@ -84,14 +84,14 @@ export default function Home() {
     }
     (async () => {
       try {
-       // Verifica unicità nickname nella stanza target
+        // Verifica unicità nickname nella stanza target
         const playersRef = ref(db, `rooms/${code}/players`);
         const snap = await get(playersRef);
         const existing = snap.val() || {};
         const latestList = Object.entries(existing).map(([id, p]) => ({ id, ...p }));
         const unique = generateUniqueNickname(nickname, latestList) || nickname;
         if (unique !== nickname) {
-        // Genera nickname univoco se necessario
+          // Genera nickname univoco se necessario
           setNickname(unique);
           localStorage.setItem('nickname', unique);
         } else {
@@ -189,7 +189,7 @@ export default function Home() {
       cfg.puzzleCycles = typeof opts.cycles !== 'undefined' ? opts.cycles : 1;
     }
     localStorage.setItem(`room_${roomId}_mode`, JSON.stringify(cfg));
-    
+
     // Salva la configurazione in Firebase per tutti i giocatori
     try {
       await set(ref(db, `rooms/${roomId}/config`), cfg);
@@ -197,7 +197,7 @@ export default function Home() {
     } catch (error) {
       console.error('❌ Errore salvando configurazione in Firebase:', error);
     }
-    
+
     navigate(`/room/${roomId}/play?nick=${encodeURIComponent(nickname)}`);
     setShowCustomModal(false);
   };
@@ -233,7 +233,7 @@ export default function Home() {
       try {
         // keep a record of how many entries the leaderboard query returned
         setLeaderboardCount(Array.isArray(list) ? list.length : 0);
-        const top = list.slice(0,4);
+        const top = list.slice(0, 4);
         // enrich top entries with latest users/{uid} data when possible
         const uids = Array.from(new Set(top.map(u => u.uid).filter(Boolean)));
         if (uids.length > 0) {
@@ -263,7 +263,7 @@ export default function Home() {
         setMyPosition(found >= 0 ? found + 1 : null);
       } catch (err) {
         console.warn('Error enriching top preview', err);
-        setTopFour((Array.isArray(list) ? list.slice(0,4) : []));
+        setTopFour((Array.isArray(list) ? list.slice(0, 4) : []));
       } finally {
         setLoadingLeaderboardPreview(false);
       }
@@ -313,10 +313,6 @@ export default function Home() {
           <span className="logo-text">SketchUp</span>
         </div>
         {/* Mobile compact nickname+XP badge shown top-left on small screens */}
-        <div className="mobile-nickname-badge" aria-hidden={nickname ? 'false' : 'true'}>
-          <span className="mobile-nick-text">{nickname || (isGuest ? 'Ospite' : '')}</span>
-          <span className="mobile-nick-xp">⭐ {xpPoints || 0}</span>
-        </div>
         {/* Mobile hamburger - visible only on small screens via CSS */}
         <button className="mobile-hamburger" onClick={(e) => { e.stopPropagation(); setShowMobileMenu(s => !s); }} aria-label="Menu">☰</button>
         {showMobileMenu && (
@@ -334,12 +330,11 @@ export default function Home() {
           </>
         )}
         {user && (
-            <div className="header-right">
+          <div className="header-right">
             <div className="user-stats-header">
               <span className="level-badge">🏆 Lv.{level}</span>
               <span className="xp-badge">⭐ {xpPoints} XP</span>
             </div>
-            <span className="user-name">{nickname || (user && (user.email ? user.email.split('@')[0] : user.email) )}</span>
             {!isGuest && (
               <button className="header-profile-btn" onClick={() => navigate('/profile')}>
                 <span className="btn-ico">👤</span>
@@ -405,12 +400,12 @@ export default function Home() {
                     <div key={mode.id} className="quick-button-card" onClick={() => handleQuickCreateRoom(mode)}>
                       <div className="quick-button-icon">
                         {mode.sprite ? (
-                          <img 
-                            src={mode.sprite} 
+                          <img
+                            src={mode.sprite}
                             alt={mode.name}
-                            style={{ 
-                              width: '100%', 
-                              height: '100%', 
+                            style={{
+                              width: '100%',
+                              height: '100%',
                               objectFit: 'contain',
                               imageRendering: 'pixelated'
                             }}
@@ -484,15 +479,15 @@ export default function Home() {
             </div>
 
             <div className="leaderboard-preview-card compact-leaderboard">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <h3 style={{ margin: 0 }}>Classifica (Top 4)</h3>
                 </div>
-                  {/* Bottone Vedi tutto rimosso dalla preview top 4 */}
-                </div>
+                {/* Bottone Vedi tutto rimosso dalla preview top 4 */}
+              </div>
               <div style={{ marginTop: 8 }}>
                 {(() => {
-                  const display = (topFour && topFour.length > 0) ? topFour.slice(0,4) : [];
+                  const display = (topFour && topFour.length > 0) ? topFour.slice(0, 4) : [];
                   return (
                     <>
                       {display.length > 0 ? (
@@ -508,7 +503,7 @@ export default function Home() {
                               <div className="leader-left">
                                 <div className="leader-avatar">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🏅'}</div>
                                 <div>
-                                  <div className="leader-name">{u.nickname || (u.email ? u.email.split('@')[0] : (u.displayName || (`Utente-${(u.uid||'').slice(0,6)}`)))}</div>
+                                  <div className="leader-name">{u.nickname || (u.email ? u.email.split('@')[0] : (u.displayName || (`Utente-${(u.uid || '').slice(0, 6)}`)))}</div>
                                   <div className="leader-meta">Lv.{u.level || 1} • {u.gamesPlayed || 0} partite</div>
                                 </div>
                               </div>

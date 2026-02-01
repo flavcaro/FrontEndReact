@@ -1,11 +1,11 @@
 import React from 'react';
 
-export default function Input({ 
-  label, 
-  value, 
-  onChange, 
+export default function Input({
+  label,
+  value,
+  onChange,
   onKeyDown,
-  placeholder = '', 
+  placeholder = '',
   maxLength,
   type = 'text',
   disabled = false,
@@ -25,6 +25,7 @@ export default function Input({
         maxLength={maxLength}
         disabled={disabled}
         autoFocus={autoFocus}
+        spellCheck={false}
       />
     </div>
   );
