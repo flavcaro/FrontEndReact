@@ -3,7 +3,7 @@
     display: none;
 }
 
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 1200px) {
     .mobile-share-link {
         display: flex !important;
         align-items: center !important;
@@ -13,7 +13,7 @@
         background: rgba(255, 255, 255, 0.05) !important;
         padding: 4px 8px !important;
         border-radius: 8px !important;
-        margin-top: 4px !important;
+        margin-top: 0 !important;
         width: 100% !important;
     }
 

@@ -328,7 +328,20 @@
   .board-container > .game-area {
     flex: 1 !important;
     width: 100% !important;
-    padding-bottom: 280px !important;
+    padding-bottom: 0 !important;
+    height: calc(100vh - 280px) !important;
+    max-height: calc(100vh - 280px) !important;
+    overflow: hidden !important;
+  }
+
+  .canvas-wrapper {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .board-main {
+    height: 100% !important;
+    max-height: 100% !important;
   }
 
   .chat-sidebar .chat-box {
