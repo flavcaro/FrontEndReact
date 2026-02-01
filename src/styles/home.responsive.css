@@ -17,7 +17,7 @@
   }
 
   .main-emoji {
-    font-size: 80px;
+    font-size: 120px !important;
   }
 
   .hero-layout {
@@ -47,6 +47,14 @@
     font-size: 16px;
   }
 
+  .hero-content h2 {
+    font-size: 28px !important;
+  }
+
+  .hero-content h3 {
+    font-size: 16px !important;
+  }
+
   .quick-create-section {
     padding: 20px;
     max-width: 100%;
@@ -66,12 +74,13 @@
     flex-direction: column;
     text-align: center;
     gap: 12px;
+    min-height: auto;
   }
 
   .quick-button-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 40px !important;
   }
 
   .create-btn {

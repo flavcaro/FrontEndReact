@@ -21,11 +21,11 @@ body {
    background: transparent;
    box-sizing: border-box;
    overflow: hidden;
-   padding: 8px;
+   padding: 12px;
    width: 100%;
    max-width: 100%;
-   max-height: calc(100vh - 240px);
-   min-height: 0;
+   height: 100%;
+   min-height: 400px;
    margin: 0 auto;
    touch-action: none;
    -webkit-overflow-scrolling: touch;
@@ -35,19 +35,17 @@ body {
    CANVAS STAGE
 ========================= */
 .canvas-stage {
-   /* Let the Konva stage scale to fit its wrapper while preserving square aspect */
    width: 100%;
-   height: auto;
+   height: 100%;
+   max-width: 900px;
+   max-height: 650px;
    background: rgba(255, 255, 255, 0.85);
    border-radius: var(--card-radius);
-   border: 1px solid rgba(15, 23, 42, 0.06);
-   box-shadow: var(--shadow-strong);
+   border: 1px solid var(--border-light);
+   box-shadow: var(--shadow-xl);
    cursor: crosshair;
-   max-width: 100%;
-   max-height: 100%;
-   min-width: 220px;
-   min-height: 140px;
-   /* Migliora il comportamento touch su mobile */
+   min-width: 300px;
+   min-height: 250px;
    touch-action: none;
    -webkit-touch-callout: none;
    -webkit-user-select: none;
@@ -56,10 +54,10 @@ body {
 
 /* Inner stage container: visible border and max-height clamp */
 .canvas-stage-inner {
-   border: 1px solid rgba(15, 23, 42, 0.08);
+   border: 1px solid var(--border-light);
    border-radius: var(--card-radius);
    background: transparent;
-   box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
+   box-shadow: var(--shadow-md);
    overflow: hidden;
    display: flex;
    align-items: center;
@@ -91,14 +89,14 @@ body {
 ========================= */
 @media (max-width: 1400px) {
    .canvas-wrapper {
-      padding: 20px;
+      padding: 16px;
    }
 }
 
-/* On large screens reserve space for sidebars but only when plenty of width available */
+/* On large screens, canvas now has more space due to reduced sidebar widths */
 @media (min-width: 1600px) {
    .canvas-wrapper {
-      max-width: calc(100% - 560px);
+      max-width: calc(100% - 80px);
    }
 }
 

@@ -1,10 +1,9 @@
 /* Players Sidebar */
 .players-sidebar {
-  width: 300px;
-  /* Use a subtle tint derived from Home primary so sidebars read as part of the brand */
+  width: 260px;
+  max-width: 260px;
   background: var(--sidebar-tint);
-  /* ensure content cards (player rows) remain white for readability */
-  border-right: 1px solid rgba(15, 23, 42, 0.06);
+  border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -12,53 +11,52 @@
 }
 
 .sidebar-header {
-  padding: 16px 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .sidebar-header h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .players-badge {
-  background: white;
-  color: #0f172a;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 4px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: var(--color-surface, white);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
 }
 
 .players-list {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 8px;
   list-style: none;
 }
 
 .players-list li {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  transition: background 0.15s ease, transform 0.12s ease;
-  background: white;
-  /* keep player rows white per request */
-  color: #0f172a;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  background: var(--color-surface, white);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .players-list li:hover {
-  background: #f8fafc;
+  background: var(--bg-primary, #f8fafc);
   transform: translateY(-2px);
 }
 
@@ -68,23 +66,23 @@
 }
 
 .player-avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.9));
   color: #1f2937;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 13px;
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .player-name {
   flex: 1;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #0f172a;
   /* dark on white row */
@@ -92,34 +90,34 @@
 }
 
 .you-tag {
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 700;
   color: #1f2937;
   background: white;
-  padding: 4px 8px;
-  border-radius: 8px;
+  padding: 3px 6px;
+  border-radius: 6px;
 }
 
 .share-box {
-  padding: 18px;
+  padding: 12px;
   border-top: 1px solid rgba(15, 23, 42, 0.06);
   background: transparent;
 }
 
 .share-box label {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: #0f172a;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .share-box input {
   width: 100%;
-  padding: 6px 8px;
+  padding: 5px 6px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 10px;
-  font-size: 11px;
+  border-radius: 8px;
+  font-size: 10px;
   font-family: 'Courier New', monospace;
   background: white;
   /* keep invite input white */
@@ -152,20 +150,23 @@
 @media (max-width: 1400px) {
   .players-sidebar {
     width: 240px;
+    max-width: 240px;
   }
 }
 
 /* Intermediate breakpoint: slightly smaller windows */
 @media (max-width: 1200px) {
   .players-sidebar {
-    width: 200px;
+    width: 220px;
+    max-width: 220px;
   }
 }
 
 /* Narrow desktop / large tablet */
 @media (max-width: 1000px) {
   .players-sidebar {
-    width: 180px;
+    width: 190px;
+    max-width: 190px;
   }
 }
 

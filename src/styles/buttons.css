@@ -3,15 +3,15 @@
   width: 100%;
   padding: 10px 20px;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: var(--card-radius);
+  font-size: var(--font-lg);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-slow);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-sm);
   font-family: inherit;
 }
 
@@ -27,12 +27,12 @@
 }
 
 .lobby-btn.secondary {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--slate-100, #f1f5f9);
+  color: var(--text-secondary, #475569);
 }
 
 .lobby-btn.secondary:hover {
-  background: #e2e8f0;
+  background: var(--slate-200, #e2e8f0);
 }
 
 .lobby-btn.tertiary {
@@ -66,20 +66,20 @@
 .btn-start {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--font-xxl);
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: var(--font-xxl);
   font-weight: 700;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 /* CLEAR */
 .btn-clear {
-  background: linear-gradient(90deg, #fb7185, #ef4444);
-  color: white;
+  background: linear-gradient(90deg, var(--danger-light), var(--danger));
+  color: var(--color-surface);
   border-radius: 999px;
   padding: 10px 14px;
   box-shadow: 0 10px 30px rgba(239, 68, 68, 0.14);
@@ -96,11 +96,11 @@
 
 /* START */
 .btn-start {
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  color: white;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  color: var(--color-surface);
   border-radius: 999px;
-  padding: 10px 16px;
-  box-shadow: 0 12px 36px rgba(102, 126, 234, 0.18);
+  padding: 10px var(--space-lg);
+  box-shadow: 0 12px 36px rgba(var(--brand-rgb), 0.18);
 }
 
 .btn-start:hover {
@@ -113,15 +113,15 @@
   /* Use flex to match sibling button sizing when placed inside a flex container */
   width: auto;
   flex: 1 1 auto;
-  padding: 16px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+  color: var(--color-surface);
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
+  border-radius: var(--card-radius);
+  font-size: var(--font-xxl);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-slow);
 }
 
 .btn-restart:hover {
@@ -133,20 +133,19 @@
 .btn-exit {
   width: auto;
   flex: 1 1 auto;
-  padding: 16px;
-  background: #ef4444;
-  /* red */
-  color: white;
+  padding: var(--space-lg);
+  background: var(--danger);
+  color: var(--color-surface);
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
+  border-radius: var(--card-radius);
+  font-size: var(--font-xxl);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-slow);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-xs);
 }
 
 .btn-exit:hover {

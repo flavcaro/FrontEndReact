@@ -35,5 +35,6 @@ Button.propTypes = {
   size: PropTypes.oneOf(['normal', 'small']),
   disabled: PropTypes.bool,
   icon: PropTypes.string,
-  className: PropTypes.string
+  className: PropTypes.string,
+  type: PropTypes.string
 };

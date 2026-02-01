@@ -1,20 +1,103 @@
 :root {
-  /* Stabilized ultra-reduced font sizes for 100% zoom desktop */
-  --font-xs: 0.7rem;
-  /* ~11px */
-  --font-sm: 0.75rem;
-  /* ~12px */
-  --font-md: 0.8125rem;
-  /* ~13px */
-  --font-lg: 0.875rem;
-  /* ~14px */
-  --font-xl: 1rem;
-  /* ~16px */
-  --font-xxl: 1.125rem;
-  /* ~18px */
-  --heading-scale-1: 1.5rem;
-  --heading-scale-2: 1.25rem;
+  /* Typography Scale */
+  --font-xs: 0.7rem;     /* ~11px */
+  --font-sm: 0.75rem;    /* ~12px */
+  --font-md: 0.8125rem;  /* ~13px */
+  --font-lg: 0.875rem;   /* ~14px */
+  --font-xl: 1rem;       /* ~16px */
+  --font-xxl: 1.125rem;  /* ~18px */
+  --font-2xl: 1.25rem;   /* ~20px */
+  --font-3xl: 1.5rem;    /* ~24px */
+  --font-4xl: 1.75rem;   /* ~28px */
+  --font-5xl: 2rem;      /* ~32px */
+  --heading-scale-1: 1.5rem;   /* ~24px */
+  --heading-scale-2: 1.25rem;  /* ~20px */
+  --heading-scale-3: 1.125rem; /* ~18px */
   --base-line-height: 1.4;
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 0.75rem;   /* 12px */
+  --space-lg: 1rem;      /* 16px */
+  --space-xl: 1.5rem;    /* 24px */
+  --space-2xl: 2rem;     /* 32px */
+  --space-3xl: 2.5rem;   /* 40px */
+
+  /* Color Palette - Slate */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* Brand Colors */
+  --brand-primary: #667eea;
+  --brand-secondary: #6366f1;
+  --brand-accent: #764ba2;
+  --brand-pink: #f093fb;
+  --brand-rgb: 102, 126, 234;
+  
+  /* Brand Gradients */
+  --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --brand-gradient-subtle: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  --brand-gradient-purple: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  
+  /* Semantic Colors */
+  --color-text: var(--slate-900);
+  --color-text-secondary: var(--slate-600);
+  --color-text-muted: var(--slate-500);
+  --color-bg: var(--slate-50);
+  --color-surface: #ffffff;
+  --color-border: var(--slate-200);
+  
+  /* Status Colors */
+  --danger: #ef4444;
+  --danger-light: #fb7185;
+  --warning: #f59e0b;
+  --warning-dark: #f97316;
+  --warning-light: #fbbf24;
+  --success: #10b981;
+  --success-dark: #059669;
+  --info: #3b82f6;
+  
+  /* Background Variations */
+  --bg-primary: var(--slate-50);
+  --surface: rgba(255, 255, 255, 0.96);
+  --surface-elevated: rgba(255, 255, 255, 0.98);
+  --sidebar-tint: rgba(102, 126, 234, 0.10);
+  
+  /* Border & Shadow */
+  --border-light: rgba(15, 23, 42, 0.06);
+  --border-medium: rgba(15, 23, 42, 0.12);
+  --card-radius: 12px;
+  --shadow-sm: 0 2px 8px rgba(2, 6, 23, 0.04);
+  --shadow-md: 0 4px 16px rgba(2, 6, 23, 0.06);
+  --shadow-lg: 0 8px 24px rgba(2, 6, 23, 0.08);
+  --shadow-xl: 0 12px 36px rgba(2, 6, 23, 0.08);
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* Z-index Scale */
+  --z-base: 1;
+  --z-header: 1000;
+  --z-sidebar: 900;
+  --z-modal: 2000;
+  --z-overlay: 3000;
+  --z-tooltip: 4000;
+  
+  /* Text Colors (Legacy Support) */
+  --text-primary: var(--slate-900);
+  --text-secondary: var(--slate-600);
+  --text-muted: var(--slate-500);
 }
 
 html,
@@ -31,8 +114,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: var(--font-md);
   line-height: var(--base-line-height);
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 h1 {

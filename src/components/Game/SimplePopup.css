@@ -2,35 +2,35 @@
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.25);
-  z-index: 99999;
+  z-index: var(--z-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .simple-popup {
-  background: #fff;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: var(--card-radius);
   box-shadow: 0 4px 32px rgba(0,0,0,0.15);
-  padding: 32px 24px 24px 24px;
+  padding: var(--space-2xl) var(--space-xl) var(--space-xl) var(--space-xl);
   min-width: 280px;
   max-width: 90vw;
   text-align: center;
 }
 .simple-popup-message {
-  font-size: 1.25rem;
-  margin-bottom: 24px;
-  color: #1e293b;
+  font-size: var(--font-xxl);
+  margin-bottom: var(--space-xl);
+  color: var(--text-primary);
 }
 .simple-popup-btn {
-  background: #6366f1;
-  color: #fff;
+  background: var(--brand-secondary);
+  color: var(--color-surface);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--space-sm);
   padding: 10px 28px;
-  font-size: 1rem;
+  font-size: var(--font-xl);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--transition-base);
 }
 .simple-popup-btn:hover {
   background: #4f46e5;

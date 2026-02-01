@@ -5,26 +5,26 @@
 
 .lobby-label {
   display: block;
-  font-size: 14px;
+  font-size: var(--font-lg);
   font-weight: 600;
-  color: #334155;
-  margin-bottom: 6px;
+  color: var(--text-secondary, #334155);
+  margin-bottom: var(--space-sm);
 }
 
 .lobby-input {
   width: 100%;
   padding: 10px 14px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 14px;
-  transition: all 0.2s;
+  border: 1.5px solid var(--border-light, #e2e8f0);
+  border-radius: var(--card-radius);
+  font-size: var(--font-lg);
+  transition: all var(--transition-base);
   font-family: inherit;
 }
 
 .lobby-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(var(--brand-rgb), 0.1);
 }
 
 .lobby-input.code-input {

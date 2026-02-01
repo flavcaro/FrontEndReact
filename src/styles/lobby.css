@@ -4,101 +4,101 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  background: var(--brand-gradient);
+  padding: var(--space-xl);
   position: relative;
   overflow: hidden;
 }
 
 .lobby-card {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: var(--card-radius);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   max-width: 400px;
   width: 100%;
-  padding: 24px;
+  padding: var(--space-xl);
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
   animation: slideUp 0.6s ease-out;
 }
 
 .lobby-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--space-2xl);
 }
 
 .lobby-header h1 {
-  font-size: 24px;
+  font-size: var(--heading-scale-1);
   font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 6px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  background: var(--brand-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .lobby-header p {
-  color: #64748b;
-  font-size: 14px;
+  color: var(--text-muted);
+  font-size: var(--font-lg);
 }
 
 .lobby-footer {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-light);
 }
 
 /* Responsive - Tablets */
 @media (max-width: 768px) {
   .lobby-container {
-    padding: 16px;
+    padding: var(--space-lg);
   }
 
   .lobby-card {
-    padding: 32px 24px;
+    padding: var(--space-2xl) var(--space-xl);
     max-width: 100%;
   }
 
   .lobby-header h1 {
-    font-size: 32px;
+    font-size: var(--font-5xl);
   }
 }
 
 /* Responsive - Mobile */
 @media (max-width: 480px) {
   .lobby-container {
-    padding: 12px;
+    padding: var(--space-md);
     align-items: flex-start;
-    padding-top: 40px;
+    padding-top: var(--space-3xl);
   }
 
   .lobby-card {
-    padding: 28px 20px;
-    border-radius: 20px;
+    padding: 28px var(--space-xl);
+    border-radius: var(--space-xl);
   }
 
   .lobby-header {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-xl);
   }
 
   .lobby-header h1 {
-    font-size: 28px;
+    font-size: var(--font-4xl);
   }
 
   .lobby-header p {
-    font-size: 14px;
+    font-size: var(--font-lg);
   }
 }
 
 /* Responsive - Extra Small */
 @media (max-width: 375px) {
   .lobby-card {
-    padding: 24px 16px;
+    padding: var(--space-xl) var(--space-lg);
   }
 
   .lobby-header h1 {
-    font-size: 24px;
+    font-size: var(--font-3xl);
   }
 }
 

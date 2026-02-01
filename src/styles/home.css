@@ -14,9 +14,9 @@
 
 /* Profile button in header */
 .header-profile-btn {
-  padding: 8px 12px;
-  font-size: 13px;
-  border-radius: 10px;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-md);
+  border-radius: var(--card-radius);
   background: rgba(255, 255, 255, 0.12);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -40,26 +40,26 @@
 }
 
 .user-name {
-  font-size: 14px;
+  font-size: var(--font-lg);
   color: rgba(255, 255, 255, 0.96);
-  margin-left: 10px;
+  margin-left: var(--space-xs);
 }
 
 .user-stats-header {
   display: flex;
-  gap: 10px;
+  gap: var(--space-xs);
   align-items: center;
-  margin-right: 12px;
+  margin-right: var(--space-md);
 }
 
 .level-badge,
 .xp-badge {
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
-  padding: 5px 10px;
+  padding: var(--space-xs) 10px;
   border-radius: 999px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: var(--font-sm);
 }
 
 /* logout button styling unified above */
@@ -71,21 +71,23 @@
 .hero-section {
   height: auto;
   display: block;
-  padding: 0;
+  padding: 40px 0;
 }
 
 .hero-illustration {
   position: relative;
-  margin-bottom: 12px;
+  margin-bottom: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
 .main-emoji {
-  font-size: 40px;
+  font-size: 200px;
   animation: bounce 3s infinite;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.3));
+  margin-bottom: 20px;
 }
 
 .floating-elements {
@@ -103,26 +105,27 @@
 
 .hero-content {
   max-width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   width: 100%;
   text-align: center;
 }
 
 .hero-content h2 {
-  font-size: 20px;
+  font-size: 36px;
   font-weight: 900;
-  color: white;
-  margin-bottom: 8px;
+  color: var(--color-surface, white);
+  margin-bottom: 12px;
   line-height: 1.1;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
 }
 
 .hero-content h3 {
-  font-size: 14px;
+  font-size: 20px;
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
   font-weight: 500;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 .hero-create-inline {
@@ -132,15 +135,15 @@
 }
 
 .inline-create-btn {
-  font-size: 14px !important;
+  font-size: var(--font-lg) !important;
   padding: 10px 20px !important;
-  border-radius: 12px !important;
-  background: white !important;
-  color: #667eea !important;
+  border-radius: var(--card-radius) !important;
+  background: var(--color-surface, white) !important;
+  color: var(--brand-primary) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
   font-weight: 700 !important;
   border: none !important;
-  transition: all 0.3s !important;
+  transition: all var(--transition-slow) !important;
 }
 
 .inline-create-btn:hover {
@@ -153,8 +156,8 @@
    =========================================== */
 
 .home-top-row {
-  padding: 8px 16px 6px;
-  margin-top: 4px;
+  padding: var(--space-sm) var(--space-lg) var(--space-sm);
+  margin-top: var(--space-xs);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,7 +171,7 @@
   grid-template-areas:
     "hero modes right"
     "hero join  right";
-  gap: 4px 12px;
+  gap: var(--space-xs) var(--space-md);
   align-items: start;
   max-width: 1200px;
   margin: 0 auto;

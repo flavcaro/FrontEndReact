@@ -13,13 +13,15 @@ import { CLASSICA } from "../../constants/gameModes/classica";
 import { SOPRAVVIVENZA } from "../../constants/gameModes/sopravvivenza";
 import { CHAOS_TOOLS } from "../../constants/gameModes/chaosTools";
 import { PUZZLE_DRAWING } from "../../constants/gameModes/puzzleDrawing";
-import classicGif from "../../sprites/classic.gif";
+import classicGif from "../../sprites/logo.gif";
 
 import "../../styles/home.css";
 import RoomActions from "./RoomActions";
 import CustomCreateForm from "./CustomCreateForm";
 import Leaderboard from "./Leaderboard";
+import SettingsModal from "./SettingsModal";
 import { subscribeLeaderboard } from "../../services/userService";
+import { playBackgroundMusic, stopBackgroundMusic } from "../../utils/audioUtils";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ export default function Home() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   // preview shows only real leaderboard data from Firebase
   const [modeOptions, setModeOptions] = useState({
     [CLASSICA.id]: { turnDuration: CLASSICA.turnDuration || 60, rounds: 3, difficulty: 'medium' },
@@ -217,6 +220,16 @@ export default function Home() {
     };
   }, []);
 
+  // Play background music when home page loads
+  React.useEffect(() => {
+    playBackgroundMusic();
+    
+    // Cleanup: stop music when leaving the home page
+    return () => {
+      stopBackgroundMusic();
+    };
+  }, []);
+
   // close mobile menu when clicking outside
   React.useEffect(() => {
     if (!showMobileMenu) return;
@@ -309,7 +322,7 @@ export default function Home() {
     <div className="home" style={{ minHeight: '100vh' }}>
       <header className="home-header">
         <div className="logo">
-          <img src={classicGif} alt="SketchUp" className="logo-icon" style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }} />
+          <img src={classicGif} alt="SketchUp" className="logo-icon" style={{ width: '60px', height: '60px', imageRendering: 'pixelated' }} />
           <span className="logo-text">SketchUp</span>
         </div>
         {/* Mobile compact nickname+XP badge shown top-left on small screens */}
@@ -328,6 +341,7 @@ export default function Home() {
                   <li><button onClick={() => { navigate('/profile'); setShowMobileMenu(false); }}><span className="menu-icon">👤</span> Profilo</button></li>
                 )}
                 <li><button onClick={() => { setShowLeaderboard(true); setShowMobileMenu(false); }}><span className="menu-icon">🏆</span> Classifica</button></li>
+                <li><button onClick={() => { setShowSettings(true); setShowMobileMenu(false); }}><span className="menu-icon">⚙️</span> Impostazioni</button></li>
                 <li><button onClick={() => { handleLogout(); setShowMobileMenu(false); }}><span className="menu-icon">🚪</span> Logout</button></li>
               </ul>
             </div>
@@ -349,6 +363,10 @@ export default function Home() {
             <button className="header-leaderboard-btn" onClick={() => setShowLeaderboard(true)}>
               <span className="btn-ico">🏆</span>
               <span className="btn-label">Classifica</span>
+            </button>
+            <button className="header-leaderboard-btn" onClick={() => setShowSettings(true)}>
+              <span className="btn-ico">⚙️</span>
+              <span className="btn-label">Impostazioni</span>
             </button>
             <button className="logout-btn" onClick={handleLogout}>
               <span className="btn-label">Logout</span>
@@ -373,7 +391,7 @@ export default function Home() {
           <div className="hero-column">
             <div className="hero-text-side">
               <div className="hero-illustration">
-                <img src={classicGif} alt="SketchUp" className="main-emoji" style={{ width: '120px', height: '120px', imageRendering: 'pixelated' }} />
+                <img src={classicGif} alt="SketchUp" className="main-emoji" style={{ width: '200px', height: '200px', imageRendering: 'pixelated' }} />
                 <div className="floating-elements">
                   <div className="float-1">🖌️</div>
                   <div className="float-2">✏️</div>
@@ -636,6 +654,8 @@ export default function Home() {
       )}
 
       <Leaderboard show={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
+
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
 
       <div className="bg-elements">
         <div className="bg-shape shape-1"></div>

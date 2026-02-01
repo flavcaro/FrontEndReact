@@ -127,22 +127,17 @@
    SIDEBAR WIDTH ADJUSTMENTS
    ========================================================================== */
 
-@media (max-width: 1600px) {
-
-  .board-container .players-sidebar,
-  .board-container .chat-sidebar {
-    flex-basis: 16%;
-    width: 16%;
-  }
-}
+/* Sidebar widths at 1600px are controlled by their individual CSS files */
 
 @media (max-width: 1200px) {
   .board-container .players-sidebar {
-    width: 200px;
+    width: 220px;
+    max-width: 220px;
   }
 
   .board-container .chat-sidebar {
-    width: 240px;
+    width: 220px;
+    max-width: 220px;
   }
 
   .board-center {
@@ -169,21 +164,25 @@
 
 @media (max-width: 1000px) {
   .board-container .players-sidebar {
-    width: 180px;
+    width: 190px;
+    max-width: 190px;
   }
 
   .board-container .chat-sidebar {
-    width: 200px;
+    width: 190px;
+    max-width: 190px;
   }
 }
 
 @media (max-width: 900px) {
   .board-container .players-sidebar {
-    width: 150px;
+    width: 160px;
+    max-width: 160px;
   }
 
   .board-container .chat-sidebar {
-    width: 180px;
+    width: 160px;
+    max-width: 160px;
   }
 
   .board-header .header-main {

@@ -9,16 +9,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Ensure overlay sits above header and sidebars */
-  z-index: 9999;
-  animation: fadeIn 0.3s ease-out;
-  padding: 20px;
+  z-index: var(--z-overlay, 3000);
+  animation: fadeIn var(--transition-slow) ease-out;
+  padding: var(--space-xl);
 }
 
 .game-results-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--color-surface, white);
+  border-radius: var(--card-radius);
+  padding: var(--space-xl);
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
@@ -33,14 +32,14 @@
 }
 
 .results-header h1 {
-  font-size: 22px;
-  color: #1e293b;
+  font-size: var(--heading-scale-2);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .results-header p {
-  color: #64748b;
-  font-size: 14px;
+  color: var(--text-muted);
+  font-size: var(--font-lg);
 }
 
 .podium {
