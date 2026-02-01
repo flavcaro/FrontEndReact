@@ -27,6 +27,7 @@
   animation: slideUp 0.5s ease-out;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  position: relative;
 }
 
 .results-header {
@@ -130,6 +131,8 @@
   min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 .results-list h3 {
