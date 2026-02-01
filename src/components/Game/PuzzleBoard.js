@@ -48,6 +48,23 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
   const [brushSize, setBrushSize] = useState(4);
   const [popup, setPopup] = useState({ open: false, message: "" });
 
+  // Detect mobile for conditional styling
+  const [isMobile, setIsMobile] = useState(() => {
+    try {
+      return window.innerWidth <= 768;
+    } catch (e) {
+      return false;
+    }
+  });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleStartGame = () => {
     startGame(gameConfig);
   };
@@ -84,7 +101,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   // PuzzleBoard doesn't forcibly change body scroll here; parent layout
   // (Board/overall app) controls body overflow to avoid layout conflicts.
-  
+
   // Prevent body scroll while PuzzleBoard is active (fills viewport)
   React.useEffect(() => {
     const prev = document.body.style.overflow;
@@ -131,8 +148,8 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
             {/* Info ruolo corrente */}
             {gameState?.active && !showResults && (
               <div style={{
-                background: isDrawer 
-                  ? 'linear-gradient(135deg, #10b981, #059669)' 
+                background: isDrawer
+                  ? 'linear-gradient(135deg, #10b981, #059669)'
                   : 'linear-gradient(135deg, #f59e0b, #d97706)',
                 color: 'white',
                 padding: '12px 24px',
@@ -190,7 +207,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
           <main className="board-main">
             <div className="game-content" style={{ maxWidth: '1100px' }}>
-                <PuzzleCanvas
+              <PuzzleCanvas
                 currentColor={selectedColor}
                 brushSize={brushSize}
                 isDrawing={isDrawer && !hasGuessed}
@@ -201,7 +218,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                 onFinishStroke={finishStroke}
                 showSectionBorders={true}
                 selectedInstrument={selectedInstrument}
-                  totalSections={effectiveSections}
+                totalSections={effectiveSections}
               />
 
               {/* Palette solo per i disegnatori */}
@@ -214,7 +231,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
                     onChangeInstrument={setSelectedInstrument}
                     showColors={true}
                   />
-                  
+
                   {/* Slider per dimensione pennello */}
                   <div style={{
                     marginTop: '12px',
@@ -260,18 +277,53 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           )}
         </div>
 
+        {/* Chat inside container on desktop only */}
+        {!isMobile && (
+          <ChatSidebar
+            className="puzzle-mode-chat"
+            roomId={roomId}
+            nickname={finalNickname}
+            messages={messages}
+            messagesEndRef={messagesEndRef}
+            gameState={gameState}
+            timeLeft={timeLeft}
+            isArtist={isDrawer}
+            hasGuessed={hasGuessed}
+            onGuessCorrect={handleGuess}
+          />
+        )}
+      </div>
+
+      {/* Chat outside container on mobile - as sibling */}
+      {isMobile && (
         <ChatSidebar
+          className="puzzle-mode-chat"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100vw',
+            maxWidth: '100vw',
+            height: '200px',
+            maxHeight: '200px',
+            minHeight: '200px',
+            borderLeft: 'none',
+            borderTop: '1px solid #e2e8f0',
+            zIndex: 500,
+            margin: 0
+          }}
           roomId={roomId}
           nickname={finalNickname}
           messages={messages}
           messagesEndRef={messagesEndRef}
           gameState={gameState}
           timeLeft={timeLeft}
-          isArtist={isDrawer} // I disegnatori non possono scrivere (come se fossero artisti)
+          isArtist={isDrawer}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
         />
-      </div>
+      )}
     </>
   );
 };

@@ -3,7 +3,8 @@
 /* Large Tablets */
 @media (max-width: 1400px) {
   .players-sidebar {
-    width: 360px; /* increased width for desktop parity */
+    width: 360px;
+    /* increased width for desktop parity */
     padding: 22px;
   }
 
@@ -17,10 +18,22 @@
     font-weight: 700;
   }
 
-  .players-sidebar .player-item { gap: 12px; }
-  .share-box { padding: 16px !important; }
-  .share-box label { font-size: 16px !important; }
-  .share-box input { font-size: 16px !important; padding: 10px !important; }
+  .players-sidebar .player-item {
+    gap: 12px;
+  }
+
+  .share-box {
+    padding: 16px !important;
+  }
+
+  .share-box label {
+    font-size: 16px !important;
+  }
+
+  .share-box input {
+    font-size: 16px !important;
+    padding: 10px !important;
+  }
 }
 
 /* Tablets Portrait */
@@ -80,7 +93,7 @@
   }
 
   .players-badge {
-    font-size: 21px;
+    font-size: 14px;
     padding: 3px 8px;
   }
 
@@ -101,11 +114,11 @@
   }
 
   .player-name {
-    font-size: 23px;
+    font-size: 15px;
   }
 
   .you-tag {
-    font-size: 20px;
+    font-size: 13px;
     padding: 2px 6px;
   }
 
@@ -114,11 +127,11 @@
   }
 
   .share-box label {
-    font-size: 21px;
+    font-size: 14px;
   }
 
   .share-box input {
-    font-size: 21px;
+    font-size: 14px;
     padding: 8px 10px;
   }
 }
@@ -316,7 +329,7 @@
 
 /* Desktop: use proportional flex-based sidebars to avoid mixing fixed widths */
 @media (min-width: 1024px) {
-  .board-container > .players-sidebar {
+  .board-container>.players-sidebar {
     flex: 0 0 18% !important;
     flex-basis: 18% !important;
     min-width: 180px !important;
@@ -337,13 +350,22 @@
     font-weight: 700 !important;
   }
 
-  .share-box { padding: 18px !important; }
-  .share-box label { font-size: 18px !important; }
-  .share-box input { font-size: 18px !important; padding: 12px !important; }
+  .share-box {
+    padding: 18px !important;
+  }
+
+  .share-box label {
+    font-size: 18px !important;
+  }
+
+  .share-box input {
+    font-size: 18px !important;
+    padding: 12px !important;
+  }
 }
 
 @media (min-width: 1400px) {
-  .board-container > .players-sidebar {
+  .board-container>.players-sidebar {
     flex-basis: 20% !important;
     min-width: 200px !important;
     max-width: 480px !important;
@@ -354,18 +376,26 @@
    Use board-container-scoped selectors and !important to override earlier
    min-width rules imported earlier in the responsive cascade. */
 @media (max-width: 1200px) {
-  .board-container .players-sidebar { width: 160px !important; }
+  .board-container .players-sidebar {
+    width: 160px !important;
+  }
 }
 
 @media (max-width: 1000px) {
-  .board-container .players-sidebar { width: 140px !important; }
+  .board-container .players-sidebar {
+    width: 140px !important;
+  }
 }
 
 /* Reduce sidebars progressively on slightly larger viewports as well */
 @media (max-width: 1600px) {
-  .board-container .players-sidebar { width: 240px !important; }
+  .board-container .players-sidebar {
+    width: 240px !important;
+  }
 }
 
 @media (max-width: 1400px) {
-  .board-container .players-sidebar { width: 200px !important; }
+  .board-container .players-sidebar {
+    width: 200px !important;
+  }
 }

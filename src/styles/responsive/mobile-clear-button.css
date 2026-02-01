@@ -1,0 +1,81 @@
+/* Mobile Clear button below canvas */
+
+.mobile-clear-btn {
+    display: none;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .mobile-clear-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: calc(100% - 16px) !important;
+        max-width: 400px !important;
+        margin: 20px auto 12px auto !important;
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .mobile-clear-btn:active {
+        transform: scale(0.98) !important;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    .mobile-clear-btn svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    /* Ensure game-content positions elements properly */
+    .game-content {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    /* Canvas at top */
+    .canvas-wrapper {
+        order: 1 !important;
+        width: 100% !important;
+    }
+
+    /* Palette in middle (above clear button) - with padding to contain elements */
+    .palette-floating {
+        order: 2 !important;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+        margin: 4px auto 4px auto !important;
+        width: calc(100% - 16px) !important;
+        max-width: 400px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Clear button at bottom - minimal margin */
+    .mobile-clear-btn {
+        order: 3 !important;
+        margin: 4px auto 4px auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-clear-btn {
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+    }
+}

@@ -1,0 +1,128 @@
+/* Mobile header layout reorganization */
+
+/* Desktop: hide mobile-specific buttons */
+.mobile-exit-btn,
+.mobile-header-buttons,
+.mobile-share-row,
+.mobile-timer {
+    display: none;
+}
+
+/* Mobile: reorganize header layout */
+@media (max-width: 768px) and (orientation: portrait) {
+
+    /* Hide desktop versions of buttons */
+    .desktop-exit-btn,
+    .desktop-clear-btn {
+        display: none !important;
+    }
+
+    /* Show mobile exit button */
+    .mobile-exit-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 6px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        font-size: 16px !important;
+        background: rgba(255, 0, 0, 0.1) !important;
+        border: none !important;
+        border-radius: 8px !important;
+        color: #dc2626 !important;
+        cursor: pointer !important;
+    }
+
+    .mobile-exit-btn svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    /* Mobile header buttons container */
+    .mobile-header-buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    /* Mobile share row */
+    .mobile-share-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: 100% !important;
+        margin-top: 6px !important;
+    }
+
+    .mobile-share-row .mobile-players-btn {
+        flex: 0 0 auto !important;
+    }
+
+    .mobile-share-row .mobile-share-link {
+        flex: 1 1 auto !important;
+        margin-top: 0 !important;
+    }
+
+    /* Word and timer inline group - compact */
+    .word-timer-group {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+        margin: 4px 0 !important;
+    }
+
+    .word-timer-group .word-display {
+        flex: 0 1 auto !important;
+        font-size: 16px !important;
+        padding: 6px 10px !important;
+    }
+
+    .word-timer-group .mobile-timer {
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        font-size: 13px !important;
+        padding: 4px 8px !important;
+        background: rgba(99, 102, 241, 0.1) !important;
+        border-radius: 6px !important;
+        color: #6366f1 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Hide desktop timer in header-actions */
+    .header-actions .timer-display:not(.mobile-timer) {
+        display: none !important;
+    }
+
+    /* Artist status inline - status label and word on same line */
+    .artist-status {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    /* Room info section should wrap properly */
+    .board-header .room-info-section {
+        flex-wrap: wrap !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-exit-btn {
+        padding: 5px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+
+    .word-timer-group .mobile-timer {
+        font-size: 12px !important;
+        padding: 3px 6px !important;
+    }
+}

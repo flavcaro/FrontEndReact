@@ -1,10 +1,10 @@
 /* Lobby Buttons */
 .lobby-btn {
   width: 100%;
-  padding: 20px 30px;
+  padding: 16px 24px;
   border: none;
   border-radius: 12px;
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
@@ -45,8 +45,8 @@
 }
 
 .lobby-btn.small {
-  padding: 14px 24px;
-  font-size: 26px;
+  padding: 12px 20px;
+  font-size: 18px;
 }
 
 .lobby-btn:active {
@@ -67,11 +67,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   transition: all 0.2s ease;
 }
@@ -82,12 +82,17 @@
   color: white;
   border-radius: 999px;
   padding: 10px 14px;
-  box-shadow: 0 10px 30px rgba(239,68,68,0.14);
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.14);
 }
 
-.btn-clear:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(239,68,68,0.18); }
+.btn-clear:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(239, 68, 68, 0.18);
+}
 
-.btn-clear:active { transform: translateY(0); }
+.btn-clear:active {
+  transform: translateY(0);
+}
 
 /* START */
 .btn-start {
@@ -95,10 +100,13 @@
   color: white;
   border-radius: 999px;
   padding: 10px 16px;
-  box-shadow: 0 12px 36px rgba(102,126,234,0.18);
+  box-shadow: 0 12px 36px rgba(102, 126, 234, 0.18);
 }
 
-.btn-start:hover { transform: translateY(-2px); box-shadow: 0 18px 48px rgba(102,126,234,0.22); }
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px rgba(102, 126, 234, 0.22);
+}
 
 /* Results Buttons */
 .btn-restart {
@@ -126,7 +134,8 @@
   width: auto;
   flex: 1 1 auto;
   padding: 16px;
-  background: #ef4444; /* red */
+  background: #ef4444;
+  /* red */
   color: white;
   border: none;
   border-radius: 12px;
@@ -148,8 +157,10 @@
 
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
+
   .btn-clear,
   .btn-start {
-    min-height: 44px; /* iOS touch target size */
+    min-height: 44px;
+    /* iOS touch target size */
   }
 }

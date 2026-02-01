@@ -8,46 +8,58 @@
   flex-direction: column;
   align-items: center;
   min-width: 0;
-  height: 100%; /* fill available container (board-container) so layout fits viewport */
+  height: 100%;
+  /* fill available container (board-container) so layout fits viewport */
   overflow: hidden;
   background: #f8fafc;
   width: 100%;
-  max-height: 100vh; /* Prevent overflow beyond viewport */
+  max-height: 100vh;
+  /* Prevent overflow beyond viewport */
 }
 
 /* Ensure header and sidebars layer above the canvas reliably */
-.board-container { position: relative; }
+.board-container {
+  position: relative;
+}
+
 .board-header {
   position: sticky;
   top: 0;
-  z-index: 1600; /* above sidebars and canvas */
+  z-index: 1600;
+  /* above sidebars and canvas */
 }
-.players-sidebar, .chat-sidebar {
+
+.players-sidebar,
+.chat-sidebar {
   position: relative;
-  z-index: 1400; /* below header but above canvas */
+  z-index: 1400;
+  /* below header but above canvas */
 }
 
 /* Gradually reduce sidebar percentage on narrower viewports so the center
   keeps usable space while sidebars shrink proportionally. */
 @media (max-width: 1600px) {
-  html body .board-container > .players-sidebar,
-  html body .board-container > .chat-sidebar {
+
+  html body .board-container>.players-sidebar,
+  html body .board-container>.chat-sidebar {
     flex-basis: 16% !important;
     width: 16% !important;
   }
 }
 
 @media (max-width: 1200px) {
-  html body .board-container > .players-sidebar,
-  html body .board-container > .chat-sidebar {
+
+  html body .board-container>.players-sidebar,
+  html body .board-container>.chat-sidebar {
     flex-basis: 14% !important;
     width: 14% !important;
   }
 }
 
 @media (max-width: 900px) {
-  html body .board-container > .players-sidebar,
-  html body .board-container > .chat-sidebar {
+
+  html body .board-container>.players-sidebar,
+  html body .board-container>.chat-sidebar {
     flex-basis: 12% !important;
     width: 12% !important;
     min-width: 100px !important;
@@ -67,7 +79,8 @@
   padding: 20px;
   width: 100%;
   min-width: 0;
-  min-height: 0; /* allow children to shrink and avoid overflow */
+  min-height: 0;
+  /* allow children to shrink and avoid overflow */
 }
 
 .game-content {
@@ -77,8 +90,10 @@
   justify-content: center;
   gap: 20px;
   width: 100%;
-  overflow: hidden; /* Nasconde tutte le scrollbar */
-  min-height: 0; /* ensure contained elements respect parent's height */
+  overflow: hidden;
+  /* Nasconde tutte le scrollbar */
+  min-height: 0;
+  /* ensure contained elements respect parent's height */
 }
 
 /* Let the main game content grow to fill available vertical space so
@@ -94,14 +109,15 @@
 .board-header {
   width: 100%;
   /* Playful translucent surface with subtle brand glow */
-  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,250,255,0.92) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 250, 255, 0.92) 100%);
   backdrop-filter: blur(8px) saturate(1.05);
-  border-bottom: 2px solid rgba(79,70,229,0.08);
+  border-bottom: 2px solid rgba(79, 70, 229, 0.08);
   padding: 16px 22px;
-  box-shadow: 0 12px 40px rgba(79,70,229,0.06), 0 2px 10px rgba(2,6,23,0.05);
+  box-shadow: 0 12px 40px rgba(79, 70, 229, 0.06), 0 2px 10px rgba(2, 6, 23, 0.05);
   flex-shrink: 0;
   max-height: 220px;
-  overflow: visible; /* allow popovers to escape and avoid inner scrollbars */
+  overflow: visible;
+  /* allow popovers to escape and avoid inner scrollbars */
   border-radius: 0 0 12px 12px;
 }
 
@@ -127,7 +143,7 @@
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(239,68,68,0.12);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.12);
 }
 
 .malus-popover {
@@ -137,10 +153,10 @@
   top: calc(100% + 8px);
   width: 360px;
   max-height: 300px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 250, 255, 0.96));
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(2,6,23,0.2);
-  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.2);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   padding: 8px;
   overflow: hidden;
   opacity: 0;
@@ -165,8 +181,8 @@
 .malus-popover-item {
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(248,249,250,0.98);
-  border: 1px solid rgba(15,23,42,0.03);
+  background: rgba(248, 249, 250, 0.98);
+  border: 1px solid rgba(15, 23, 42, 0.03);
   margin-bottom: 8px;
 }
 
@@ -216,7 +232,7 @@
 }
 
 .room-code {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #6366f1;
   font-family: "Courier New", monospace;
@@ -231,82 +247,124 @@
   gap: 16px;
   align-items: flex-start;
   flex-wrap: wrap;
-  position: relative; /* allow popover positioning inside game-info */
+  position: relative;
+  /* allow popover positioning inside game-info */
 }
 
 /* Make header info boxes responsive: allow shrinking and show ellipsis when needed */
 .board-header .game-info {
   flex: 1 1 auto;
-  min-width: 0; /* allow contents to shrink below their intrinsic width */
+  min-width: 0;
+  /* allow contents to shrink below their intrinsic width */
 }
-.board-header .game-info > div {
-  min-width: 0; /* prevents overflow in flex items */
+
+.board-header .game-info>div {
+  min-width: 0;
+  /* prevents overflow in flex items */
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mode-badge, .difficulty-badge, .round-display {
+
+.mode-badge,
+.difficulty-badge,
+.round-display {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.room-info-section { min-width: 0; }
 
-.game-mode-info, .difficulty-info, .round-info {
+.room-info-section {
+  min-width: 0;
+}
+
+.game-mode-info,
+.difficulty-info,
+.round-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.mode-badge, .difficulty-badge {
-  font-size: 18px;
+
+.mode-badge,
+.difficulty-badge {
+  font-size: 16px;
   font-weight: 800;
   color: white;
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
-  padding: 10px 16px;
+  padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(2,6,23,0.06);
-  box-shadow: 0 10px 30px rgba(102,126,234,0.18);
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.18);
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  text-shadow: 0 2px 6px rgba(2,6,23,0.18);
+  text-shadow: 0 2px 6px rgba(2, 6, 23, 0.18);
 }
 
 /* Special styling for Puzzle Drawing badge for better contrast */
 .mode-badge.puzzle {
   background: linear-gradient(90deg, #064e3b, #10b981);
   color: white;
-  box-shadow: 0 8px 26px rgba(16,185,129,0.14);
+  box-shadow: 0 8px 26px rgba(16, 185, 129, 0.14);
 }
 
 .difficulty-badge.secondary {
   background: linear-gradient(90deg, var(--warning), var(--warning-dark));
-  box-shadow: 0 10px 30px rgba(249,115,22,0.16);
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.16);
 }
 
 .round-display {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #111827;
-  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(250, 250, 255, 0.96));
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,0.04);
-  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
 }
 
 /* Larger header and badges on desktop-wide screens */
 @media (min-width: 1024px) {
-  .board-header { padding: 22px 32px; }
-  .room-code { font-size: 44px !important; padding: 10px 18px !important; }
-  .room-label { font-size: 14px !important; }
-  .board-header .game-info .room-label { font-size: 13px !important; }
-  .mode-badge { font-size: 26px !important; padding: 12px 20px !important; }
-  .mode-badge.puzzle { font-size: 26px !important; padding: 12px 20px !important; }
-  .difficulty-badge { font-size: 20px !important; padding: 10px 16px !important; }
-  .round-display { font-size: 20px !important; padding: 10px 14px !important; }
+  .board-header {
+    padding: 22px 32px;
+  }
+
+  .room-code {
+    font-size: 44px !important;
+    padding: 10px 18px !important;
+  }
+
+  .room-label {
+    font-size: 14px !important;
+  }
+
+  .board-header .game-info .room-label {
+    font-size: 13px !important;
+  }
+
+  .mode-badge {
+    font-size: 26px !important;
+    padding: 12px 20px !important;
+  }
+
+  .mode-badge.puzzle {
+    font-size: 26px !important;
+    padding: 12px 20px !important;
+  }
+
+  .difficulty-badge {
+    font-size: 20px !important;
+    padding: 10px 16px !important;
+  }
+
+  .round-display {
+    font-size: 20px !important;
+    padding: 10px 14px !important;
+  }
 }
 
 .status-section {
@@ -335,30 +393,39 @@
   font-size: 36px;
   font-weight: 900;
   color: var(--success);
-  background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(16,185,129,0.03));
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.03));
   padding: 8px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(16,185,129,0.12);
+  border: 1px solid rgba(16, 185, 129, 0.12);
   letter-spacing: 3px;
-  text-shadow: 0 6px 18px rgba(16,185,129,0.12);
+  text-shadow: 0 6px 18px rgba(16, 185, 129, 0.12);
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .malus-popover {
   position: absolute;
-  left: 0; /* align under the round/mode area */
+  left: 0;
+  /* align under the round/mode area */
   top: calc(100% + 8px);
   width: 360px;
   max-height: 300px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.96));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 250, 255, 0.96));
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(2,6,23,0.2);
-  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.2);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   padding: 8px;
   overflow: hidden;
   opacity: 0;
@@ -375,17 +442,21 @@
   gap: 8px;
   /* let malus scroll internally without forcing page scroll; reserve space for actions */
   max-width: calc(100% - 260px);
-  overflow-x: auto; /* internal horizontal scroll when many malus */
+  overflow-x: auto;
+  /* internal horizontal scroll when many malus */
   -webkit-overflow-scrolling: touch;
   padding-bottom: 6px;
-  -ms-overflow-style: none; /* IE/Edge hide scrollbar */
-  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge hide scrollbar */
+  scrollbar-width: thin;
+  /* Firefox */
 }
 
 .malus-effects {
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap; /* keep items in a single row */
+  flex-wrap: nowrap;
+  /* keep items in a single row */
 }
 
 .malus-effect {
@@ -393,48 +464,64 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
   color: #7f1d1d;
   border-radius: 999px;
   font-weight: 700;
   font-size: 13px;
 
-/* Waiting overlay inside canvas wrapper so it follows canvas sizing and doesn't overlap header/sidebar */
-.canvas-wrapper { position: relative; }
-/* Strong absolute overlay rules to avoid layout shifts — use high specificity and !important
+  /* Waiting overlay inside canvas wrapper so it follows canvas sizing and doesn't overlap header/sidebar */
+  .canvas-wrapper {
+    position: relative;
+  }
+
+  /* Strong absolute overlay rules to avoid layout shifts — use high specificity and !important
    to override older responsive rules that may target .waiting-message */
-.canvas-wrapper > .waiting-overlay {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  pointer-events: none !important;
-  z-index: 1400 !important; /* above canvas but below header (header z-index:1600) */
-}
-.canvas-wrapper .waiting-overlay-inner {
-  pointer-events: auto; /* allow interaction if needed in future */
-  background: rgba(255,255,255,0.0);
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 8px 30px rgba(2,6,23,0.06);
-  font-size: clamp(14px, 2.5vw, 18px);
-  color: #0f172a;
-  font-weight: 700;
-  text-align: center;
-}
+  .canvas-wrapper>.waiting-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+    z-index: 1400 !important;
+    /* above canvas but below header (header z-index:1600) */
+  }
+
+  .canvas-wrapper .waiting-overlay-inner {
+    pointer-events: auto;
+    /* allow interaction if needed in future */
+    background: rgba(255, 255, 255, 0.0);
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+    font-size: clamp(14px, 2.5vw, 18px);
+    color: #0f172a;
+    font-weight: 700;
+    text-align: center;
+  }
+
   border: 1px solid rgba(239, 68, 68, 0.12);
-  box-shadow: 0 6px 18px rgba(79,70,229,0.04);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.04);
   white-space: nowrap;
 }
 
 /* Thin, subtle scrollbar for malus area */
-.malus-details-section::-webkit-scrollbar { height: 8px; }
-.malus-details-section::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.08); border-radius: 999px; }
-.malus-details-section::-webkit-scrollbar-track { background: transparent; }
+.malus-details-section::-webkit-scrollbar {
+  height: 8px;
+}
+
+.malus-details-section::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+}
+
+.malus-details-section::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .effect-name {
   font-size: 13px;
@@ -449,9 +536,11 @@
 
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
+
   .btn-clear,
   .btn-start {
-    min-height: 44px; /* iOS touch target size */
+    min-height: 44px;
+    /* iOS touch target size */
   }
 }
 
@@ -553,9 +642,17 @@
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
+
 /* =========================
    HEADER ACTIONS
 ========================= */
@@ -587,13 +684,21 @@
 
 .timer-pulse {
   animation: timerPulse 850ms ease-in-out infinite;
-  box-shadow: 0 8px 26px rgba(99,102,241,0.14), 0 0 0 6px rgba(99,102,241,0.06);
+  box-shadow: 0 8px 26px rgba(99, 102, 241, 0.14), 0 0 0 6px rgba(99, 102, 241, 0.06);
 }
 
 @keyframes timerPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* WAITING MESSAGES */
@@ -667,11 +772,14 @@
 }
 
 /* Ensure the leave/exit button is visible in header actions across responsive rules */
-.header-actions .btn-leave { display: inline-flex !important; align-items: center !important; gap: 6px !important; }
+.header-actions .btn-leave {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
 
 .btn-leave:hover {
   background: #475569;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
 }
-

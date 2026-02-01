@@ -201,15 +201,16 @@ body {
    }
 }
 
-/* Mobile: make canvas bigger and use most of the vertical space between header and chat */
-/* Layout: header ~100px, chat ~200-300px = ~400px reserved max */
+/* Mobile: maximize canvas height for drawing */
+/* Absolute minimal reserved space */
 @media (max-width: 768px) and (orientation: portrait) {
    .canvas-wrapper {
       padding: 4px;
       width: calc(100vw - 16px);
       max-width: none;
-      max-height: calc(100dvh - 350px);
-      min-height: 160px;
+      max-height: calc(100dvh - 220px);
+      min-height: 380px;
+      margin-top: 30px;
    }
 
    .canvas-stage {
@@ -222,7 +223,7 @@ body {
    .canvas-wrapper {
       padding: 2px;
       width: calc(100vw - 8px);
-      max-height: calc(100dvh - 200px);
+      max-height: calc(100dvh - 220px);
       min-height: 140px;
    }
 }

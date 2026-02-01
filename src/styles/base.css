@@ -1,25 +1,27 @@
 html {
-  font-size: 22px;
+  font-size: 16px;
 }
+
 :root {
   --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   --brand-primary: #667eea;
   --brand-accent: #764ba2;
   --brand-pink: #f093fb;
   --brand-secondary: #6366f1;
-  --brand-rgb: 102,126,234;
+  --brand-rgb: 102, 126, 234;
   --danger: #ef4444;
   --danger-light: #fb7185;
   --warning: #f59e0b;
   --warning-dark: #f97316;
   --success: #10b981;
-  --surface: rgba(255,255,255,0.96);
-  --sidebar-tint: rgba(102,126,234,0.10);
+  --surface: rgba(255, 255, 255, 0.96);
+  --sidebar-tint: rgba(102, 126, 234, 0.10);
   --muted: #64748b;
   --text: #0f172a;
   --card-radius: 12px;
-  --shadow-strong: 0 12px 36px rgba(2,6,23,0.08);
+  --shadow-strong: 0 12px 36px rgba(2, 6, 23, 0.08);
 }
+
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
@@ -40,6 +42,7 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -51,6 +54,7 @@ body {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -58,18 +62,24 @@ body {
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-30px) rotate(180deg);
   }
@@ -238,9 +248,9 @@ body {
   bottom: 32px;
   transform: translateX(-50%);
   z-index: 10;
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
   padding: 8px 18px;
   display: flex;
   gap: 16px;

@@ -169,9 +169,11 @@
 }
 
 /* Force equal widths regardless of button text length */
-.results-actions > button {
-  flex: 1 1 0; /* use zero basis so both buttons share space equally */
-  min-width: 0; /* allow shrinking below intrinsic size */
+.results-actions>button {
+  flex: 1 1 0;
+  /* use zero basis so both buttons share space equally */
+  min-width: 0;
+  /* allow shrinking below intrinsic size */
   box-sizing: border-box;
 }
 
@@ -209,13 +211,18 @@
   }
 
   /* Stack buttons on small screens */
-  .game-results-card > div:last-child {
+  .game-results-card>div:last-child {
     flex-direction: column !important;
   }
 
-  .game-results-card > div:last-child button {
+  .game-results-card>div:last-child button {
     width: 100% !important;
     flex: unset !important;
+  }
+
+  /* Ensure overlay is above chat on mobile */
+  .game-results-overlay {
+    z-index: 10000 !important;
   }
 }
 

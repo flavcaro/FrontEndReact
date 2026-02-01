@@ -187,13 +187,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    font-size: 20px !important;
+    padding: 6px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    font-size: 18px !important;
     background: rgba(255, 255, 255, 0.1) !important;
     border: none;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     color: inherit;
     cursor: pointer;
     transition: all 0.2s ease !important;

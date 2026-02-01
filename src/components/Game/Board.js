@@ -201,6 +201,13 @@ export default function Board({ roomId, nickname, gameConfig }) {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
+  // Clear all notifications when game starts
+  useEffect(() => {
+    if (gameState?.active) {
+      setNotifications([]);
+    }
+  }, [gameState?.active]);
+
   // Resize Listener (Ripristinato logica originale)
   useEffect(() => {
     const onResize = () => {
@@ -352,46 +359,46 @@ export default function Board({ roomId, nickname, gameConfig }) {
             onShowPlayers={() => setShowPlayersModal(true)}
           />
 
-          {/* Lives Display - Solo in modalità sopravvivenza */}
-          {gameState?.survivalMode && gameState?.playerLives && (
-            <div className="lives-display">
-              <div className="lives-title">❤️ Vite Giocatori</div>
-              {typeof survivalThresholdValue !== 'undefined' && (
-                <div className="lives-subtitle">
-                  Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
-                </div>
-              )}
-              <div className="lives-container">
-                {players.map((player) => {
-                  const lives = gameState.playerLives[player.name] || 0;
-                  const isEliminated = lives === 0;
-
-                  return (
-                    <div
-                      key={player.id}
-                      className={`player-lives ${isEliminated ? 'eliminated' : ''} ${player.name === finalNickname ? 'current-player' : ''}`}
-                    >
-                      <div className="player-name">{player.name}</div>
-                      <div className="hearts-container">
-                        {Array.from({ length: gameState.startingLives || 3 }, (_, i) => (
-                          <span
-                            key={i}
-                            className={`heart ${i < lives ? 'filled' : 'empty'}`}
-                          >
-                            {i < lives ? '❤️' : '🤍'}
-                          </span>
-                        ))}
-                      </div>
-                      {isEliminated && <div className="eliminated-text">ELIMINATO</div>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
           <main className="board-main" style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             <div className="game-content">
+              {/* Lives Display - Solo in modalità sopravvivenza - MOBILE: between header and canvas */}
+              {gameState?.survivalMode && gameState?.playerLives && (
+                <div className="lives-display">
+                  <div className="lives-title">❤️ Vite Giocatori</div>
+                  {typeof survivalThresholdValue !== 'undefined' && (
+                    <div className="lives-subtitle">
+                      Soglia minima: {survivalThresholdValue} {survivalThresholdType ? `(${survivalThresholdType === 'turn' ? 'per turno' : 'per partita'})` : ''}
+                    </div>
+                  )}
+                  <div className="lives-container">
+                    {players.map((player) => {
+                      const lives = gameState.playerLives[player.name] || 0;
+                      const isEliminated = lives === 0;
+
+                      return (
+                        <div
+                          key={player.id}
+                          className={`player-lives ${isEliminated ? 'eliminated' : ''} ${player.name === finalNickname ? 'current-player' : ''}`}
+                        >
+                          <div className="player-name">{player.name}</div>
+                          <div className="hearts-container">
+                            {Array.from({ length: gameState.startingLives || 3 }, (_, i) => (
+                              <span
+                                key={i}
+                                className={`heart ${i < lives ? 'filled' : 'empty'}`}
+                              >
+                                {i < lives ? '❤️' : '🤍'}
+                              </span>
+                            ))}
+                          </div>
+                          {isEliminated && <div className="eliminated-text">ELIMINATO</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <Canvas
                 lines={lines}
                 onMouseDown={showResults ? undefined : handleMouseDown}
@@ -401,6 +408,17 @@ export default function Board({ roomId, nickname, gameConfig }) {
                 nickname={finalNickname}
                 chaosEffects={gameState?.chaosEffects}
               />
+
+              {/* Mobile Clear button - below canvas */}
+              {isArtist && gameState?.active && (
+                <button onClick={clearBoard} className="btn-clear mobile-clear-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Pulisci
+                </button>
+              )}
 
               {isArtist && (
                 <div className="palette-floating">
@@ -416,6 +434,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
             </div>
           </main>
 
+          {/* Game Results Overlay */}
           {finalResults && (
             <GameResults
               roomId={roomId}
@@ -423,13 +442,49 @@ export default function Board({ roomId, nickname, gameConfig }) {
               finalNickname={finalNickname}
               finalResults={finalResults}
               onRestart={restartGame}
+              minYesVotes={4}
               playerId={playerId}
             />
           )}
         </div>
 
+        {/* Chat inside container on desktop only */}
+        {!isMobile && (
+          <ChatSidebar
+            className={isMobile ? 'chat-mobile-fullwidth' : ''}
+            roomId={roomId}
+            nickname={finalNickname}
+            messages={messages}
+            messagesEndRef={messagesEndRef}
+            gameState={gameState}
+            timeLeft={timeLeft}
+            isArtist={isArtist}
+            hasGuessed={hasGuessed}
+            onGuessCorrect={handleGuess}
+            style={isMobile ? {} : { width: `${chatSidebarWidth}px` }}
+          />
+        )}
+      </div>
+
+      {/* Chat outside container on mobile - as sibling */}
+      {isMobile && (
         <ChatSidebar
-          className={isMobile ? 'chat-mobile-fullwidth' : ''}
+          className="chat-mobile-fullwidth"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100vw',
+            maxWidth: '100vw',
+            height: '200px',
+            maxHeight: '200px',
+            minHeight: '200px',
+            borderLeft: 'none',
+            borderTop: '1px solid #e2e8f0',
+            zIndex: 500,
+            margin: 0
+          }}
           roomId={roomId}
           nickname={finalNickname}
           messages={messages}
@@ -439,9 +494,8 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
-          style={isMobile ? {} : { width: `${chatSidebarWidth}px` }}
         />
-      </div>
+      )}
 
       {/* Players Modal */}
       <PlayersModal

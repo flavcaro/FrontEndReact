@@ -211,25 +211,54 @@ export default function GameHeader({
             <div className="room-code">{roomId}</div>
           </div>
 
-          {/* mobile info toggle (visible only on small screens via CSS) */}
-          <button
-            type="button"
-            className="mobile-info-btn"
-            aria-expanded={mobileInfoOpen}
-            onClick={() => setMobileInfoOpen((s) => !s)}
-          >
-            ℹ️
-          </button>
+          {/* Mobile buttons group */}
+          <div className="mobile-header-buttons">
+            {/* mobile info toggle */}
+            <button
+              type="button"
+              className="mobile-info-btn"
+              aria-expanded={mobileInfoOpen}
+              onClick={() => setMobileInfoOpen((s) => !s)}
+            >
+              ℹ️
+            </button>
 
-          {/* mobile players toggle */}
-          <button
-            type="button"
-            className="mobile-players-btn"
-            onClick={onShowPlayers}
-            title="Vedi giocatori"
-          >
-            👥
-          </button>
+            {/* Exit button - visible on mobile */}
+            <button onClick={handleLeaveRoom} className="btn-leave mobile-exit-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+
+          {/* Mobile second row: Players button + Share link */}
+          <div className="mobile-share-row">
+            {/* mobile players toggle */}
+            <button
+              type="button"
+              className="mobile-players-btn"
+              onClick={onShowPlayers}
+              title="Vedi giocatori"
+            >
+              👥
+            </button>
+
+            {/* Share link for mobile */}
+            <div className="mobile-share-link">
+              <label>🔗</label>
+              <input
+                value={`${window.location.origin}/room/${roomId}`}
+                readOnly
+                onClick={(e) => {
+                  e.target.select();
+                  navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+                }}
+                title="Clicca per copiare il link"
+              />
+            </div>
+          </div>
 
           {/* Render game-info normally (desktop) */}
           <div className="game-info desktop-only">
@@ -351,12 +380,13 @@ export default function GameHeader({
                 <div className="status-label">
                   {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
                 </div>
-                <div className="word-display">
-                  {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
+                <div className="word-timer-group">
+                  <div className="word-display">
+                    {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
+                  </div>
+                  <div className="timer-display mobile-timer">⏱️ {timeLeft}s</div>
                 </div>
               </div>
-
-
 
               {/* Malus summary moved next to round info to avoid header overflow */}
             </>
@@ -393,8 +423,9 @@ export default function GameHeader({
           </div>
         )}
 
+        {/* Clear button - will be moved below canvas on mobile via CSS */}
         {isArtist && gameState?.active && (
-          <button onClick={onClearBoard} className="btn-clear">
+          <button onClick={onClearBoard} className="btn-clear desktop-clear-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -403,7 +434,8 @@ export default function GameHeader({
           </button>
         )}
 
-        <button onClick={handleLeaveRoom} className="btn-leave">
+        {/* Exit button - desktop only, mobile version is in room-info-section */}
+        <button onClick={handleLeaveRoom} className="btn-leave desktop-exit-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
