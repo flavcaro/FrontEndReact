@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
+import classicGif from '../../sprites/logo.gif';
 import { onAuthStateChanged } from 'firebase/auth';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -77,7 +78,9 @@ export default function RoomJoin({ roomId }) {
       <div className="lobby-container">
         <div className="lobby-card">
           <div className="lobby-header">
-            <div className="logo">🎨</div>
+            <div className="logo">
+              <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
+            </div>
             <h1>Stanza: {roomId}</h1>
             <p>Devi accedere per entrare in questa stanza</p>
           </div>
@@ -110,7 +113,9 @@ export default function RoomJoin({ roomId }) {
     <div className="lobby-container">
       <div className="lobby-card">
         <div className="lobby-header">
-          <div className="logo">🎨</div>
+          <div className="logo">
+            <img src={classicGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
+          </div>
           <h1>Entra nella Stanza</h1>
           <p>Stanza: <strong style={{ color: '#6366f1', fontFamily: 'monospace' }}>{roomId}</strong></p>
         </div>
