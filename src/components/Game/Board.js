@@ -345,7 +345,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
             flexDirection: "column",
             overflow: "hidden",
             minHeight: 0,
-            background: 'linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fbcfe8 100%)'
+            background: 'transparent'
           }}
         >
           <GameHeader
@@ -366,36 +366,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
             onShowPlayers={() => setShowPlayersModal(true)}
           />
 
-          <main className="board-main" style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+          <main className="board-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: "hidden", minHeight: 0 }}>
             <div className="game-content">
-              {/* Mobile Waiting/Start Messages - Only visible on mobile, shown first */}
-              {isMobile && (
-                <>
-                  {/* Start button for owner */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length >= 2 && isOwner && (
-                    <button onClick={handleStartGame} className="mobile-start-btn">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                      👑 Inizia Partita
-                    </button>
-                  )}
-
-                  {/* Waiting message for non-owner */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length >= 2 && !isOwner && (
-                    <div className="mobile-waiting-overlay">
-                      👑 In attesa che il creatore avvii la partita...
-                    </div>
-                  )}
-
-                  {/* Waiting for more players */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length < 2 && (
-                    <div className="mobile-waiting-overlay">
-                      ⏳ In attesa di altri giocatori ({players.length}/2)
-                    </div>
-                  )}
-                </>
-              )}
+              {/* Mobile overlays moved to Header to avoid 'macello' */}
 
               {/* Lives Display - Solo in modalità sopravvivenza - MOBILE: between header and canvas */}
               {gameState?.survivalMode && gameState?.playerLives && (
@@ -445,19 +418,16 @@ export default function Board({ roomId, nickname, gameConfig }) {
                 chaosEffects={gameState?.chaosEffects}
               />
 
-              {/* Mobile Clear button - below canvas */}
               {isArtist && gameState?.active && (
-                <button onClick={clearBoard} className="btn-clear mobile-clear-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                  Pulisci
-                </button>
-              )}
+                <div className="palette-floating unified-drawing-toolbar">
+                  <button onClick={clearBoard} className="btn-clear unified-clear-btn" title="Pulisci lavagna">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span className="btn-text">Pulisci</span>
+                  </button>
 
-              {isArtist && (
-                <div className="palette-floating">
                   <Palette
                     selectedColor={selectedColor}
                     onChangeColor={setSelectedColor}
@@ -496,12 +466,18 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
-          isMobile={true}
+          isMobile={isMobile}
           style={isMobile
-            ? { flex: 1, minHeight: 0, width: '100%' } // Mobile: takes remaining vertical space
-            : { width: `${chatSidebarWidth}px` }       // Desktop: fixed width
+            ? { height: '32dvh', width: '100vw', minWidth: '100vw', flex: 'none' }
+            : { width: `${chatSidebarWidth}px` }
           }
         />
+
+        <div className="home-bg-shapes">
+          <div className="shape shape-1"></div>
+          <div className="shape shape-2"></div>
+          <div className="shape shape-3"></div>
+        </div>
       </div>
 
       {/* Players Modal */}
