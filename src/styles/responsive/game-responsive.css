@@ -356,6 +356,13 @@
         font-size: 13px !important;
     }
 
+    .word-timer-group {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
     /* 5. GAME AREA (CANVAS) */
     .board-center {
         flex: 1 !important;
