@@ -138,7 +138,6 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   gap: '12px'
                 }}
               >
-<<<<<<< HEAD
                 {mode.sprite ? (
                   <img 
                     src={mode.sprite} 
@@ -151,15 +150,10 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                     }}
                   />
                 ) : (
-                  <div style={{ fontSize: '24px' }}>{mode.icon}</div>
+                  <div style={{ fontSize: 'clamp(18px, 3.5vw, 24px)' }}>{mode.icon}</div>
                 )}
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
-=======
-                <div style={{ fontSize: 'clamp(18px, 3.5vw, 22px)' }}>{mode.icon}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: '600', color: '#1e293b', fontSize: 'clamp(13px, 2.8vw, 18px)', lineHeight: '1.3' }}>
->>>>>>> 84cdc6cb549c4a6361963d673637389a031157e1
                     {mode.name}
                   </div>
                   <div style={{ 
