@@ -345,7 +345,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
             flexDirection: "column",
             overflow: "hidden",
             minHeight: 0,
-            background: isMobile ? 'transparent' : 'linear-gradient(135deg, #f0f1ff 0%, #f5f3ff 50%, #faf5ff 100%)'
+            background: 'transparent'
           }}
         >
           <GameHeader
