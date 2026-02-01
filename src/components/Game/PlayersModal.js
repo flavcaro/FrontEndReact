@@ -4,22 +4,6 @@ import { MAX_PLAYERS } from '../../constants/gameConfig';
 export default function PlayersModal({ isOpen, onClose, players, gameState, nickname, roomId }) {
   if (!isOpen) return null;
 
-  // Try to include the room name in the share URL if available in localStorage
-  let shareUrl = `${window.location.origin}/room/${roomId}`;
-  let roomName = '';
-  try {
-    const stored = localStorage.getItem(`room_${roomId}_mode`);
-    if (stored) {
-      const cfg = JSON.parse(stored);
-      if (cfg && cfg.name) {
-        const nameOnly = cfg.name.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
-        const cleaned = nameOnly.replace(/[^\p{L}\p{N}\s\-_.]/gu, '').trim();
-        roomName = cleaned || '';
-      }
-    }
-  } catch (err) {
-    // ignore parse errors
-  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -34,18 +18,18 @@ export default function PlayersModal({ isOpen, onClose, players, gameState, nick
             ✕
           </button>
         </div>
-        
+
         <div className="players-modal-list">
           {players.map((p) => (
-            <div 
-              key={p.id} 
+            <div
+              key={p.id}
               className={`player-modal-item ${p.name === nickname ? 'player-current' : ''}`}
               style={{
                 border: p.name === gameState?.currentArtist ? '2px solid #22c55e' : 'none',
                 background: p.name === gameState?.currentArtist ? '#dcfce7' : undefined
               }}
             >
-              <div 
+              <div
                 className="player-modal-avatar"
                 style={{
                   background: `linear-gradient(135deg, ${p.color || '#667eea'}, ${adjustBrightness(p.color || '#667eea', -20)})`,
@@ -54,7 +38,7 @@ export default function PlayersModal({ isOpen, onClose, players, gameState, nick
               >
                 {p.isOwner ? '👑' : p.name === gameState?.currentArtist ? '🎨' : p.name.charAt(0).toUpperCase()}
               </div>
-              
+
               <div className="player-modal-info">
                 <div className="player-modal-name">
                   {p.isOwner && '👑 '}
@@ -68,7 +52,7 @@ export default function PlayersModal({ isOpen, onClose, players, gameState, nick
                   </div>
                 )}
               </div>
-              
+
               {gameState?.guessedPlayers?.some(g => g.nickname === p.name) && (
                 <span className="guessed-check">✅</span>
               )}
@@ -76,27 +60,6 @@ export default function PlayersModal({ isOpen, onClose, players, gameState, nick
           ))}
         </div>
 
-        <div className="share-box-modal">
-          <label className="share-label">
-            🔗 Invita amici 
-            {players.length >= MAX_PLAYERS && <span className="room-full-text">(Stanza piena)</span>}
-          </label>
-          {roomName && (
-            <div className="room-name-display">
-              Nome stanza: <strong>{roomName}</strong>
-            </div>
-          )}
-          <input
-            className="share-input-modal"
-            value={shareUrl}
-            readOnly
-            onClick={(e) => {
-              e.target.select();
-              navigator.clipboard.writeText(shareUrl);
-            }}
-            title={shareUrl}
-          />
-        </div>
       </div>
     </div>
   );

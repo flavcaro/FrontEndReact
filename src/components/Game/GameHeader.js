@@ -382,20 +382,6 @@ export default function GameHeader({
                   <div className="round-display">{currentRound}/{totalRounds}</div>
                 </div>
               )}
-              <div className="share-section">
-                <div className="room-label">Link Invito</div>
-                <div className="mobile-share-link">
-                  <input
-                    value={`${window.location.origin}/room/${roomId}`}
-                    readOnly
-                    onClick={(e) => {
-                      e.target.select();
-                      navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-                    }}
-                  />
-                  <span className="copy-hint">Tocca per copiare</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
