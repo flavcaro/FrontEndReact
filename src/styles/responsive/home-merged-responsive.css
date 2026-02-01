@@ -19,11 +19,20 @@
         padding-bottom: 0px !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
 
-    /* Hide background shapes on mobile to prevent overflow/extra space */
+    /* Restore background shapes but fix them to viewport to avoid scroll overflow */
     .bg-elements {
-        display: none !important;
+        display: block !important;
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 0 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
     }
 
     /* Header Elements */

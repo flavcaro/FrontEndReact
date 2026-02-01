@@ -351,11 +351,10 @@ export default function GameResults({ roomId, players = [], finalNickname, final
           </button>
         </div>
 
-        {/* Voting modal */}
         {restartVote?.status === 'open' && !gameActive && !restartVote?.inPlaceRestart && (
           <div className="simple-modal" style={{
             position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', background: 'rgba(0,0,0,0.4)'
+            justifyContent: 'center', background: 'rgba(0,0,0,0.4)', zIndex: 20
           }}>
             <div style={{ background: 'white', padding: 20, borderRadius: 12, minWidth: 360, maxWidth: 680 }}>
               <h3 style={{ marginTop: 0 }}>Votazione: Giocare ancora?</h3>
