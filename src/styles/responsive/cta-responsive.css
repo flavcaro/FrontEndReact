@@ -3,7 +3,8 @@
 /* Larger, taller mobile CTA and hero adjustments */
 @media (max-width: 480px) {
   .mobile-create-btn-wrapper { display: block !important; }
-  .mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100% !important; padding: 14px 16px !important; font-size: 18px !important; line-height: 1 !important; border-radius: 14px !important; background: linear-gradient(90deg,#fff,#f3f4f6) !important; color: #0f172a !important; box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important; border: none !important; font-weight: 700 !important; }
+  .mobile-create-btn.lobby-btn,
+  .mobile-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100% !important; padding: 24px 32px !important; font-size: 18px !important; line-height: 1.2 !important; border-radius: 16px !important; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%) !important; color: white !important; box-shadow: 0 12px 35px rgba(79, 70, 229, 0.5), 0 6px 15px rgba(124, 58, 237, 0.35) !important; border: none !important; font-weight: 700 !important; transition: all 0.3s ease !important; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important; letter-spacing: 0.3px !important; text-transform: uppercase !important; }
   .hero-create-inline { display: none !important; }
   .mobile-cta-column { display: block !important; order: 0 !important; }
   .mobile-cta-column .mobile-create-btn { margin-bottom: 6px !important; }

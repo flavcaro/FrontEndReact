@@ -63,18 +63,64 @@
     white-space: normal !important;
   }
 
-  /* Make mode buttons behave like option buttons on narrow screens (two per row) */
-  .custom-create .modes-select .mode-btn {
-    width: calc(50% - 4px) !important;
-    text-align: center !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 10px 8px !important;
-    font-size: 13px !important;
-    white-space: nowrap !important;
+  /* Make mode buttons full width on narrow screens (one per row) */
+  .custom-create .modes-select {
+    gap: 8px !important;
+    flex-direction: column !important;
   }
 
+  .custom-create .modes-select .mode-btn {
+    width: 100% !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.3 !important;
+    height: 52px !important;
+    min-height: unset !important;
+    font-weight: 700 !important;
+  }
+}
+
+/* GameModeSelector mobile: aumenta opacità delle opzioni selezionate */
+@media (max-width: 768px) {
+  /* Difficoltà selezionata: background più opaco e visibile */
+  button[style*="#22c55e40"],
+  button[style*="#f59e0b40"],
+  button[style*="#ef444440"] {
+    background-color: rgba(34, 197, 94, 0.4) !important;
+    font-weight: 700 !important;
+  }
+  
+  button[style*="#f59e0b40"] {
+    background-color: rgba(245, 158, 11, 0.4) !important;
+  }
+  
+  button[style*="#ef444440"] {
+    background-color: rgba(239, 68, 68, 0.4) !important;
+  }
+
+  /* Option buttons attivi: background più visibile e opaco */
+  .option-btn.active {
+    background: linear-gradient(90deg, #06b6d4, #7c3aed) !important;
+    color: #fff !important;
+    border: 3px solid #7c3aed !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4) !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+  }
+
+  .custom-create .option-btn.active {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed, #db2777) !important;
+    border: 3px solid #7c3aed !important;
+  }
+}
+
+@media (max-width: 520px) {
   /* Layout: durata + rounds as two columns, each with vertical stacked options */
   .custom-create .duration-rounds-row {
     display: grid !important;

@@ -23,6 +23,43 @@
   animation: slideIn 0.4s ease-out;
 }
 
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .profile-card {
+    padding: 16px;
+    border-radius: 16px;
+    margin-top: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .profile-header h2 {
+    font-size: 24px !important;
+  }
+
+  .section-title {
+    font-size: 20px !important;
+  }
+
+  .user-avatar {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .avatar-icon {
+    font-size: 30px !important;
+  }
+
+  .nickname-display h3 {
+    font-size: 20px !important;
+  }
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -243,25 +280,26 @@
 }
 
 .edit-account-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 24px;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
 .edit-account-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
 }
 
 .edit-account-btn:active {
   transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
 }
 
 .account-edit-form {
@@ -482,21 +520,38 @@
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
-  .profile-header h2 {
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-value {
     font-size: 20px;
   }
 
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .profile-header {
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .profile-header h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
   .profile-header > button {
-    font-size: 12px !important;
-    padding: 6px 10px !important;
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    white-space: nowrap;
   }
 
   .info-label {

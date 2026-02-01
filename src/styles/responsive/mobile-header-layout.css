@@ -1,128 +1,235 @@
-/* Mobile header layout reorganization */
-
-/* Desktop: hide mobile-specific buttons */
-.mobile-exit-btn,
-.mobile-header-buttons,
-.mobile-share-row,
-.mobile-timer {
-    display: none;
+/* =========================================================
+   DESKTOP – nascondi elementi mobile
+   ========================================================= */
+@media (min-width: 1201px) {
+  .mobile-exit-btn,
+  .mobile-header-buttons,
+  .mobile-share-row,
+  .mobile-timer {
+    display: none !important;
+  }
 }
 
-/* Mobile: reorganize header layout */
-@media (max-width: 768px) and (orientation: portrait) {
+/* =========================================================
+   MOBILE / TABLET
+   ========================================================= */
+@media (max-width: 1200px) {
 
-    /* Hide desktop versions of buttons */
-    .desktop-exit-btn,
-    .desktop-clear-btn {
-        display: none !important;
-    }
+  /* Nascondi pulsanti desktop */
+  .desktop-exit-btn,
+  .desktop-clear-btn,
+  .btn-leave.desktop-exit-btn {
+    display: none !important;
+  }
 
-    /* Show mobile exit button */
-    .mobile-exit-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 6px !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
-        font-size: 16px !important;
-        background: rgba(255, 0, 0, 0.1) !important;
-        border: none !important;
-        border-radius: 8px !important;
-        color: #dc2626 !important;
-        cursor: pointer !important;
-    }
+  /* Header */
+  .board-header {
+    position: relative !important;
+    padding: 10px 52px 10px 12px !important;
+    overflow: visible !important;
+  }
 
-    .mobile-exit-btn svg {
-        width: 16px !important;
-        height: 16px !important;
-    }
+  .header-main,
+  .room-info-section,
+  .mobile-header-buttons {
+    min-width: 0 !important;
+  }
 
-    /* Mobile header buttons container */
-    .mobile-header-buttons {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 6px !important;
-    }
+  .header-main {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 
-    /* Mobile share row */
-    .mobile-share-row {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 6px !important;
-        width: 100% !important;
-        margin-top: 6px !important;
-    }
+  /* Exit button */
+  .mobile-exit-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 100 !important;
 
-    .mobile-share-row .mobile-players-btn {
-        flex: 0 0 auto !important;
-    }
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    .mobile-share-row .mobile-share-link {
-        flex: 1 1 auto !important;
-        margin-top: 0 !important;
-    }
+    min-width: 40px !important;
+    min-height: 40px !important;
+    padding: 6px !important;
 
-    /* Word and timer inline group - compact */
-    .word-timer-group {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 6px !important;
-        flex-wrap: nowrap !important;
-        margin: 4px 0 !important;
-    }
+    font-size: 16px !important;
+    color: #dc2626 !important;
+    background: rgba(255, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 0, 0, 0.3) !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+  }
 
-    .word-timer-group .word-display {
-        flex: 0 1 auto !important;
-        font-size: 16px !important;
-        padding: 6px 10px !important;
-    }
+  .mobile-exit-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
 
-    .word-timer-group .mobile-timer {
-        display: inline-flex !important;
-        flex: 0 0 auto !important;
-        font-size: 13px !important;
-        padding: 4px 8px !important;
-        background: rgba(99, 102, 241, 0.1) !important;
-        border-radius: 6px !important;
-        color: #6366f1 !important;
-        font-weight: 600 !important;
-    }
+  /* Header actions */
+  .header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding-right: 60px !important;
+  }
 
-    /* Hide desktop timer in header-actions */
-    .header-actions .timer-display:not(.mobile-timer) {
-        display: none !important;
-    }
+  .waiting-message {
+    flex: 1 !important;
+  }
 
-    /* Artist status inline - status label and word on same line */
-    .artist-status {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 8px !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-    }
+  /* Room info */
+  .room-info-section {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    flex: 1 !important;
+  }
 
-    /* Room info section should wrap properly */
-    .board-header .room-info-section {
-        flex-wrap: wrap !important;
-    }
+  .room-basic {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .room-code {
+    font-size: 18px !important;
+    padding: 6px 10px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Info / players buttons */
+  .mobile-info-btn,
+  .mobile-players-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    min-width: 40px !important;
+    min-height: 40px !important;
+    padding: 8px !important;
+
+    font-size: 20px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+  }
+
+  /* ===== SHARE ROW – FULL WIDTH ===== */
+  .mobile-share-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+
+    width: 100% !important;
+    flex-basis: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-share-row .mobile-players-btn {
+    flex: 0 0 auto !important;
+  }
+
+  .mobile-share-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+
+    padding: 8px 10px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .mobile-share-link label {
+    font-size: 18px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .mobile-share-link input {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Timer */
+  .mobile-timer {
+    display: inline-flex !important;
+    padding: 4px 8px !important;
+    font-size: 13px !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: #6366f1 !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+  }
+
+  .header-actions .timer-display:not(.mobile-timer) {
+    display: none !important;
+  }
+
+  /* Artist status */
+  .artist-status {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
 }
 
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
 @media (max-width: 480px) {
-    .mobile-exit-btn {
-        padding: 5px !important;
-        min-width: 32px !important;
-        min-height: 32px !important;
-    }
 
-    .word-timer-group .mobile-timer {
-        font-size: 12px !important;
-        padding: 3px 6px !important;
-    }
+  .board-header {
+    padding: 8px 48px 8px 10px !important;
+  }
+
+  .room-code {
+    font-size: 15px !important;
+  }
+
+  .mobile-exit-btn {
+    min-width: 36px !important;
+    min-height: 36px !important;
+    font-size: 13px !important;
+  }
+
+  .mobile-info-btn,
+  .mobile-players-btn {
+    min-width: 36px !important;
+    min-height: 36px !important;
+    font-size: 18px !important;
+  }
+
+  .mobile-share-link {
+    padding: 6px 8px !important;
+  }
+
+  .mobile-share-link input {
+    font-size: 11px !important;
+    padding: 5px 6px !important;
+  }
 }

@@ -82,7 +82,7 @@ export default function GameHeader({
   };
 
   const minPlayersRequired = getMinPlayersForMode();
-  const canStartGame = !gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && isOwner;
+  const canStartGame = !gameState?.active && !gameState?.gameEnded && (gameState?.round === 0 || !gameState?.round) && playersCount >= minPlayersRequired && isOwner;
 
   // active malus list is shown via the popover; no inline summary variable needed
 

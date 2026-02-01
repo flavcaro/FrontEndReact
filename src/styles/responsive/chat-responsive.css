@@ -301,6 +301,54 @@
 }
 
 /* Ensure chat sidebar reduces on narrower viewports despite desktop min-width rules */
+/* Force mobile layout when window width is narrow */
+@media (max-width: 1200px) {
+  /* Switch to mobile layout: chat at bottom */
+  .board-container {
+    flex-direction: column !important;
+  }
+
+  html body .board-container > .chat-sidebar,
+  html body .board-container .chat-sidebar,
+  html body .chat-sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 280px !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    flex-basis: 100% !important;
+    z-index: 100 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  .board-container > .game-area {
+    flex: 1 !important;
+    width: 100% !important;
+    padding-bottom: 0 !important;
+    height: calc(100vh - 280px) !important;
+    max-height: calc(100vh - 280px) !important;
+    overflow: hidden !important;
+  }
+
+  .canvas-wrapper {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .board-main {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .chat-sidebar .chat-box {
+    height: calc(100% - 60px) !important;
+  }
+}
+
 @media (max-width: 1200px) {
   .board-container .chat-sidebar {
     width: 160px !important;

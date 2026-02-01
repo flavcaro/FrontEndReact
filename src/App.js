@@ -12,12 +12,13 @@ import { ref, get } from "firebase/database";
 import Lobby from "./components/Lobby/Lobby";
 import Home from "./components/Home/Home";
 import Board from "./components/Game/Board";
-import PuzzleBoard from "./components/Game/PuzzleBoard";
 import RoomJoin from "./components/Room/RoomJoin";
 import Profile from "./components/Profile/Profile";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
+import "./styles/responsive/mobile-home-improvements.css";
+import "./styles/modal-desktop-enhancements.css";
 import { GAME_MODES, DEFAULT_DIFFICULTY, DEFAULT_ROUNDS, TURN_DURATION } from './constants/gameConfig';
 
 function ProtectedHome() {
@@ -76,7 +77,6 @@ function RoomPlay() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
   const [gameConfig, setGameConfig] = useState(null);
-  const [isReady, setIsReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [configLoaded, setConfigLoaded] = useState(false); // Flag per evitare loop
@@ -182,7 +182,6 @@ function RoomPlay() {
 
     loadGameConfig();
     setNickname(nick);
-    setIsReady(true);
   }, [navigate, roomId, user, authLoading, configLoaded]); // Aggiungi configLoaded alle dipendenze
 
   return <Board roomId={roomId.toUpperCase()} nickname={nickname} gameConfig={gameConfig} />;

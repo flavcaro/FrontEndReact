@@ -70,7 +70,8 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
       zIndex: 1000,
       padding: '20px',
       animation: 'fadeIn 0.3s ease-out'
-    }}>
+    }}
+    className="game-mode-selector-modal">
       <div style={{
         background: 'white',
         borderRadius: '24px',
@@ -85,7 +86,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
       }}
       className="hide-scrollbar">
         <h2 style={{
-          fontSize: '38px',
+          fontSize: 'clamp(24px, 5vw, 38px)',
           fontWeight: '700',
           color: '#1e293b',
           marginBottom: '8px',
@@ -95,7 +96,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         </h2>
         <p style={{
           color: '#64748b',
-          fontSize: '26px',
+          fontSize: 'clamp(14px, 3vw, 26px)',
           marginBottom: '24px',
           textAlign: 'center'
         }}>
@@ -105,7 +106,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Game Mode Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '26px',
+            fontSize: 'clamp(18px, 4vw, 26px)',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -122,7 +123,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                 key={mode.id}
                 onClick={() => setSelectedMode(mode.id)}
                 style={{
-                  padding: '16px',
+                  padding: 'clamp(12px, 3vw, 16px)',
                   border: selectedMode === mode.id 
                     ? '3px solid #6366f1' 
                     : '2px solid #e2e8f0',
@@ -137,6 +138,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   gap: '12px'
                 }}
               >
+<<<<<<< HEAD
                 {mode.sprite ? (
                   <img 
                     src={mode.sprite} 
@@ -153,14 +155,28 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                 )}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
+=======
+                <div style={{ fontSize: 'clamp(18px, 3.5vw, 22px)' }}>{mode.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: 'clamp(13px, 2.8vw, 18px)', lineHeight: '1.3' }}>
+>>>>>>> 84cdc6cb549c4a6361963d673637389a031157e1
                     {mode.name}
                   </div>
-                  <div style={{ fontSize: '24px', color: '#64748b' }}>
+                  <div style={{ 
+                    fontSize: 'clamp(11px, 2.2vw, 14px)', 
+                    color: '#64748b',
+                    lineHeight: '1.3',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
                     {mode.description}
                   </div>
                 </div>
                 {selectedMode === mode.id && (
-                  <div style={{ fontSize: '20px', color: '#6366f1' }}>✓</div>
+                  <div style={{ fontSize: 'clamp(16px, 3vw, 20px)', color: '#6366f1' }}>✓</div>
                 )}
               </div>
             ))}
@@ -170,7 +186,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
         {/* Turn Time Selection */}
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{
-            fontSize: '26px',
+            fontSize: 'clamp(18px, 4vw, 26px)',
             fontWeight: '600',
             color: '#334155',
             marginBottom: '12px'
@@ -187,7 +203,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                 key={timeOption.id}
                 onClick={() => setSelectedTime(timeOption.id)}
                 style={{
-                  padding: '16px',
+                  padding: 'clamp(12px, 3vw, 16px)',
                   border: selectedTime === timeOption.id 
                     ? '3px solid #6366f1' 
                     : '2px solid #e2e8f0',
@@ -202,17 +218,26 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   gap: '12px'
                 }}
               >
-                <div style={{ fontSize: '24px' }}>{timeOption.icon}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '26px' }}>
+                <div style={{ fontSize: 'clamp(18px, 3.5vw, 22px)' }}>{timeOption.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: '600', color: '#1e293b', fontSize: 'clamp(13px, 2.8vw, 18px)', lineHeight: '1.3' }}>
                     {timeOption.name}
                   </div>
-                  <div style={{ fontSize: '24px', color: '#64748b' }}>
+                  <div style={{ 
+                    fontSize: 'clamp(11px, 2.2vw, 14px)', 
+                    color: '#64748b',
+                    lineHeight: '1.3',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
                     {timeOption.description}
                   </div>
                 </div>
                 {selectedTime === timeOption.id && (
-                  <div style={{ fontSize: '20px', color: '#6366f1' }}>✓</div>
+                  <div style={{ fontSize: 'clamp(16px, 3vw, 20px)', color: '#6366f1' }}>✓</div>
                 )}
               </div>
             ))}
@@ -249,7 +274,7 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   background: selectedDifficulty === difficulty.id 
-                    ? `${difficulty.color}15` 
+                    ? `${difficulty.color}40` 
                     : 'white',
                   textAlign: 'center'
                 }}
@@ -258,14 +283,14 @@ export default function GameModeSelector({ onSelectMode, onCancel }) {
                   {difficulty.icon}
                 </div>
                 <div style={{
-                  fontWeight: '600',
+                  fontWeight: '700',
                   color: selectedDifficulty === difficulty.id ? difficulty.color : '#334155',
                   fontSize: '26px',
                   marginBottom: '4px'
                 }}>
                   {difficulty.name}
                 </div>
-                <div style={{ fontSize: '23px', color: '#64748b' }}>
+                <div style={{ fontSize: '23px', color: selectedDifficulty === difficulty.id ? '#334155' : '#64748b' }}>
                   {difficulty.description}
                 </div>
               </button>
