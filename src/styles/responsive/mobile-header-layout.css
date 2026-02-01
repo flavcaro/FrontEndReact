@@ -1,49 +1,172 @@
 /* Mobile header layout reorganization */
 
-/* Desktop: hide mobile-specific buttons */
-.mobile-exit-btn,
-.mobile-header-buttons,
-.mobile-share-row,
-.mobile-timer {
-    display: none;
+/* Desktop: hide mobile-specific buttons only on large screens */
+@media (min-width: 1201px) {
+  .mobile-exit-btn,
+  .mobile-header-buttons,
+  .mobile-share-row,
+  .mobile-timer {
+    display: none !important;
+  }
 }
 
 /* Mobile: reorganize header layout */
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 1200px) {
 
     /* Hide desktop versions of buttons */
     .desktop-exit-btn,
-    .desktop-clear-btn {
+    .desktop-clear-btn,
+    .btn-leave.desktop-exit-btn {
         display: none !important;
     }
 
-    /* Show mobile exit button */
+    /* Position exit button in top right corner */
+    .board-header {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        min-height: 64px !important;
+    }
+
+    .header-main {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+
     .mobile-exit-btn {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 6px !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
-        font-size: 16px !important;
-        background: rgba(255, 0, 0, 0.1) !important;
-        border: none !important;
-        border-radius: 8px !important;
+        padding: 8px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        font-size: 18px !important;
+        background: rgba(255, 0, 0, 0.15) !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
         color: #dc2626 !important;
         cursor: pointer !important;
+        position: absolute !important;
+        top: 10px !important;
+        right: 12px !important;
+        z-index: 10 !important;
     }
 
     .mobile-exit-btn svg {
-        width: 16px !important;
-        height: 16px !important;
+        width: 18px !important;
+        height: 18px !important;
     }
 
-    /* Mobile header buttons container */
+    /* Position exit button on the right side in header-actions */
+    .header-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding-right: 60px !important;
+    }
+
+    .waiting-message {
+        flex: 1 !important;
+        text-align: left !important;
+    }
+
+    /* Mobile header buttons container - keep info and players together */
+    .board-header .room-info-section {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex: 1 !important;
+    }
+
+    .board-header .header-main {
+        display: flex !important;
+        align-items: center !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    .room-basic {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
     .mobile-header-buttons {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .mobile-share-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+
+    /* Larger mobile info and players buttons */
+    .mobile-info-btn,
+    .mobile-players-btn {
+        min-width: 48px !important;
+        min-height: 48px !important;
+        font-size: 24px !important;
+        padding: 10px !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Hide desktop game info and show mobile popover */
+    .game-info.desktop-only {
+        display: none !important;
+    }
+
+    .mobile-game-info-popover {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 8px;
+        right: 8px;
+        margin: 0 auto;
+        max-width: 400px;
+        z-index: 2000;
+    }
+
+    .mobile-game-info-popover.open {
+        display: block !important;
+    }
+
+    .mobile-game-info-inner {
+        background: #fff;
+        color: #0f172a;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-game-info-inner > div {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mobile-game-info-inner > div:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
     }
 
     /* Mobile share row */

@@ -1,14 +1,16 @@
 /* Header responsive rules extracted from home-responsive.css */
 
-/* Desktop-first: hide mobile-only info toggle/popover by default */
-.mobile-info-btn,
-.mobile-players-btn,
-.mobile-game-info-popover {
-  display: none;
-}
+/* Desktop-first: hide mobile-only info toggle/popover by default on large screens */
+@media (min-width: 1201px) {
+  .mobile-info-btn,
+  .mobile-players-btn,
+  .mobile-game-info-popover {
+    display: none !important;
+  }
 
-.desktop-only {
-  display: block;
+  .desktop-only {
+    display: block;
+  }
 }
 
 /* Hide mobile-only menu by default; shown only inside mobile media queries */
@@ -25,6 +27,50 @@
 .status-section,
 .header-actions {
   transition: all 0.3s ease;
+}
+
+/* Show mobile buttons when layout switches to mobile (same as chat breakpoint) */
+@media (max-width: 1200px) {
+  .mobile-info-btn,
+  .mobile-players-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: inherit;
+    cursor: pointer;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-game-info-popover {
+    display: block;
+  }
+
+  /* Hide desktop game info (mode, difficulty, rounds) from header */
+  .board-header .game-info {
+    display: none !important;
+  }
+
+  /* Hide players sidebar - shown only via modal button */
+  .board-container > .players-sidebar,
+  .players-sidebar {
+    display: none !important;
+  }
+
+  /* Adjust game area to take full width without sidebar */
+  .board-container > .game-area {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 /* Intermediate breakpoint for split-screen scenarios */
@@ -98,7 +144,7 @@
 
   .mobile-info-btn,
   .mobile-players-btn {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     padding: 6px;
@@ -133,7 +179,7 @@
   }
 
   .desktop-only {
-    display: none;
+    display: none !important;
   }
 }
 
