@@ -366,36 +366,9 @@ export default function Board({ roomId, nickname, gameConfig }) {
             onShowPlayers={() => setShowPlayersModal(true)}
           />
 
-          <main className="board-main" style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+          <main className="board-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: "hidden", minHeight: 0 }}>
             <div className="game-content">
-              {/* Mobile Waiting/Start Messages - Only visible on mobile, shown first */}
-              {isMobile && (
-                <>
-                  {/* Start button for owner */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length >= 2 && isOwner && (
-                    <button onClick={handleStartGame} className="mobile-start-btn">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                      👑 Inizia Partita
-                    </button>
-                  )}
-
-                  {/* Waiting message for non-owner */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length >= 2 && !isOwner && (
-                    <div className="mobile-waiting-overlay">
-                      👑 In attesa che il creatore avvii la partita...
-                    </div>
-                  )}
-
-                  {/* Waiting for more players */}
-                  {!gameState?.active && !gameState?.gameEnded && players.length < 2 && (
-                    <div className="mobile-waiting-overlay">
-                      ⏳ In attesa di altri giocatori ({players.length}/2)
-                    </div>
-                  )}
-                </>
-              )}
+              {/* Mobile overlays moved to Header to avoid 'macello' */}
 
               {/* Lives Display - Solo in modalità sopravvivenza - MOBILE: between header and canvas */}
               {gameState?.survivalMode && gameState?.playerLives && (

@@ -204,263 +204,239 @@ export default function GameHeader({
   return (
     <header className="board-header">
       <div className="header-main">
-        {/* Info stanza e modalità */}
         <div className="room-info-section">
           <div className="room-basic">
             <div className="room-label">Stanza {isOwner && '👑'}</div>
             <div className="room-code">{roomId}</div>
           </div>
 
-          {/* Mobile buttons group - info and players next to room */}
-          <div className="mobile-header-buttons">
-            {/* mobile info toggle */}
-            <button
-              type="button"
-              className="mobile-icon-btn info-trigger"
-              onClick={() => setMobileInfoOpen(true)}
-              aria-label="Informazioni partita"
-            >
-              ℹ️
-            </button>
-
-            {/* mobile players toggle */}
-            <button
-              type="button"
-              className="mobile-icon-btn players-trigger"
-              onClick={onShowPlayers}
-              aria-label="Lista giocatori"
-            >
-              👥
-            </button>
-
-            {/* Exit button - visible on mobile */}
-            <button
-              onClick={handleLeaveRoom}
-              className="mobile-icon-btn exit-trigger"
-              aria-label="Esci"
-            >
-              ✕
-            </button>
-          </div>
-
-        {/* Mobile share link row - visible on mobile */}
-        <div className="mobile-share-row">
-          <span>🔗 Invita:</span>
-          <div className="mobile-share-link">
-            <input
-              type="text"
-              value={`${window.location.origin}/room/${roomId}`}
-              readOnly
-              onClick={(e) => {
-                e.target.select();
-                navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-              }}
-            />
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-              }}
-            >
-              Copia
-            </button>
+          {/* Mobile Share Button Style (Classic) */}
+          <div className="mobile-share-row">
+            <div className="mobile-share-link" onClick={() => {
+              navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+            }}>
+              🔗 Invita Amici
+            </div>
           </div>
         </div>
 
-          {/* Render game-info normally (desktop) */}
-          <div className="game-info desktop-only">
-            <div className="game-mode-info">
-              <div className="room-label">Modalità</div>
-              <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
-            </div>
+        <div className="mobile-header-buttons">
+          <button className="mobile-icon-btn info-trigger" onClick={() => setMobileInfoOpen(true)}>ℹ️</button>
+          <button className="mobile-icon-btn players-trigger" onClick={onShowPlayers}>👥</button>
+          <button className="mobile-icon-btn exit-trigger" onClick={handleLeaveRoom}>✕</button>
+        </div>
+      </div>
 
-            <div className="difficulty-info">
-              <div className="room-label">Difficoltà</div>
-              <div className="difficulty-badge secondary">{difficulty}</div>
-            </div>
+      {/* This was causing the 'macello' - hiding it for now or making it CSS-conditional */}
+      {!gameState?.active && (
+        <div className="mobile-waiting-status">
+          {playersCount < minPlayersRequired
+            ? `⏳ In attesa (${playersCount}/${minPlayersRequired})`
+            : isOwner ? "✅ Pronti a iniziare!" : "👑 In attesa dell'host..."}
+        </div>
+      )}
 
-            <div className="round-info">
-              <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
-              <div className="round-display">{roundsPerPlayer}</div>
-            </div>
+      {/* Render game-info normally (desktop) */}
+      <div className="game-info desktop-only">
+        <div className="game-mode-info">
+          <div className="room-label">Modalità</div>
+          <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
+        </div>
 
-            {gameState?.active && (
-              <div className="round-info">
-                <div className="room-label">Round</div>
-                <div className="round-display">{currentRound}/{totalRounds}</div>
-              </div>
-            )}
-            {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
-              <div
-                className="malus-inline"
-                ref={malusRef}
-                onMouseEnter={() => {
-                  if (malusAutoTimeoutRef.current) {
-                    clearTimeout(malusAutoTimeoutRef.current);
-                    malusAutoTimeoutRef.current = null;
-                  }
-                  setMalusOpen(true);
+        <div className="difficulty-info">
+          <div className="room-label">Difficoltà</div>
+          <div className="difficulty-badge secondary">{difficulty}</div>
+        </div>
+
+        <div className="round-info">
+          <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
+          <div className="round-display">{roundsPerPlayer}</div>
+        </div>
+
+        {gameState?.active && (
+          <div className="round-info">
+            <div className="room-label">Round</div>
+            <div className="round-display">{currentRound}/{totalRounds}</div>
+          </div>
+        )}
+        {Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
+          <div
+            className="malus-inline"
+            ref={malusRef}
+            onMouseEnter={() => {
+              if (malusAutoTimeoutRef.current) {
+                clearTimeout(malusAutoTimeoutRef.current);
+                malusAutoTimeoutRef.current = null;
+              }
+              setMalusOpen(true);
+            }}
+            onMouseLeave={() => {
+              setMalusOpen(malusManualOpen);
+            }}
+          >
+            <div className="malus-label">🎭</div>
+            <div className="malus-info-inline">
+              <button
+                type="button"
+                className="malus-summary"
+                onClick={() => {
+                  setMalusManualOpen((prev) => {
+                    const nv = !prev;
+                    setMalusOpen(nv);
+                    return nv;
+                  });
                 }}
-                onMouseLeave={() => {
-                  setMalusOpen(malusManualOpen);
-                }}
+                aria-expanded={malusOpen}
               >
-                <div className="malus-label">🎭</div>
-                <div className="malus-info-inline">
-                  <button
-                    type="button"
-                    className="malus-summary"
-                    onClick={() => {
-                      setMalusManualOpen((prev) => {
-                        const nv = !prev;
-                        setMalusOpen(nv);
-                        return nv;
-                      });
-                    }}
-                    aria-expanded={malusOpen}
-                  >
-                    {gameState.chaosEffects.length} attivi
-                  </button>
-                  <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
-                    <div className="malus-popover-inner">
-                      {gameState.chaosEffects.map((m, idx) => {
-                        const renderParams = () => {
-                          if (!m.params || typeof m.params !== 'object') return null;
-                          return Object.entries(m.params).map(([k, v]) => {
-                            const pretty = (val) => {
-                              if (val === null || val === undefined) return String(val);
-                              if (typeof val === 'object') {
-                                try { return JSON.stringify(val); } catch (e) { return String(val); }
-                              }
-                              return String(val);
-                            };
-                            return `${k}: ${pretty(v)}`;
-                          }).join(' • ');
+                {gameState.chaosEffects.length} attivi
+              </button>
+              <div className={`malus-popover ${malusOpen ? 'open' : ''}`} role="dialog" aria-hidden={!malusOpen}>
+                <div className="malus-popover-inner">
+                  {gameState.chaosEffects.map((m, idx) => {
+                    const renderParams = () => {
+                      if (!m.params || typeof m.params !== 'object') return null;
+                      return Object.entries(m.params).map(([k, v]) => {
+                        const pretty = (val) => {
+                          if (val === null || val === undefined) return String(val);
+                          if (typeof val === 'object') {
+                            try { return JSON.stringify(val); } catch (e) { return String(val); }
+                          }
+                          return String(val);
                         };
+                        return `${k}: ${pretty(v)}`;
+                      }).join(' • ');
+                    };
 
-                        return (
-                          <div key={m.id || idx} className="malus-popover-item">
-                            <div className="effect-name">{m.name}</div>
-                            {m.params && typeof m.params === 'object' && (
-                              <div className="effect-params">{renderParams()}</div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile Modal for game info */}
-        {mobileInfoOpen && (
-          <div className="mobile-modal-overlay" onClick={() => setMobileInfoOpen(false)}>
-            <div className="mobile-modal-content" onClick={e => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3>ℹ️ Informazioni Partita</h3>
-                <button className="close-btn" onClick={() => setMobileInfoOpen(false)}>✕</button>
-              </div>
-              <div className="mobile-game-info-inner">
-                <div className="game-mode-info">
-                  <div className="room-label">Modalità</div>
-                  <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
-                </div>
-                <div className="difficulty-info">
-                  <div className="room-label">Difficoltà</div>
-                  <div className="difficulty-badge secondary">{difficulty}</div>
-                </div>
-                <div className="round-info">
-                  <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
-                  <div className="round-display">{roundsPerPlayer}</div>
-                </div>
-                {gameState?.active && (
-                  <div className="round-info">
-                    <div className="room-label">Round</div>
-                    <div className="round-display">{currentRound}/{totalRounds}</div>
-                  </div>
-                )}
-                <div className="share-section">
-                  <div className="room-label">Link Invito</div>
-                  <div className="mobile-share-link">
-                    <input
-                      value={`${window.location.origin}/room/${roomId}`}
-                      readOnly
-                      onClick={(e) => {
-                        e.target.select();
-                        navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-                      }}
-                    />
-                    <span className="copy-hint">Tocca per copiare</span>
-                  </div>
+                    return (
+                      <div key={m.id || idx} className="malus-popover-item">
+                        <div className="effect-name">{m.name}</div>
+                        {m.params && typeof m.params === 'object' && (
+                          <div className="effect-params">{renderParams()}</div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
         )}
-
-        {/* Stato artista / malus */}
-        <div className="status-section">
-          {gameState?.active && (
-            <>
-              <div className="artist-status">
-                <div className="status-label">
-                  {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
-                </div>
-                <div className="word-timer-group">
-                  <div className="word-display">
-                    {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
-                  </div>
-                  <div className="timer-display mobile-timer">⏱️ {timeLeft}s</div>
-                </div>
-              </div>
-
-              {/* Malus summary moved next to round info to avoid header overflow */}
-            </>
-          )}
-        </div>
       </div>
 
+      {/* Mobile Modal for game info */}
+      {mobileInfoOpen && (
+        <div className="mobile-modal-overlay" onClick={() => setMobileInfoOpen(false)}>
+          <div className="mobile-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>ℹ️ Informazioni Partita</h3>
+              <button className="close-btn" onClick={() => setMobileInfoOpen(false)}>✕</button>
+            </div>
+            <div className="mobile-game-info-inner">
+              <div className="game-mode-info">
+                <div className="room-label">Modalità</div>
+                <div className={`mode-badge ${puzzleDetected ? 'puzzle' : ''}`}>{gameMode}</div>
+              </div>
+              <div className="difficulty-info">
+                <div className="room-label">Difficoltà</div>
+                <div className="difficulty-badge secondary">{difficulty}</div>
+              </div>
+              <div className="round-info">
+                <div className="room-label">{puzzleDetected ? 'Cicli' : 'Rounds a testa'}</div>
+                <div className="round-display">{roundsPerPlayer}</div>
+              </div>
+              {gameState?.active && (
+                <div className="round-info">
+                  <div className="room-label">Round</div>
+                  <div className="round-display">{currentRound}/{totalRounds}</div>
+                </div>
+              )}
+              <div className="share-section">
+                <div className="room-label">Link Invito</div>
+                <div className="mobile-share-link">
+                  <input
+                    value={`${window.location.origin}/room/${roomId}`}
+                    readOnly
+                    onClick={(e) => {
+                      e.target.select();
+                      navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
+                    }}
+                  />
+                  <span className="copy-hint">Tocca per copiare</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+      }
 
+      {/* Stato artista / malus */}
+      <div className="status-section">
+        {gameState?.active && (
+          <>
+            <div className="artist-status">
+              <div className="status-label">
+                {isArtist ? '🎨 Stai disegnando' : hasGuessed ? '✅ Hai indovinato!' : '🤔 Indovina la parola'}
+              </div>
+              <div className="word-timer-group">
+                <div className="word-display">
+                  {isArtist ? gameState.word : '_ '.repeat(gameState.word?.length || 0)}
+                </div>
+                <div className="timer-display mobile-timer">⏱️ {timeLeft}s</div>
+              </div>
+            </div>
+
+            {/* Malus summary moved next to round info to avoid header overflow */}
+          </>
+        )}
+      </div>
 
       {/* Azioni */}
       <div className="header-actions">
         {gameState?.active && (
           <div className="timer-display">⏱️ {timeLeft}s</div>
-        )}
+        )
+        }
 
-        {canStartGame && (
-          <button onClick={onStartGame} className="btn-start">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            👑 Inizia
-          </button>
-        )}
+        {
+          canStartGame && (
+            <button onClick={onStartGame} className="btn-start">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              👑 Inizia
+            </button>
+          )
+        }
 
-        {!gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && !isOwner && (
-          <div className="waiting-message">
-            👑 In attesa che il creatore avvii la partita...
-          </div>
-        )}
+        {
+          !gameState?.active && !gameState?.gameEnded && playersCount >= minPlayersRequired && !isOwner && (
+            <div className="waiting-message">
+              👑 In attesa che il creatore avvii la partita...
+            </div>
+          )
+        }
 
-        {!gameState?.active && !gameState?.gameEnded && playersCount < minPlayersRequired && (
-          <div className="waiting-message">
-            ⏳ In attesa di altri giocatori ({playersCount}/{minPlayersRequired})
-          </div>
-        )}
+        {
+          !gameState?.active && !gameState?.gameEnded && playersCount < minPlayersRequired && (
+            <div className="waiting-message">
+              ⏳ In attesa di altri giocatori ({playersCount}/{minPlayersRequired})
+            </div>
+          )
+        }
 
         {/* Clear button - will be moved below canvas on mobile via CSS */}
-        {isArtist && gameState?.active && (
-          <button onClick={onClearBoard} className="btn-clear desktop-clear-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-            Pulisci
-          </button>
-        )}
+        {
+          isArtist && gameState?.active && (
+            <button onClick={onClearBoard} className="btn-clear desktop-clear-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Pulisci
+            </button>
+          )
+        }
 
         {/* Exit button - desktop only, mobile version is in room-info-section */}
         <button onClick={handleLeaveRoom} className="btn-leave desktop-exit-btn">
@@ -471,7 +447,7 @@ export default function GameHeader({
           </svg>
           {isOwner ? '👑 Esci' : 'Esci'}
         </button>
-      </div>
-    </header>
+      </div >
+    </header >
   );
 }
