@@ -496,6 +496,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
           isArtist={isArtist}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
+          isMobile={true}
           style={isMobile
             ? { flex: 1, minHeight: 0, width: '100%' } // Mobile: takes remaining vertical space
             : { width: `${chatSidebarWidth}px` }       // Desktop: fixed width

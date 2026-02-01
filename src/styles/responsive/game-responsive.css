@@ -113,22 +113,175 @@
    ========================================================= */
 @media (max-width: 768px) {
 
-    /* Force exact height split layout */
+    /* STRICT LAYOUT: Header -> Game -> Chat */
     .board-container {
+        display: flex !important;
         flex-direction: column !important;
         height: 100dvh !important;
         width: 100vw !important;
-        padding: 0 !important;
-        margin: 0 !important;
         overflow: hidden !important;
-        display: flex !important;
+        background: #f8fafc !important;
         position: fixed !important;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
-        align-items: stretch !important;
-        background: #f8fafc !important;
+    }
+
+    .board-main {
+        display: contents !important;
+        /* Flatten structure so children participate in main flex container if needed, or keep as flex wrapper */
+    }
+
+    /* 1. Game Area - Takes available space above chat */
+    .board-center {
+        flex: 1 1 auto !important;
+        /* Grow to fill space */
+        height: auto !important;
+        /* Let flex decide */
+        min-height: 0 !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .game-content {
+        flex: 1 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .canvas-wrapper {
+        flex: 1 !important;
+        height: 100% !important;
+        max-height: none !important;
+        /* Remove constraints, fill space */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .canvas-wrapper canvas {
+        max-height: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* 2. CHAT - Fixed height at bottom, no overlap */
+    .board-container .chat-sidebar.chat-mobile-split,
+    .chat-mobile-split {
+        flex: 0 0 40dvh !important;
+        /* Fixed 40% height */
+        height: 40dvh !important;
+        width: 100% !important;
+        order: 99 !important;
+        border-top: 1px solid #e2e8f0 !important;
+        z-index: 50 !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+        background: white !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03) !important;
+        margin: 0 !important;
+        /* No auto margin, just strict block */
+    }
+
+    /* Hide chat header on mobile to remove 'white bar' */
+    .chat-mobile-split .sidebar-header {
+        display: none !important;
+    }
+
+    /* Waiting overlay moved to Header section */
+
+    /* Rules moved/merged with header section below */
+
+    /* HEADER & WAITING MESSAGE MERGE */
+    .board-header {
+        border-bottom: none !important;
+        /* Remove separator */
+        padding-bottom: 0 !important;
+        background: white !important;
+        z-index: 60 !important;
+    }
+
+    .mobile-waiting-overlay {
+        background: white !important;
+        /* Match header */
+        color: #d97706 !important;
+        padding: 4px 12px 8px 12px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        /* Border moved here */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: 100% !important;
+        position: static !important;
+        margin: 0 !important;
+    }
+
+    /* CLEAN SHARE LINK - Button Style Only */
+    .mobile-share-row {
+        margin: 4px 0 0 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .mobile-share-link {
+        background: #eff6ff !important;
+        color: #3b82f6 !important;
+        border: 1px solid #dbeafe !important;
+        border-radius: 8px !important;
+        padding: 6px 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* HIDE THE UGLY INPUT */
+    .mobile-share-link input {
+        display: none !important;
+    }
+
+    /* REVEAL BUTTON ACTION TEXT */
+    .mobile-share-link::before {
+        content: '🔗 Invita Amici';
+        display: block;
+    }
+
+    .mobile-share-link button {
+        display: none !important;
+    }
+
+    /* Hide chat header */
+    .chat-mobile-split .sidebar-header,
+    .chat-mobile-fullwidth .sidebar-header {
+        display: none !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .game-content {
+        padding-top: 0 !important;
+        /* Remove top gap */
+        justify-content: center !important;
+        /* Center canvas vertically */
+    }
+
+    .mobile-icon-btn {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+        border-radius: 8px !important;
     }
 
     .desktop-only,
@@ -189,18 +342,6 @@
         color: #64748b !important;
     }
 
-    .board-main {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
-        min-height: 0 !important;
-        gap: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        align-items: stretch !important;
-    }
-
     /* Game Area (Top ~55%) */
     .board-center {
         height: 55dvh !important;
@@ -214,53 +355,8 @@
         flex-direction: column !important;
     }
 
-    .game-content {
-        flex: 1 !important;
-        /* Fill the board-center vertical space */
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
-        /* Cut off oversized canvas */
-        gap: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        justify-content: flex-start !important;
-    }
-
-    /* Canvas more compact */
-    .canvas-wrapper {
-        flex: 0 0 auto !important;
-        max-height: 28vh !important;
-        order: 1 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .canvas-wrapper canvas {
-        max-height: 28vh !important;
-        width: 100% !important;
-        height: auto !important;
-        display: block !important;
-    }
-
     /* Hide waiting message from header */
     .header-actions .waiting-message {
-        display: none !important;
-    }
-
-    /* Mobile share link - very compact */
-    .mobile-share-row {
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-        padding: 5px 8px !important;
-        background: #f8fafc !important;
-        border-radius: 5px !important;
-        border: 1px solid #e2e8f0 !important;
-        width: 100% !important;
-    }
-
-    .mobile-share-row>span {
         display: none !important;
     }
 

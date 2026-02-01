@@ -46,7 +46,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
 
   const [selectedColor, setSelectedColor] = useState("#1e293b");
   const [selectedInstrument, setSelectedInstrument] = useState("pencil");
-  const [brushSize, setBrushSize] = useState(2);
+  const [brushSize] = useState(2);
   const [popup, setPopup] = useState({ open: false, message: "" });
   const [showPlayersModal, setShowPlayersModal] = useState(false);
 
@@ -278,13 +278,13 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
         )}
       </div>
 
-      {/* Chat outside container on mobile - as sibling */}
+      {/* Chat outside container on mobile - as sibling, but styled as split for consistency if desired, or kept fullwidth but without header */}
       {isMobile && (
         <ChatSidebar
-          className="chat-mobile-fullwidth"
+          className="chat-mobile-split"
           style={{
             width: '100%',
-            height: '180px',
+            height: '40dvh', // Match Board.js
             flexShrink: 0,
             borderLeft: 'none',
             borderTop: '2px solid #e2e8f0',
@@ -299,6 +299,7 @@ const PuzzleBoard = ({ roomId, nickname, gameConfig }) => {
           isArtist={isDrawer}
           hasGuessed={hasGuessed}
           onGuessCorrect={handleGuess}
+          isMobile={true}
         />
       )}
 

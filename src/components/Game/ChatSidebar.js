@@ -14,7 +14,8 @@ export default function ChatSidebar({
   hasGuessed,
   onGuessCorrect,
   style,
-  className
+  className,
+  isMobile
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [players, setPlayers] = useState([]);
@@ -155,9 +156,11 @@ export default function ChatSidebar({
 
   return (
     <aside className={`chat-sidebar ${className || ''}`} style={style}>
-      <div className="sidebar-header">
-        <h3>💬 Chat</h3>
-      </div>
+      {!isMobile && (
+        <div className="sidebar-header">
+          <h3>💬 Chat</h3>
+        </div>
+      )}
 
       <div className="chat-messages">
         {messages.map((msg) => {
