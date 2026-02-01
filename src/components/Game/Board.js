@@ -319,13 +319,12 @@ export default function Board({ roomId, nickname, gameConfig }) {
       <div
         className="board-container"
         style={{
-          position: isPinned ? 'fixed' : 'static',
-          inset: isPinned ? 0 : 'auto',
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          overflow: 'hidden',
-          alignItems: 'stretch',
-          width: '100%'
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
+          background: "transparent"
         }}
       >
         <PlayersSidebar

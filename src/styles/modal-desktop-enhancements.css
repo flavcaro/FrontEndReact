@@ -335,8 +335,12 @@
   }
 
   .custom-create .modes-select .mode-btn {
-    padding: 22px 20px;
-    font-size: 19px;
+    padding: 16px 10px;
+    font-size: 15px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .custom-create .duration-rounds-row {

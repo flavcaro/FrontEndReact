@@ -4,9 +4,7 @@
 .mobile-nickname-badge,
 .mobile-hamburger,
 .mobile-menu,
-.mobile-menu-backdrop,
-.mobile-cta-column,
-.mobile-create-btn-wrapper {
+.mobile-menu-backdrop {
     display: none !important;
 }
 

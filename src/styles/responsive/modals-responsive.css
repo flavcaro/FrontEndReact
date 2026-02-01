@@ -3,12 +3,67 @@
 /* FROM modal-responsive.css */
 @media (max-width: 768px) {
     .modal-content {
-        width: 95% !important;
-        max-width: 480px !important;
-        padding: 20px !important;
-        border-radius: 16px !important;
-        max-height: 90vh;
+        width: 92% !important;
+        max-width: 450px !important;
+        padding: 24px 20px !important;
+        border-radius: 24px !important;
+        max-height: 92vh;
         overflow-y: auto;
+    }
+
+    /* Custom Room Modal Specifics - Back to Compact */
+    .custom-create .modes-select {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .custom-create .duration-rounds-row {
+        flex-direction: row !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .custom-create .vertical-options {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .custom-create .option-btn {
+        flex: 1 !important;
+        padding: 10px 6px !important;
+        font-size: 13px !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    .custom-create .difficulty-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+    }
+
+    .modal-actions-row {
+        flex-direction: row !important;
+        gap: 10px !important;
+        padding-top: 16px !important;
+        margin-top: 16px !important;
+    }
+
+    .modal-actions-row button {
+        flex: 1 !important;
+        width: auto !important;
+        padding: 12px !important;
+        font-size: 14px !important;
+    }
+
+    .modal-close {
+        top: 12px !important;
+        right: 12px !important;
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 13px !important;
+        background: #f1f5f9 !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
     }
 }
 
