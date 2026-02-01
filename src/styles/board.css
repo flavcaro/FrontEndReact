@@ -109,56 +109,58 @@
    HEADER / ROOM INFO
 ========================= */
 
-/* Hard-Compact Header Overrides */
-html body .board-container .board-header {
-  padding: 0 16px !important;
-  min-height: 64px !important;
-  height: 64px !important;
-  display: flex !important;
-  align-items: center !important;
-  background: white !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-  width: 100% !important;
-  justify-content: space-between !important;
-}
+/* Hard-Compact Header Overrides - ONLY ON DESKTOP */
+@media (min-width: 769px) {
+  html body .board-container .board-header {
+    padding: 0 16px !important;
+    min-height: 64px !important;
+    height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    background: white !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
 
-html body .board-container .board-header .room-code {
-  font-size: 16px !important;
-  padding: 6px 12px !important;
-  border-radius: 10px !important;
-  background: #f1f5f9 !important;
-  color: #6366f1 !important;
-  font-weight: 800 !important;
-}
+  html body .board-container .board-header .room-code {
+    font-size: 16px !important;
+    padding: 6px 12px !important;
+    border-radius: 10px !important;
+    background: #f1f5f9 !important;
+    color: #6366f1 !important;
+    font-weight: 800 !important;
+  }
 
-html body .board-container .board-header .mode-badge,
-html body .board-container .board-header .difficulty-badge,
-html body .board-container .board-header .round-display {
-  font-size: 11px !important;
-  padding: 3px 8px !important;
-  height: 24px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  font-weight: 700 !important;
-}
+  html body .board-container .board-header .mode-badge,
+  html body .board-container .board-header .difficulty-badge,
+  html body .board-container .board-header .round-display {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+    height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    font-weight: 700 !important;
+  }
 
-html body .board-container .board-header .btn-start,
-html body .board-container .board-header .btn-clear,
-html body .board-container .board-header .btn-leave {
-  font-size: 11px !important;
-  padding: 4px 12px !important;
-  height: 28px !important;
-  min-height: 0 !important;
-  border-radius: 8px !important;
-}
+  html body .board-container .board-header .btn-start,
+  html body .board-container .board-header .btn-clear,
+  html body .board-container .board-header .btn-leave {
+    font-size: 11px !important;
+    padding: 4px 12px !important;
+    height: 28px !important;
+    min-height: 0 !important;
+    border-radius: 8px !important;
+  }
 
-html body .board-container .board-header .room-label {
-  font-size: 10px !important;
-  text-transform: uppercase !important;
-  margin-bottom: 4px !important;
-  letter-spacing: 0.5px !important;
-  font-weight: 700 !important;
-  color: #94a3b8 !important;
+  html body .board-container .board-header .room-label {
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    margin-bottom: 4px !important;
+    letter-spacing: 0.5px !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+  }
 }
 
 /* Malus compact summary + popover */
@@ -433,46 +435,49 @@ html body .board-container .board-header .room-label {
   }
 }
 
-.status-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
-  justify-content: center;
-  flex: 1 1 auto;
-  margin-right: 24px;
-}
+/* Status Section and Word Display - ONLY ON DESKTOP */
+@media (min-width: 769px) {
+  .status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+    justify-content: center;
+    flex: 1 1 auto;
+    margin-right: 24px;
+  }
 
-.artist-status {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 2px;
-}
+  .artist-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+  }
 
-.status-label {
-  font-size: 10px;
-  font-weight: 800;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
+  .status-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
 
-.word-display {
-  font-size: 17px;
-  font-weight: 900;
-  color: var(--success);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
-  padding: 4px 12px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(16, 185, 129, 0.15);
-  letter-spacing: 1.5px;
-  text-shadow: 0 1px 3px rgba(16, 185, 129, 0.1);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
-  transition: font-size 0.3s ease;
-  word-break: break-word;
-  max-width: 100%;
+  .word-display {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--success);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+    padding: 4px 12px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(16, 185, 129, 0.15);
+    letter-spacing: 1.5px;
+    text-shadow: 0 1px 3px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
+    transition: font-size 0.3s ease;
+    word-break: break-word;
+    max-width: 100%;
+  }
 }
 
 @keyframes pulse {
