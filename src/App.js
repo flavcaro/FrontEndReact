@@ -17,7 +17,6 @@ import Profile from "./components/Profile/Profile";
 import Loading from "./components/common/Loading";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./App.css";
-import "./styles/responsive/mobile-home-improvements.css";
 import "./styles/modal-desktop-enhancements.css";
 import { GAME_MODES, DEFAULT_DIFFICULTY, DEFAULT_ROUNDS, TURN_DURATION } from './constants/gameConfig';
 
@@ -139,7 +138,7 @@ function RoomPlay() {
           const configRef = ref(db, `rooms/${roomId}/config`);
           const configSnap = await get(configRef);
           const configData = configSnap.val();
-          
+
           if (configData) {
             console.log('✅ Config caricata da Firebase (config):', configData);
             setGameConfig(configData);
@@ -148,7 +147,7 @@ function RoomPlay() {
             // Fallback: prova localStorage o URL
             const storedConfigKey = `room_${roomId}_mode`;
             const storedConfig = localStorage.getItem(storedConfigKey);
-            
+
             if (storedConfig) {
               const config = JSON.parse(storedConfig);
               console.log("📦 Config da localStorage:", config);
@@ -172,7 +171,7 @@ function RoomPlay() {
             }
           }
         }
-        
+
         setConfigLoaded(true); // Marca come caricato!
       } catch (error) {
         console.error('❌ Errore caricamento config:', error);

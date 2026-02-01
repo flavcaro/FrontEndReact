@@ -30,11 +30,26 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding-top: 0;
-  padding-bottom: 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop: No vertical scroll on main container */
+@media (min-width: 1025px) {
+  .home {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* Mobile/Tablet: Standard scrolling */
+@media (max-width: 1024px) {
+  .home {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }
 
 /* ===========================================
@@ -142,6 +157,33 @@ span.logo-text {
   gap: 6px;
   align-items: center;
   margin-right: 10px;
+}
+
+/* Premium Save Nickname Button */
+.save-nick-btn {
+  background: linear-gradient(135deg, #ff7ab6, #7c3aed) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 8px 16px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2) !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+}
+
+.save-nick-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3) !important;
+  filter: brightness(1.05);
+}
+
+.save-nick-btn:active {
+  transform: translateY(0) !important;
+}
+
+.save-nick-btn.saved {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
 }
 
 .level-badge,

@@ -1,0 +1,52 @@
+/* modals-responsive.css — Modals, Results, Join, and Mode selections */
+
+/* FROM modal-responsive.css */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95% !important;
+        max-width: 480px !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* FROM results-responsive.css */
+@media (max-width: 768px) {
+    .results-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .result-card {
+        padding: 12px !important;
+    }
+}
+
+/* FROM modes-responsive.css */
+@media (max-width: 768px) {
+    .modes-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .mode-option {
+        padding: 15px !important;
+    }
+}
+
+/* FROM join-responsive.css */
+@media (max-width: 768px) {
+    .join-room-modal .lobby-input {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+}
+
+/* FROM leaderboard-responsive.css */
+@media (max-width: 768px) {
+    .leaderboard-modal .leader-row {
+        padding: 8px 10px !important;
+    }
+}

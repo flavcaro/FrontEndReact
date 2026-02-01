@@ -1,25 +1,8 @@
 /* Aggregate entry for responsive styles.
-   This file re-exports existing responsive modules so the app can import
-   a single CSS file instead of many small ones.
-   Keeping separate files intact so future incremental refactors are possible.
+   Consolidated into 4 thematic bundles for better maintainability.
 */
 
-@import './board-responsive.css';
-@import './chat-responsive.css';
-@import './cta-responsive.css';
-@import './header-responsive.css';
-@import './home-responsive.css';
-@import './interactions-responsive.css';
-@import './join-responsive.css';
-@import './leaderboard-responsive.css';
-@import './menu-responsive.css';
-@import './mobile-landscape.css';
-@import './mobile-portrait.css';
-@import './modal-responsive.css';
-@import './modes-responsive.css';
-@import './players-responsive.css';
-@import './results-responsive.css';
-@import './tablet-landscape.css';
-@import './share-link-mobile.css';
-@import './mobile-header-layout.css';
-@import './mobile-clear-button.css';
+@import './core-responsive.css';
+@import './game-responsive.css';
+@import './home-merged-responsive.css';
+@import './modals-responsive.css';

@@ -1,0 +1,176 @@
+/* home-merged-responsive.css — Consolidated Home page mobile overrides. */
+
+/* --- GLOBAL VISIBILITY TOGGLES --- */
+.mobile-nickname-badge,
+.mobile-hamburger,
+.mobile-menu,
+.mobile-menu-backdrop,
+.mobile-cta-column,
+.mobile-create-btn-wrapper {
+    display: none !important;
+}
+
+/* --- MOBILE & TABLET LAYOUT (Single Rule) --- */
+@media (max-width: 1024px) {
+
+    /* Header Elements */
+    .mobile-hamburger {
+        display: flex !important;
+        position: absolute !important;
+        right: 14px !important;
+        top: 14px !important;
+        background: rgba(255, 255, 255, 0.18) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+        font-size: 22px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 1300 !important;
+    }
+
+    .mobile-nickname-badge {
+        display: inline-flex !important;
+        position: absolute !important;
+        right: 64px !important;
+        top: 14px !important;
+        height: 38px !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(8px) !important;
+        padding: 6px 14px !important;
+        border-radius: 99px !important;
+        align-items: center !important;
+        gap: 10px !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+    }
+
+    .mobile-nick-xp {
+        color: #fbbf24 !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu-backdrop {
+        display: block !important;
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(2px) !important;
+        z-index: 1100 !important;
+    }
+
+    .mobile-menu {
+        display: block !important;
+        position: fixed !important;
+        top: 60px !important;
+        right: 14px !important;
+        left: 14px !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(20px) !important;
+        border-radius: 20px !important;
+        padding: 12px !important;
+        z-index: 1200 !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .mobile-menu ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mobile-menu li {
+        padding: 4px 0;
+    }
+
+    .mobile-menu button {
+        width: 100%;
+        background: #f8fafc;
+        border: 1.5px solid #edf2f7;
+        padding: 14px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    /* Main Grid Collapse */
+    .home-row-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Layout Ordering */
+    .modes-column {
+        order: 1 !important;
+        margin-bottom: 8px;
+    }
+
+    .join-column {
+        order: 2 !important;
+        margin-bottom: 8px;
+    }
+
+    .right-column {
+        order: 3 !important;
+        position: static !important;
+    }
+
+    /* Hide Desktop Elements */
+    .header-right,
+    .hero-column,
+    .desktop-only {
+        display: none !important;
+    }
+
+    /* Mobile Cards Polish */
+    .quick-buttons-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .quick-button-card {
+        padding: 12px 8px !important;
+        min-height: 140px !important;
+        background: white !important;
+        border: 2px solid #f1f5f9 !important;
+        border-radius: 14px !important;
+    }
+
+    .join-card {
+        padding: 20px !important;
+        border-radius: 16px !important;
+    }
+
+    .join-card input {
+        padding: 14px !important;
+        font-size: 16px !important;
+    }
+
+    /* Section Full Width */
+    .quick-create-section {
+        width: 100% !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        /* Premium flush look */
+        background: white !important;
+    }
+}

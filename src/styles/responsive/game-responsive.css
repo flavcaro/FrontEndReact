@@ -1,0 +1,204 @@
+/* game-responsive.css — Game board, Chat, Players, and Sidebar elements */
+
+/* =========================================================
+   DESKTOP (min-width: 1201px)
+   ========================================================= */
+@media (min-width: 1201px) {
+
+    .mobile-exit-btn,
+    .mobile-header-buttons,
+    .mobile-share-row,
+    .mobile-timer,
+    .mobile-share-link {
+        display: none !important;
+    }
+}
+
+/* PROPORTIONAL SIDEBARS (From chat/players-responsive.css) */
+@media (min-width: 1024px) {
+    .board-container>.chat-sidebar {
+        flex: 0 0 22% !important;
+        min-width: 240px !important;
+        max-width: 600px !important;
+        box-sizing: border-box !important;
+    }
+
+    .board-container>.players-sidebar {
+        flex: 0 0 18% !important;
+        min-width: 180px !important;
+        max-width: 420px !important;
+        padding: 22px !important;
+        box-sizing: border-box !important;
+    }
+
+    .player-avatar {
+        width: 72px !important;
+        height: 72px !important;
+    }
+
+    .player-name {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+    }
+
+    .share-box {
+        padding: 18px !important;
+    }
+
+    .share-box input {
+        font-size: 18px !important;
+        padding: 12px !important;
+    }
+}
+
+/* =========================================================
+   BOARD & HEADER RESPONSIVE
+   ========================================================= */
+@media (min-width: 769px) {
+    .board-header .game-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .board-header .header-main {
+        padding-right: 380px;
+    }
+
+    .board-header .header-actions {
+        position: absolute;
+        right: 32px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        z-index: 1100;
+    }
+}
+
+@media (max-width: 1200px) {
+
+    .desktop-exit-btn,
+    .desktop-clear-btn {
+        display: none !important;
+    }
+
+    .board-header {
+        position: relative !important;
+        padding: 10px 52px 10px 12px !important;
+    }
+
+    .header-main {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .mobile-exit-btn {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        z-index: 100 !important;
+        display: inline-flex !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        background: rgba(255, 0, 0, 0.15) !important;
+        border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        border-radius: 10px !important;
+        color: #dc2626 !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .room-info-section {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        flex: 1 !important;
+    }
+
+    .mobile-info-btn,
+    .mobile-players-btn {
+        display: inline-flex !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Share Link (From share-link-mobile.css) */
+    .mobile-share-link {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        padding: 4px 8px !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+    }
+
+    .mobile-share-link input {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-radius: 6px !important;
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+        color: #0f172a !important;
+    }
+}
+
+/* =========================================================
+   MOBILE PORTRAIT STACKING (From board-responsive.css)
+   ========================================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+    .board-container {
+        flex-direction: column !important;
+        height: 100dvh !important;
+    }
+
+    .board-main {
+        padding-bottom: calc(25vh + 20px) !important;
+    }
+
+    .game-content {
+        padding-top: 45px !important;
+    }
+
+    .mobile-clear-btn {
+        display: flex !important;
+        width: calc(100% - 16px) !important;
+        margin: 20px auto 12px auto !important;
+        padding: 12px 20px !important;
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        order: 3 !important;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .canvas-wrapper {
+        order: 1 !important;
+    }
+
+    .palette-floating {
+        order: 2 !important;
+        position: relative !important;
+        margin: 4px auto !important;
+    }
+
+    /* HIDE SIDEBARS IN STACKED MODE */
+    .board-container>.players-sidebar,
+    .board-container>.chat-sidebar {
+        display: none !important;
+    }
+}

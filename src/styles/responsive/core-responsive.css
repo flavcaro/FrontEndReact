@@ -1,0 +1,101 @@
+/* core-responsive.css — Layout, Header, Menu, and basic Mobile/Tablet base */
+
+/* FROM mobile-portrait.css (Main Layout Stack) */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .board-container {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .board-main {
+        flex: 1;
+        order: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-sidebar {
+        position: relative !important;
+        width: 100% !important;
+        max-height: 30% !important;
+        min-height: 120px !important;
+        order: 2;
+        border-top: 2px solid #e2e8f0 !important;
+        z-index: 5 !important;
+    }
+
+    .players-sidebar {
+        position: relative !important;
+        width: 100% !important;
+        max-height: 96px !important;
+        min-height: 64px !important;
+        order: 3;
+        border-top: 2px solid #e2e8f0 !important;
+        overflow-x: auto;
+        z-index: 10 !important;
+        background: white;
+    }
+
+    .players-list {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding: 12px 8px !important;
+        gap: 10px !important;
+    }
+}
+
+/* FROM mobile-landscape.css (Landscape Fixes) */
+@media (max-height: 600px) and (orientation: landscape) {
+    .board-container {
+        flex-direction: row !important;
+    }
+
+    .players-sidebar {
+        width: 180px !important;
+        height: 100vh !important;
+        order: 1 !important;
+    }
+
+    .chat-sidebar {
+        width: 220px !important;
+        height: 100vh !important;
+        order: 3 !important;
+    }
+}
+
+/* FROM menu-responsive.css (Mobile Menu & Hamburger) */
+@media (max-width: 480px) {
+    .mobile-hamburger {
+        display: inline-flex !important;
+        position: absolute !important;
+        right: 8px !important;
+        top: 8px !important;
+        z-index: 950 !important;
+    }
+
+    .mobile-menu {
+        display: block !important;
+        position: fixed;
+        top: 56px;
+        right: 8px;
+        left: 8px;
+        background: #ffffffcc;
+        backdrop-filter: blur(6px);
+        border-radius: 12px;
+        z-index: 1200;
+        padding: 6px;
+    }
+
+    .mobile-menu-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.28);
+        z-index: 1150;
+    }
+}
