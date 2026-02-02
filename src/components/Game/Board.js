@@ -400,7 +400,7 @@ export default function Board({ roomId, nickname, gameConfig }) {
                                 key={i}
                                 className={`heart ${i < lives ? 'filled' : 'empty'}`}
                               >
-                                {i < lives ? '❤️' : '🤍'}
+                                {'❤️'}
                               </span>
                             ))}
                           </div>

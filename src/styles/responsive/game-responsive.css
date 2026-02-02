@@ -161,7 +161,7 @@
         flex: 1 !important;
         min-height: 0 !important;
         overflow: hidden !important;
-        padding-bottom: 32dvh !important;
+        padding-bottom: 22dvh !important;
     }
 
     /* 2. HEADER - Slim & Non-Overlapping */
@@ -447,7 +447,7 @@
         bottom: 0 !important;
         left: 0 !important;
         width: 100vw !important;
-        height: 32dvh !important;
+        height: 22dvh !important;
         background: white !important;
         border-top: 1px solid #f1f5f9 !important;
         display: flex !important;

@@ -10,12 +10,19 @@ import { validateNickname } from '../../utils/roomUtils';
 import { ref, get } from "firebase/database";
 import { db } from "../../firebase";
 import { generateUniqueNickname } from "../../utils/nicknameUtils";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function RoomJoin({ roomId }) {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const { handleGuestAuth } = useAuth();
+
+  const onGuestLogin = async () => {
+    await handleGuestAuth();
+    // onAuthStateChanged triggererà il re-render con l'utente loggato
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -65,6 +72,7 @@ export default function RoomJoin({ roomId }) {
   };
 
   const handleBackToAuth = () => {
+    localStorage.setItem('returnTo', `/room/${roomId}`);
     navigate('/', { replace: true });
   };
 
@@ -93,8 +101,16 @@ export default function RoomJoin({ roomId }) {
           </div>
 
           <div className="lobby-actions">
-            <Button onClick={handleBackToAuth} variant="primary" icon="🔑">
-              Vai al Login
+            <Button onClick={onGuestLogin} variant="primary" icon="👤">
+              Gioca come Ospite
+            </Button>
+
+            <div className="divider">
+              <span>oppure</span>
+            </div>
+
+            <Button onClick={handleBackToAuth} variant="secondary" icon="🔑">
+              Accedi con Account
             </Button>
           </div>
         </div>

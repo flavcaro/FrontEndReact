@@ -49,6 +49,27 @@
   border-top: 1px solid #e2e8f0;
 }
 
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
 /* Responsive - Tablets */
 @media (max-width: 768px) {
   .lobby-container {
@@ -88,6 +109,16 @@
 
   .lobby-header p {
     font-size: 14px;
+  }
+
+  .lobby-input {
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+    height: 44px !important;
+  }
+
+  ::placeholder {
+    font-size: 14px !important;
   }
 }
 

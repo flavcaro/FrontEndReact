@@ -215,7 +215,7 @@
         padding: 20px !important;
         box-sizing: border-box !important;
         margin: 0 !important;
-        border-radius: 0 !important;
+        border-radius: 24px !important;
         /* Premium flush look */
         background: white !important;
     }

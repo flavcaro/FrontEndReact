@@ -16,11 +16,22 @@ export default function Lobby() {
   const [showAuthForm, setShowAuthForm] = useState(false);
   const { authError, setAuthError, handleEmailAuth, handleGuestAuth, handleGoogleAuth } = useAuth();
 
+  // Helper to handle redirection
+  const handleRedirect = () => {
+    const returnTo = localStorage.getItem('returnTo');
+    if (returnTo) {
+      localStorage.removeItem('returnTo');
+      navigate(returnTo, { replace: true });
+    } else {
+      navigate("/home", { replace: true });
+    }
+  };
+
   // Check if user is already authenticated
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        navigate("/home", { replace: true });
+        handleRedirect();
       }
       setAuthLoading(false);
     });
@@ -29,17 +40,17 @@ export default function Lobby() {
 
   const handleAuth = async () => {
     const success = await handleEmailAuth(email, password, isSignUp);
-    if (success) navigate("/home", { replace: true });
+    if (success) handleRedirect();
   };
 
   const handleGuestLogin = async () => {
     const success = await handleGuestAuth();
-    if (success) navigate("/home", { replace: true });
+    if (success) handleRedirect();
   };
 
   const handleGoogleLogin = async () => {
     const success = await handleGoogleAuth();
-    if (success) navigate("/home", { replace: true });
+    if (success) handleRedirect();
   };
 
   const handleBack = () => {
