@@ -128,8 +128,7 @@ export function useChat(roomId) {
   // ============================================================================
 
   return {
-    messages,           // Array di messaggi ordinati e deduplica
-    ti
+    messages,           // Array di messaggi ordinati e deduplicati
     messagesEndRef,     // Ref per auto-scroll (da assegnare a un <div> alla fine della lista)
     sendChatMessage     // Funzione per inviare un nuovo messaggio
   };
