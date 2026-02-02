@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import logoGif from '../../sprites/logo.gif';
 
 export default function AuthForm({ 
   email, 
@@ -18,7 +19,9 @@ export default function AuthForm({
     <div className="lobby-container">
       <div className={`lobby-card ${isSignUp ? 'auth-signup' : 'auth-login'}`}>
         <div className="lobby-header">
-          <div className="logo">🎨</div>
+          <div className="logo">
+            <img src={logoGif} alt="SketchUp" style={{ width: '72px', height: '72px', imageRendering: 'pixelated' }} />
+          </div>
           <h1>SketchUp</h1>
           <p>{isSignUp ? "Crea un account" : "Accedi al tuo account"}</p>
         </div>
