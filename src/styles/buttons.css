@@ -1,11 +1,11 @@
 /* Lobby Buttons */
 .lobby-btn {
   width: 100%;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
@@ -16,9 +16,10 @@
 }
 
 .lobby-btn.primary {
-  background: var(--brand-gradient);
+  background: linear-gradient(135deg, #6d28d9 0%, #7e22ce 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(var(--brand-rgb), 0.4);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .lobby-btn.primary:hover {

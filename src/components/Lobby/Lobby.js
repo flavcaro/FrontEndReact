@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import classicGif from "../../sprites/logo.gif";
@@ -17,7 +17,7 @@ export default function Lobby() {
   const { authError, setAuthError, handleEmailAuth, handleGuestAuth, handleGoogleAuth } = useAuth();
 
   // Helper to handle redirection
-  const handleRedirect = () => {
+  const handleRedirect = useCallback(() => {
     const returnTo = localStorage.getItem('returnTo');
     if (returnTo) {
       localStorage.removeItem('returnTo');
@@ -25,7 +25,7 @@ export default function Lobby() {
     } else {
       navigate("/home", { replace: true });
     }
-  };
+  }, [navigate]);
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -36,21 +36,18 @@ export default function Lobby() {
       setAuthLoading(false);
     });
     return () => unsubscribe();
-  }, [navigate]);
+  }, [handleRedirect]);
 
   const handleAuth = async () => {
-    const success = await handleEmailAuth(email, password, isSignUp);
-    if (success) handleRedirect();
+    await handleEmailAuth(email, password, isSignUp);
   };
 
   const handleGuestLogin = async () => {
-    const success = await handleGuestAuth();
-    if (success) handleRedirect();
+    await handleGuestAuth();
   };
 
   const handleGoogleLogin = async () => {
-    const success = await handleGoogleAuth();
-    if (success) handleRedirect();
+    await handleGoogleAuth();
   };
 
   const handleBack = () => {
