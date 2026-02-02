@@ -11,11 +11,12 @@ export default function PuzzleCanvas({
   onAddPoint,
   onFinishStroke,
   showSectionBorders = true,
-  selectedInstrument = 'pencil', // 'pencil' | 'eraser'
-  totalSections = 3 // Numero totale di sezioni (2 o 3)
+  selectedInstrument = 'pencil',
+  totalSections = 3
 }) {
-  const canvasRef = useRef(null);
-  const ctxRef = useRef(null);
+  const bgCanvasRef = useRef(null); // Background layer (static)
+  const drawCanvasRef = useRef(null); // Drawing layer (with eraser support)
+  const drawCtxRef = useRef(null);
   const currentStrokeRef = useRef(null);
 
   const [isPointerDown, setIsPointerDown] = useState(false);
@@ -26,22 +27,19 @@ export default function PuzzleCanvas({
   ----------------------------- */
 
   const getCanvasPoint = useCallback((e) => {
-    const canvas = canvasRef.current;
+    const canvas = drawCanvasRef.current;
     if (!canvas) return null;
 
     const rect = canvas.getBoundingClientRect();
     const source = e.touches?.[0] ?? e;
 
-    // Calcola le coordinate del mouse relative al canvas visualizzato
     const clientX = source.clientX - rect.left;
     const clientY = source.clientY - rect.top;
 
-    // Scala le coordinate in base al rapporto tra dimensioni interne e dimensioni CSS
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
     return {
-      // Return both pixel coords (canvas internal pixels) and normalized coords (0..1)
       x: clientX * scaleX,
       y: clientY * scaleY,
       nx: clientX / rect.width,
@@ -50,9 +48,8 @@ export default function PuzzleCanvas({
   }, []);
 
   const isAllowedPoint = useCallback((x, y) => {
-    if (assignedSection === null || !canvasRef.current) return false;
-    // x,y may be normalized or pixel coords; detect normalized (0..1)
-    const canvas = canvasRef.current;
+    if (assignedSection === null || !drawCanvasRef.current) return false;
+    const canvas = drawCanvasRef.current;
     const px = (x > 0 && x <= 1) ? Math.round(x * canvas.width) : x;
     const py = (y > 0 && y <= 1) ? Math.round(y * canvas.height) : y;
     return isPointInSection(
@@ -71,17 +68,16 @@ export default function PuzzleCanvas({
 
   const drawBackground = useCallback((ctx, w, h) => {
     ctx.clearRect(0, 0, w, h);
-    // Sfondo trasparente o leggermente colorato per integrarsi con il gradiente
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    // Sfondo bianco opaco
+    ctx.fillStyle = 'rgba(255, 255, 255, 1)';
     ctx.fillRect(0, 0, w, h);
 
     if (!showSectionBorders) return;
 
     const sectionW = w / totalSections;
     ctx.setLineDash([4, 4]);
-    // Colore più visibile sia su mobile che desktop
-    ctx.strokeStyle = '#475569'; // Slate 600 - Darker
-    ctx.lineWidth = 2; // Thicker
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2;
 
     ctx.beginPath();
     for (let i = 1; i < totalSections; i++) {
@@ -108,7 +104,7 @@ export default function PuzzleCanvas({
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = stroke.size;
+    ctx.lineWidth = stroke.eraser ? stroke.size * 8 : stroke.size;
 
     if (stroke.eraser) {
       ctx.globalCompositeOperation = 'destination-out';
@@ -118,12 +114,10 @@ export default function PuzzleCanvas({
       ctx.strokeStyle = stroke.color;
     }
 
-    // Points are stored normalized (nx, ny) or pixel; detect and map to pixels
     const pts = stroke.points.map(p => {
       if (p.nx !== undefined && p.ny !== undefined) {
         return { x: p.nx * ctx.canvas.width, y: p.ny * ctx.canvas.height };
       }
-      // legacy support: numeric x/y pixels
       return { x: p.x, y: p.y };
     });
 
@@ -136,79 +130,71 @@ export default function PuzzleCanvas({
   }, []);
 
   /* -----------------------------
-     REDRAW
+     INIT & REDRAW
   ----------------------------- */
 
+  // Initialize canvases
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const bgCanvas = bgCanvasRef.current;
+    const drawCanvas = drawCanvasRef.current;
+    if (!bgCanvas || !drawCanvas) return;
 
-    const ctx = canvas.getContext('2d');
-    ctxRef.current = ctx;
-
-    console.log('🔧 [PuzzleCanvas] init drawBackground totalSections=', totalSections);
-
-    // Use parent container dimensions for responsive sizing
-    const container = canvas.parentElement;
+    const container = bgCanvas.parentElement;
     if (!container) return;
 
-    // Get available space from container
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
 
-    // Use more vertical space - aim for a wider canvas that fills height better
-    // Keep aspect ratio reasonable (16:9 or similar) but prioritize using available height
-    // Use close to 100% of available space
     const maxWidth = containerWidth - 4;
     const maxHeight = containerHeight - 4;
 
-    // Simply fill the available space to maximize size
-    // Normalized coordinates handle the aspect ratio scaling automatically
-    let canvasWidth, canvasHeight;
-    canvasWidth = maxWidth;
-    canvasHeight = maxHeight;
-
-    // Support high-DPI displays
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvasWidth * dpr;
-    canvas.height = canvasHeight * dpr;
 
-    // Scale canvas CSS size
-    canvas.style.width = `${canvasWidth}px`;
-    canvas.style.height = `${canvasHeight}px`;
+    // Setup background canvas
+    bgCanvas.width = maxWidth * dpr;
+    bgCanvas.height = maxHeight * dpr;
+    bgCanvas.style.width = `${maxWidth}px`;
+    bgCanvas.style.height = `${maxHeight}px`;
 
-    // Scale context to match device pixel ratio
-    ctx.scale(dpr, dpr);
+    const bgCtx = bgCanvas.getContext('2d');
+    bgCtx.scale(dpr, dpr);
+    drawBackground(bgCtx, maxWidth, maxHeight);
 
-    drawBackground(ctx, canvasWidth, canvasHeight);
+    // Setup drawing canvas
+    drawCanvas.width = maxWidth * dpr;
+    drawCanvas.height = maxHeight * dpr;
+    drawCanvas.style.width = `${maxWidth}px`;
+    drawCanvas.style.height = `${maxHeight}px`;
+
+    const drawCtx = drawCanvas.getContext('2d');
+    drawCtx.scale(dpr, dpr);
+    drawCtxRef.current = drawCtx;
   }, [drawBackground, totalSections]);
 
+  // Redraw strokes on drawing canvas
   useEffect(() => {
-    const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
+    const ctx = drawCtxRef.current;
+    const canvas = drawCanvasRef.current;
     if (!ctx || !canvas) return;
 
-    // Use CSS dimensions for drawing (already scaled by dpr in context)
     const w = parseFloat(canvas.style.width) || canvas.width;
     const h = parseFloat(canvas.style.height) || canvas.height;
 
-    drawBackground(ctx, w, h);
+    // Clear only the drawing layer
+    ctx.clearRect(0, 0, w, h);
 
     if (!allStrokes) return;
 
     Object.entries(allStrokes).forEach(([section, strokes]) => {
       const visible = assignedSection === null || Number(section) === assignedSection;
-
       if (!visible) return;
-
       strokes.forEach(s => drawStroke(ctx, s));
     });
 
     if (currentStrokeRef.current) {
-      // currentStrokeRef may hold normalized points (nx,ny)
       drawStroke(ctx, currentStrokeRef.current);
     }
-  }, [allStrokes, assignedSection, drawBackground, drawStroke]);
+  }, [allStrokes, assignedSection, drawStroke]);
 
   /* -----------------------------
      POINTER EVENTS
@@ -226,23 +212,22 @@ export default function PuzzleCanvas({
     const eraser = selectedInstrument === 'eraser';
 
     currentStrokeRef.current = {
-      // store normalized coords for cross-client compatibility
       points: p.nx !== undefined ? [{ nx: p.nx, ny: p.ny }] : [{ x: p.x, y: p.y }],
       size: brushSize,
       color: eraser ? null : currentColor,
       eraser
     };
-    onStartStroke?.(p.nx !== undefined ? p.nx : p.x, p.ny !== undefined ? p.ny : p.y, currentColor, brushSize, eraser);
+    onStartStroke?.(p.nx !== undefined ? p.nx : p.x, p.ny !== undefined ? p.ny : p.y, eraser ? null : currentColor, brushSize, eraser);
   }, [isDrawing, assignedSection, brushSize, currentColor, selectedInstrument, getCanvasPoint, isAllowedPoint, onStartStroke]);
 
   const handleMove = useCallback((e) => {
     if (!isPointerDown || !lastPoint) return;
 
-    const ctx = ctxRef.current;
+    const ctx = drawCtxRef.current;
     const p = getCanvasPoint(e);
     if (!ctx || !p || !isAllowedPoint(p.nx, p.ny)) return;
 
-    ctx.lineWidth = brushSize;
+    ctx.lineWidth = selectedInstrument === 'eraser' ? brushSize * 8 : brushSize;
     ctx.lineCap = 'round';
 
     if (selectedInstrument === 'eraser') {
@@ -286,8 +271,21 @@ export default function PuzzleCanvas({
       alignItems: 'center',
       justifyContent: 'center'
     }}>
+      {/* Background canvas - static layer */}
       <canvas
-        ref={canvasRef}
+        ref={bgCanvasRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none'
+        }}
+      />
+      {/* Drawing canvas - interactive layer */}
+      <canvas
+        ref={drawCanvasRef}
         onMouseDown={handleDown}
         onMouseMove={handleMove}
         onMouseUp={handleUp}
@@ -295,7 +293,14 @@ export default function PuzzleCanvas({
         onTouchStart={handleDown}
         onTouchMove={handleMove}
         onTouchEnd={handleUp}
-        style={{ width: '100%', height: '100%', touchAction: 'none', display: 'block' }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          touchAction: 'none'
+        }}
       />
     </div>
   );
