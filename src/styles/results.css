@@ -61,29 +61,7 @@
   flex-shrink: 0;
 }
 
-/* ... existing styles ... */
-
-.game-results-card {
-  padding: 16px;
-  max-height: 75vh;
-}
-
-.results-header h1 {
-  font-size: 22px;
-  /* Smaller mobile title */
-}
-
-/* On very small screens, stack buttons but keep them compact */
-@media (max-width: 480px) {
-  .game-results-card {
-    padding: 14px;
-    width: 95%;
-  }
-
-  .results-header h1 {
-    font-size: 20px;
-  }
-}
+/* ... existing styles continued ... */
 
 .podium-place {
   display: flex;
@@ -116,7 +94,7 @@
 
 .podium-player {
   background: #f8fafc;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 12px;
   text-align: center;
   border: 2px solid #e2e8f0;
@@ -153,7 +131,7 @@
 }
 
 .results-list {
-  margin-top: 16px;
+  margin-top: 12px;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -163,9 +141,9 @@
 }
 
 .results-list h3 {
-  font-size: 18px;
+  font-size: 16px;
   color: #334155;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   text-align: center;
   position: sticky;
   top: 0;
@@ -177,18 +155,18 @@
 .result-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
+  gap: 12px;
+  padding: 10px 12px;
   background: #f8fafc;
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .result-position {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   color: #6366f1;
-  min-width: 40px;
+  min-width: 30px;
   flex-shrink: 0;
 }
 
@@ -197,125 +175,124 @@
   font-weight: 600;
   color: #334155;
   word-break: break-word;
+  font-size: 14px;
 }
 
 .result-score {
   font-weight: 700;
   color: #6366f1;
   flex-shrink: 0;
+  font-size: 14px;
 }
 
 /* Container for action buttons in results card */
 .results-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 12px;
   flex-shrink: 0;
-  padding-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid #e2e8f0;
 }
 
 /* Force equal widths regardless of button text length */
 .results-actions>button {
   flex: 1 1 0;
-  /* use zero basis so both buttons share space equally */
   min-width: 0;
-  /* allow shrinking below intrinsic size */
   box-sizing: border-box;
 }
 
 /* Responsive - Mobile */
 @media (max-width: 768px) {
   .game-results-overlay {
-    /* Ensure overlay covers entire viewport including chat */
     position: fixed !important;
     z-index: 999999 !important;
     inset: 0 !important;
   }
 
   .game-results-card {
-    padding: 20px;
-    max-height: 80vh;
+    padding: 16px;
+    max-height: 75vh;
+    border-radius: 20px;
   }
 
   .results-header h1 {
-    font-size: 28px;
+    font-size: 20px;
   }
 
   .podium {
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    /* Keep row for tablet, stack only on very small if needed */
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .podium-place {
-    width: 100%;
+    min-width: 80px;
+    /* Allow shrinking */
   }
 
-  .place-1,
-  .place-2,
-  .place-3 {
-    order: unset;
-  }
-
-  .podium-medal {
-    font-size: 44px;
-  }
-
-  .place-1 .podium-medal {
-    font-size: 52px;
-  }
-
-  /* Stack buttons on small screens */
-  .game-results-card>div:last-child {
-    flex-direction: column !important;
-  }
-
-  .game-results-card>div:last-child button {
-    width: 100% !important;
-    flex: unset !important;
-  }
+  /* Stack buttons on small screens if needed, otherwise row is fine */
 }
 
 @media (max-width: 480px) {
   .game-results-card {
-    padding: 20px;
+    padding: 12px;
+    width: 95%;
+    max-height: 70vh;
   }
 
   .results-header h1 {
-    font-size: 24px;
+    font-size: 18px;
+  }
+
+  .podium-medal {
+    font-size: 32px;
+  }
+
+  .place-1 .podium-medal {
+    font-size: 40px;
   }
 
   .podium-player {
-    padding: 12px 16px;
+    padding: 8px 10px;
   }
 
   .podium-name {
-    font-size: 18px;
+    font-size: 11px;
   }
 
   .podium-score {
-    font-size: 20px;
+    font-size: 13px;
   }
 
   .result-row {
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
 
   .result-position {
-    font-size: 18px;
-    min-width: 35px;
+    font-size: 14px;
+    min-width: 24px;
   }
 
   .result-player {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .result-score {
-    font-size: 16px;
+    font-size: 13px;
+  }
+
+  .results-actions {
+    flex-direction: column;
+  }
+
+  .results-actions>button {
+    width: 100%;
   }
 
   .btn-restart {
-    padding: 16px;
-    font-size: 16px;
+    padding: 12px;
+    font-size: 14px;
   }
 }
