@@ -12,7 +12,8 @@
     .mobile-share-link,
     .mobile-game-info-popover,
     .mobile-game-info-inline,
-    .mobile-waiting-status {
+    .mobile-waiting-status,
+    .mobile-malus-bar {
         display: none !important;
     }
 
@@ -231,6 +232,30 @@
         font-weight: 600;
         color: #1f2937;
         white-space: nowrap;
+    }
+
+    .mobile-malus-bar {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: #7f1d1d;
+        background: #fef2f2;
+        padding: 6px 12px;
+        border-bottom: 1px solid #fecaca;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .mobile-malus-bar .malus-icon {
+        font-size: 14px;
+    }
+
+    .mobile-malus-bar .malus-text {
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .room-code {
@@ -546,7 +571,8 @@
 
     /* Hide mobile-specific elements on larger screens to prevent duplication */
     .mobile-timer,
-    .mobile-round-display {
+    .mobile-round-display,
+    .mobile-malus-bar {
         display: none !important;
     }
 }

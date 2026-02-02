@@ -332,6 +332,16 @@ export default function GameHeader({
         )}
       </div>
 
+      {/* MOBILE MALUS DISPLAY - Separate Bar */}
+      {gameState?.active && Array.isArray(gameState?.chaosEffects) && gameState.chaosEffects.length > 0 && (
+        <div className="mobile-malus-bar">
+          <span className="malus-icon">🎭</span>
+          <span className="malus-text">
+            {gameState.chaosEffects.map(e => e.name).join(', ')}
+          </span>
+        </div>
+      )}
+
       {/* Azioni */}
       <div className="header-actions">
         {gameState?.active && (

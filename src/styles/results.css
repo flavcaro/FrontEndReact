@@ -17,11 +17,12 @@
 
 .game-results-card {
   background: white;
-  border-radius: 16px;
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-  max-height: 85vh;
+  border-radius: 20px;
+  padding: 16px;
+  max-width: 400px;
+  /* Reduced from 500px */
+  width: 90%;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   animation: slideUp 0.5s ease-out;
@@ -32,30 +33,56 @@
 
 .results-header {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
 .results-header h1 {
-  font-size: 20px;
+  font-size: 22px;
+  /* Slightly smaller */
   color: #1e293b;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .results-header p {
   color: #64748b;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .podium {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 12px;
+  gap: 8px;
+  /* Reduced gap */
+  margin-bottom: 12px;
+  padding: 8px;
   flex-wrap: wrap;
   flex-shrink: 0;
+}
+
+/* ... existing styles ... */
+
+.game-results-card {
+  padding: 16px;
+  max-height: 75vh;
+}
+
+.results-header h1 {
+  font-size: 22px;
+  /* Smaller mobile title */
+}
+
+/* On very small screens, stack buttons but keep them compact */
+@media (max-width: 480px) {
+  .game-results-card {
+    padding: 14px;
+    width: 95%;
+  }
+
+  .results-header h1 {
+    font-size: 20px;
+  }
 }
 
 .podium-place {
