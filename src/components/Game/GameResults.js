@@ -354,13 +354,22 @@ export default function GameResults({ roomId, players = [], finalNickname, final
         {restartVote?.status === 'open' && !gameActive && !restartVote?.inPlaceRestart && (
           <div className="simple-modal" style={{
             position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', background: 'rgba(0,0,0,0.4)', zIndex: 20
+            justifyContent: 'center', background: 'rgba(0,0,0,0.4)', zIndex: 20, padding: '16px'
           }}>
-            <div style={{ background: 'white', padding: 20, borderRadius: 12, minWidth: 360, maxWidth: 680 }}>
-              <h3 style={{ marginTop: 0 }}>Votazione: Giocare ancora?</h3>
-              <p style={{ marginTop: 6, marginBottom: 12, color: '#334155' }}>Avviata da: {restartVote.initiatorName}</p>
+            <div style={{
+              background: 'white',
+              padding: '16px',
+              borderRadius: 12,
+              minWidth: '280px',
+              maxWidth: '90vw',
+              width: '100%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}>
+              <h3 style={{ marginTop: 0, fontSize: '18px' }}>Votazione: Giocare ancora?</h3>
+              <p style={{ marginTop: 6, marginBottom: 12, color: '#334155', fontSize: '14px' }}>Avviata da: {restartVote.initiatorName}</p>
 
-              <div style={{ display: 'flex', gap: 16, marginTop: 6, alignItems: 'stretch' }}>
+              <div style={{ display: 'flex', gap: 12, marginTop: 6, alignItems: 'stretch', flexWrap: 'wrap' }}>
                 {(() => {
                   const myVote = restartVote?.votes ? restartVote.votes[currentPlayerId] : undefined;
                   return (
@@ -372,7 +381,8 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                         tabIndex={0}
                         onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('yes')); }}
                         style={{
-                          flex: 1,
+                          flex: '1 1 120px',
+                          minWidth: '120px',
                           textAlign: 'center',
                           padding: 12,
                           borderRadius: 8,
@@ -381,8 +391,8 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                           border: myVote === 'yes' ? '1px solid #34d399' : '1px solid transparent'
                         }}
                       >
-                        <div style={{ fontSize: 44 }}>👍</div>
-                        <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'yes').length} voti</div>
+                        <div style={{ fontSize: 36 }}>👍</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'yes').length} voti</div>
                       </div>
 
                       <div
@@ -392,7 +402,8 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                         tabIndex={0}
                         onKeyDown={(e) => { if (e.key === 'Enter') (!hasCast && handleVote('no')); }}
                         style={{
-                          flex: 1,
+                          flex: '1 1 120px',
+                          minWidth: '120px',
                           textAlign: 'center',
                           padding: 12,
                           borderRadius: 8,
@@ -401,15 +412,15 @@ export default function GameResults({ roomId, players = [], finalNickname, final
                           border: myVote === 'no' ? '1px solid #f87171' : '1px solid transparent'
                         }}
                       >
-                        <div style={{ fontSize: 44 }}>👎</div>
-                        <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'no').length} voti</div>
+                        <div style={{ fontSize: 36 }}>👎</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>{Object.values(restartVote.votes || {}).filter(v => v === 'no').length} voti</div>
                       </div>
                     </>
                   );
                 })()}
               </div>
 
-              {hasCast && <div style={{ marginTop: 14, textAlign: 'center', color: '#475569' }}>Hai votato. Attendi il risultato...</div>}
+              {hasCast && <div style={{ marginTop: 14, textAlign: 'center', color: '#475569', fontSize: '14px' }}>Hai votato. Attendi il risultato...</div>}
             </div>
           </div>
         )}

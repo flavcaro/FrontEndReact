@@ -52,6 +52,7 @@
 .divider {
   display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
   margin: 16px 0;
   color: #94a3b8;
@@ -68,6 +69,9 @@
 
 .divider span {
   padding: 0 10px;
+  background: white;
+  position: relative;
+  z-index: 1;
 }
 
 /* Responsive - Tablets */
@@ -119,6 +123,16 @@
 
   ::placeholder {
     font-size: 14px !important;
+  }
+
+  .divider {
+    margin: 12px 0;
+    font-size: 12px;
+  }
+
+  .divider span {
+    padding: 0 8px;
+    white-space: nowrap;
   }
 }
 
